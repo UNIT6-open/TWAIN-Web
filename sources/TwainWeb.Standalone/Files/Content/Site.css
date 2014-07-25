@@ -1,0 +1,88 @@
+﻿section {
+    display: block;
+}
+
+.disp-no {
+    display: none;
+}
+
+
+
+body section.header {
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: #ffffff;
+    width: 100%;
+    height: 80px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+body section.body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #3097be;
+    -webkit-transition: color linear .2s;
+    -moz-transition: color linear .2s;
+    -o-transition: color linear .2s;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #207291;
+}
+
+h1 {
+    font-size: 26px;
+    color: #333333;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
+h1 span {
+    color: #78b127;
+}
+
+h2 {
+    font-size: 20px;
+    line-height: 24px;
+    color: #333333;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 100;
+    margin-bottom: 30px;
+}
+
+
+.logo {
+    padding-top: 10px;
+    float: left;
+}
+
+ul.nav {
+    float: right;
+    margin-bottom: 0px;
+}
+
+ul.nav li {
+    float: left;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+ul.nav li a:hover {
+    color: #3097be;
+    background: #f2f2f2;
+}
+
+ul.nav li a {
+    padding: 30px 20px;
+    color: #333333;
+    -webkit-transition: color linear .2s, background linear .2s;
+    -moz-transition: color linear .2s, background linear .2s;
+    -o-transition: color linear .2s, background linear .2s;
+}

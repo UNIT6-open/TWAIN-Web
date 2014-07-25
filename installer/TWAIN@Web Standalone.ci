@@ -1,0 +1,465 @@
+﻿<project version = 9 civer = 6.1.0 winver = "2.12/6.2.9200" >
+   <autorun >1</>
+   <autoclose >0</>
+   <compname >UNIT6.ru</>
+   <produrl >http://unit6.ru/twain-web</>
+   <ver >1.3</>
+   <supurl ></>
+   <updurl ></>
+   <dlgfont >verdana</>
+   <headlogo >default - 1</>
+   <dlgfontsize >s8</>
+   <output >D:\Works\unit6\projects\ScannerSite new\release\installer</>
+   <exename >TWAIN@Web-v1beta3-setup.exe</>
+   <beffile ></>
+   <aftfile ></>
+   <uninclude >1</>
+   <lang >russian</>
+   <addlang ></>
+   <selfextr >1</>
+   <instpath ></>
+   <voltype >nolimit</>
+   <volsize ></>
+   <volpattern >disk%i.pak</>
+   <password ></>
+   <progname >TWAIN@Web Standalone</>
+   <appname >TWAIN@Web Standalone</>
+   <bl ></>
+   <blurl ></>
+   <unpath >inst</>
+   <unexe >uninstall.exe</>
+   <unlog >uninstall.ini</>
+   <installroot sorttype = 0 >
+      <children >
+         <install id = install expanded = 2 >
+            <children >
+               <_ id = background disabled = 1 >
+                  <desc ></>
+                  <head >#lcaption#</>
+                  <foot ></>
+                  <font >Times</>
+                  <height >36</>
+                  <bold >0</>
+                  <italic >0</>
+                  <backcol >0x0000FF</>
+                  <textcol >0xFFFFFF</>
+                  <shadecol >0x888888</>
+                  <uniform >0</>
+                  <backbmp ></>
+                  <stretchback >0</>
+               </>
+               <_ tag = 0 id = getuser disabled = 1 >
+                  <desc ></>
+                  <var >username</>
+                  <vars >appdata,apppath,userpath,desktop,progpath,startup</>
+                  <if ></>
+               </>
+               <_ id = checkreq expanded = 0 disabled = 0 >
+                  <children >
+                     <_ tag = 0 id = empty ></>
+                  </>
+                  <desc ></>
+                  <checktype >net2</>
+                  <resvar >ischeck</>
+                  <not >0</>
+                  <msg >Для работы приложения необходимо скачать и установить .NET Framework 2.0</>
+               </>
+               <_ id = dlglang disabled = 1 >
+                  <desc ></>
+                  <buttons >nc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ id = dlgwel disabled = 1 >
+                  <desc ></>
+                  <buttons >auto</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ id = dlglic disabled = 1 >
+                  <desc ></>
+                  <file ></>
+                  <print >1</>
+                  <iagree >radio</>
+                  <buttons >pnc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >Liccolor</>
+                           <value >1</>
+                        </>
+                     </>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <if ></>
+               </>
+               <_ id = dlgpath >
+                  <desc ></>
+                  <buttons >auto</>
+                  <design >left</>
+                  <headlogo ></>
+                  <chlist >
+                     <rows >
+                        <_ >
+                           <varname >config</>
+                           <value >Задать расширенные настройки</>
+                        </>
+                     </>
+                  </>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <pathadd ></>
+                  <enforce >0</>
+                  <if ></>
+                  <savepath >0</>
+               </>
+               <_ id = dlgprog expanded = 2 >
+                  <children >
+                     <_ tag = 0 id = unpack >
+                        <desc ></>
+                        <comptype >default</>
+                        <ratio >r5</>
+                        <solid >1</>
+                        <path >inst</>
+                        <custpath ></>
+                        <ifexist >overnewer</>
+                        <if ></>
+                        <srclist >
+                           <rows rel = unpack >
+                              <_ >
+                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainWeb.Standalone.exe</>
+                                 <recurse >0</>
+                                 <justfile >1</>
+                                 <emptydir >0</>
+                                 <exclude ></>
+                              </>
+                              <_ >
+                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\Files</>
+                                 <recurse >1</>
+                                 <justfile >0</>
+                                 <emptydir >1</>
+                                 <exclude ></>
+                              </>
+                              <_ >
+                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\PdfSharp.dll</>
+                                 <recurse >0</>
+                                 <justfile >1</>
+                                 <emptydir >0</>
+                                 <exclude ></>
+                              </>
+                              <_ >
+                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainWeb.Standalone.exe.config</>
+                                 <recurse >0</>
+                                 <justfile >1</>
+                                 <emptydir >0</>
+                                 <exclude ></>
+                              </>
+                           </>
+                        </>
+                        <varlist >
+                           <rows ></>
+                        </>
+                     </>
+                     <_ id = shcut >
+                        <desc ></>
+                        <shpath >prog</>
+                        <shfile >#lunname#</>
+                        <path >inst</>
+                        <file >uninstall.exe</>
+                        <icon ></>
+                        <cmdline ></>
+                        <comment ></>
+                        <work >inst</>
+                        <defwork ></>
+                        <runas >norm</>
+                        <runasadmin >0</>
+                     </>
+                     <_ tag = 0 id = shlist >
+                        <desc ></>
+                        <shlist >
+                           <rows >
+                              <_ >
+                                 <shpath >comdesk</>
+                                 <shfile >TWAIN@Web</>
+                                 <path >inst</>
+                                 <file >TwainWeb.Standalone.exe</>
+                                 <cmdline >run</>
+                                 <icon ></>
+                                 <work >inst</>
+                                 <defwork ></>
+                                 <if ></>
+                              </>
+                              <_ >
+                                 <shpath >prog</>
+                                 <shfile >Uninstall</>
+                                 <path >inst</>
+                                 <file >Uninstall.exe</>
+                                 <cmdline ></>
+                                 <icon ></>
+                                 <work >inst</>
+                                 <defwork ></>
+                                 <if ></>
+                              </>
+                              <_ >
+                                 <shpath >prog</>
+                                 <shfile >TWAIN@Web</>
+                                 <path >inst</>
+                                 <file >TwainWeb.Standalone.exe</>
+                                 <cmdline >run</>
+                                 <icon ></>
+                                 <work >inst</>
+                                 <defwork ></>
+                                 <if ></>
+                              </>
+                              <_ >
+                                 <shpath >prog</>
+                                 <shfile >Readme</>
+                                 <path >inst</>
+                                 <file >Files\Readme.txt</>
+                                 <cmdline ></>
+                                 <icon ></>
+                                 <work >inst</>
+                                 <defwork ></>
+                                 <if ></>
+                              </>
+                              <_ >
+                                 <shpath >prog</>
+                                 <shfile >Конфигурация</>
+                                 <path >inst</>
+                                 <file >TwainWeb.Standalone.exe</>
+                                 <cmdline >config</>
+                                 <icon ></>
+                                 <work >inst</>
+                                 <defwork ></>
+                                 <if ></>
+                              </>
+                           </>
+                        </>
+                     </>
+                     <_ id = uninstexe >
+                        <desc ></>
+                     </>
+                     <_ id = unar >
+                        <desc ></>
+                        <name ></>
+                        <path >inst</>
+                        <ifile ></>
+                     </>
+                     <_ tag = 0 id = run >
+                        <desc ></>
+                        <path >inst</>
+                        <name >TwainWeb.Standalone.exe</>
+                        <cmdline >configrun #config#</>
+                        <work >inst</>
+                        <defwork ></>
+                        <wait >1</>
+                        <runas >norm</>
+                        <if ></>
+                     </>
+                     <_ tag = 0 id = run >
+                        <desc ></>
+                        <path >inst</>
+                        <name >Files\bat\install.bat</>
+                        <cmdline ></>
+                        <work >inst</>
+                        <defwork ></>
+                        <wait >1</>
+                        <runas >norm</>
+                        <if ></>
+                     </>
+                  </>
+                  <desc >Go into the item for viewing unpacking actions.</>
+                  <auto >1</>
+                  <buttons >nc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ id = dlgfin >
+                  <desc ></>
+                  <buttons >c</>
+                  <design >left</>
+                  <headlogo ></>
+                  <chlist >
+                     <rows >
+                        <_ >
+                           <varname >runtwainweb</>
+                           <value >Запустить TWAIN@Web сейчас?</>
+                        </>
+                     </>
+                  </>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >runtwainweb</>
+                           <value >1</>
+                        </>
+                     </>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext >Поздравляем! Теперь доступ к сканеру на этом компьютере возможен через браузер!
+
+Сетевой адрес для сканирования — http://127.0.0.1/TWAIN@Web/ (слэш в конце обязательный).
+
+С других компьютеров — вместо 127.0.0.1 используйте IP адрес этого компьютера, например, 192.168.0.1</>
+               </>
+               <_ tag = 0 id = run >
+                  <desc ></>
+                  <path >inst</>
+                  <name >Twainweb.Standalone.exe</>
+                  <cmdline >run</>
+                  <work >inst</>
+                  <defwork ></>
+                  <wait >1</>
+                  <runas >norm</>
+                  <if >runtwainweb</>
+               </>
+            </>
+            <icofile >default</>
+            <resfile ></>
+            <leftimg >install - 1</>
+            <caption ></>
+            <verinfo >1</>
+            <noadmin >0</>
+            <selfdelete >0</>
+         </>
+      </>
+   </>
+   <uninstallroot sorttype = 0 >
+      <children >
+         <uninstall id = uninstall expanded = 2 >
+            <children >
+               <_ id = dlguconf >
+                  <desc ></>
+                  <buttons >c</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ tag = 0 id = run >
+                  <desc ></>
+                  <path >inst</>
+                  <name >Files\bat\uninstall.bat</>
+                  <cmdline ></>
+                  <work >inst</>
+                  <defwork ></>
+                  <wait >1</>
+                  <runas >norm</>
+                  <if ></>
+               </>
+               <_ id = dlguprog expanded = 2 >
+                  <children >
+                     <_ id = unprocess >
+                        <desc ></>
+                     </>
+                  </>
+                  <desc ></>
+                  <buttons >nc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <auto >1</>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ id = dlgundel >
+                  <desc ></>
+                  <buttons >nc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <if ></>
+               </>
+               <_ id = dlgufin >
+                  <desc ></>
+                  <buttons >nc</>
+                  <design >left</>
+                  <headlogo ></>
+                  <varlist >
+                     <rows ></>
+                  </>
+                  <head ></>
+                  <headtext ></>
+                  <dlgtext ></>
+                  <feedback ></>
+                  <if ></>
+               </>
+            </>
+            <unicon >uninstall</>
+            <unresfile ></>
+            <leftimg >uninstall - 1</>
+            <caption ></>
+            <noadmin >0</>
+         </>
+      </>
+   </>
+   <phone ></>
+   <shfolder ></>
+   <headcol ></>
+   <headtext ></>
+   <headimg ></>
+   <stretchback >0</>
+   <silentpar >-silent</>
+   <custfont ></>
+   <upinclude >0</>
+   <uppath >inst</>
+   <upexe >update.exe</>
+   <upurl ></>
+   <upxml >update.ini</>
+   <upredir ></>
+   <ignnotfound >0</>
+   <csfile ></>
+   <csinst >"<exefilename>"</>
+   <csuninst >"<exefilename>"</>
+   <csupdate >"<exefilename>"</>
+   <crautorun >0</>
+   <autoicon ></>
+   <multilist >
+      <rows ></>
+   </>
+   <tozip >0</>
+   <zipfile ></>
+</>
