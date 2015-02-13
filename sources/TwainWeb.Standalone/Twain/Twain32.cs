@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Drawing;
 using System.Threading;
+using TwainWeb.Standalone.App;
 
 namespace TwainWeb.Standalone.Twain
 {
@@ -44,9 +45,10 @@ namespace TwainWeb.Standalone.Twain
         /// Initializes a new instance of the <see cref="Twain32"/> class.
         /// </summary>
         public Twain32() {
-            Form _window=new Form();
+			
+            var _window=new Form();
             this._hwnd=_window.Handle;
-
+	       
             Assembly _asm=Assembly.GetExecutingAssembly();
             AssemblyName _asm_name=new AssemblyName(_asm.FullName);
             Version _version=new Version(((AssemblyFileVersionAttribute)_asm.GetCustomAttributes(typeof(AssemblyFileVersionAttribute),false)[0]).Version);
@@ -232,9 +234,14 @@ namespace TwainWeb.Standalone.Twain
         /// <returns>Истина, если операция прошла удачно; иначе, лож.</returns>
         private bool OpenSource()
         {
-            if (this.OpenSM() && (this._TwainState & StateFlag.DSOpen) == 0)
-            {
-                var _rc = this._DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.OpenDS, this._srcds);
+			if (this.OpenSM() && (this._TwainState & StateFlag.DSOpen) == 0)
+			{
+				TwRC _rc;
+	            using (new MessageBoxHook())
+	            {
+					_rc = this._DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.OpenDS, this._srcds);
+	            }
+               
                 if (_rc == TwRC.Success)
                     this._TwainState |= StateFlag.DSOpen;
             }

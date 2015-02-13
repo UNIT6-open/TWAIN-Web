@@ -102,6 +102,8 @@
     <Compile Include="App\FormatPage.cs" />
     <Compile Include="App\GlobalDictionaries.cs" />
     <Compile Include="App\HomeController.cs" />
+    <Compile Include="App\MessageBoxHookManager.cs" />
+    <Compile Include="App\MessageBoxHook.cs" />
     <Compile Include="App\MyError.cs" />
     <Compile Include="App\ScanCommand.cs" />
     <Compile Include="App\ScannerSettings.cs" />
