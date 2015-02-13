@@ -34,9 +34,12 @@ namespace TwainWeb.Standalone.App
 
         private void FillAllowedFormats(float? maxHeight, float? maxWidth)
         {
-            if (!maxHeight.HasValue && !maxWidth.HasValue)
-                allowedFormats = GlobalDictionaries.Formats;
-            allowedFormats = new List<FormatPage>();
+	        if (!maxHeight.HasValue || !maxWidth.HasValue)
+	        {
+		        allowedFormats = GlobalDictionaries.Formats;
+		        return;
+	        }
+	        allowedFormats = new List<FormatPage>();
             FormatPage prevFormat = null;
             bool? useStandartSizes = null;
             foreach(var format in GlobalDictionaries.Formats)
