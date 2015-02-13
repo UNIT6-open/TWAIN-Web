@@ -205,7 +205,7 @@ namespace TwainWeb.Standalone.Twain
         {
             if (this.OpenSM() && this.OpenSource() && (this._TwainState & StateFlag.DSEnabled) == 0)
             {
-                TwRC _rc = this._DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd});
+                TwRC _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd});
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState |= StateFlag.DSEnabled;
@@ -222,7 +222,7 @@ namespace TwainWeb.Standalone.Twain
         private bool _DisableSource() {
             if ((this._TwainState & StateFlag.DSEnabled) == 0)
                 return true;
-			var _rc = this._DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd });
+			var _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd });
             if(_rc==TwRC.Success)
                 this._TwainState&=~StateFlag.DSEnabled;
             return (this._TwainState & StateFlag.DSEnabled) == 0;
@@ -236,11 +236,7 @@ namespace TwainWeb.Standalone.Twain
         {
 			if (this.OpenSM() && (this._TwainState & StateFlag.DSOpen) == 0)
 			{
-				TwRC _rc;
-	            using (new MessageBoxHook())
-	            {
-					_rc = this._DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.OpenDS, this._srcds);
-	            }
+				var _rc = this.DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.OpenDS, this._srcds);	            
                
                 if (_rc == TwRC.Success)
                     this._TwainState |= StateFlag.DSOpen;
@@ -256,7 +252,7 @@ namespace TwainWeb.Standalone.Twain
         {
             if ((this._TwainState & StateFlag.DSOpen) != 0 && this._DisableSource())
             {
-                var _rc = this._DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.CloseDS, this._srcds);
+                var _rc = this.DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.CloseDS, this._srcds);
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState &= ~StateFlag.DSOpen;
@@ -273,7 +269,7 @@ namespace TwainWeb.Standalone.Twain
         {
             if ((this._TwainState & StateFlag.DSMOpen) == 0)
             {
-                TwRC _rc = _DsmParent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Parent, TwMSG.OpenDSM, ref this._hwnd);
+                TwRC _rc = DsmParent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Parent, TwMSG.OpenDSM, ref this._hwnd);
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState |= StateFlag.DSMOpen;
@@ -290,7 +286,7 @@ namespace TwainWeb.Standalone.Twain
         public bool CloseSM() {
             if ((this._TwainState & StateFlag.DSOpen) != 0 && this.CloseSource())
             {
-                var _rc = _DsmParent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Parent, TwMSG.CloseDSM, ref this._hwnd);
+                var _rc = DsmParent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Parent, TwMSG.CloseDSM, ref this._hwnd);
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState &= ~StateFlag.DSMOpen;
@@ -376,7 +372,7 @@ namespace TwainWeb.Standalone.Twain
             get
             {
                 var _imageLayout = new TwImageLayout();
-                var _rc = this._DsImageLayuot(this._appid, this._srcds, TwDG.Image, TwDAT.ImageLayout, TwMSG.Get, _imageLayout);
+                var _rc = this.DsImageLayuot(this._appid, this._srcds, TwDG.Image, TwDAT.ImageLayout, TwMSG.Get, _imageLayout);
                 var twainStatus = this._GetStatus();
                 if (_rc != TwRC.CheckStatus && twainStatus != TwCC.Success)
                     throw new TwainException(twainStatus);
@@ -398,7 +394,7 @@ namespace TwainWeb.Standalone.Twain
                         Bottom = TwFix32.FromFloat(value.Bottom)
                     }
                 };
-                var _rc = this._DsImageLayuot(this._appid, this._srcds, TwDG.Image, TwDAT.ImageLayout, TwMSG.Set, _imageLayout);
+                var _rc = this.DsImageLayuot(this._appid, this._srcds, TwDG.Image, TwDAT.ImageLayout, TwMSG.Set, _imageLayout);
                 var twainStatus = this._GetStatus();
                 if (_rc != TwRC.CheckStatus && twainStatus != TwCC.Success)
                     throw new TwainException(twainStatus);
@@ -491,7 +487,7 @@ namespace TwainWeb.Standalone.Twain
         public TwQC IsCapSupported(TwCap capability) {
             if((this._TwainState&StateFlag.DSOpen)!=0) {
                 using(TwCapability _cap=new TwCapability(capability)) {
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.QuerySupport,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.QuerySupport,_cap);
                     if(_rc==TwRC.Success) {
                         return (TwQC)((_TwOneValue)_cap.GetValue()).Item;
                     } else {
@@ -512,7 +508,7 @@ namespace TwainWeb.Standalone.Twain
         public object GetCap(TwCap capability) {
             if((this._TwainState&StateFlag.DSOpen)!=0) {
                 using(TwCapability _cap=new TwCapability(capability)) {
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Get,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Get,_cap);
                     if(_rc==TwRC.Success) {
                         switch(_cap.ConType) {
                             case TwOn.One:
@@ -559,7 +555,7 @@ namespace TwainWeb.Standalone.Twain
         public void SetCap(TwCap capability,object value) {
             if((this._TwainState&StateFlag.DSOpen)!=0) {
                 using(TwCapability _cap=new TwCapability(capability,Twain32._Convert(value),Twain32._Convert(value.GetType()))) {
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
                     if(_rc!=TwRC.Success) {
                         throw new TwainException(this._GetStatus());
                     }
@@ -584,7 +580,7 @@ namespace TwainWeb.Standalone.Twain
                     },
                     capabilityValue)) {
 
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
                     if(_rc!=TwRC.Success) {
                         throw new TwainException(this._GetStatus());
                     }
@@ -603,7 +599,7 @@ namespace TwainWeb.Standalone.Twain
         public void SetCap(TwCap capability,Range capabilityValue) {
             if((this._TwainState&StateFlag.DSOpen)!=0) {
                 using(TwCapability _cap=new TwCapability(capability,capabilityValue.ToTwRange())) {
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
                     if(_rc!=TwRC.Success) {
                         throw new TwainException(this._GetStatus());
                     }
@@ -631,7 +627,7 @@ namespace TwainWeb.Standalone.Twain
                     },
                     capabilityValue.Items)) {
 
-                    TwRC _rc=this._DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
+                    TwRC _rc=this.DsCap(this._appid,this._srcds,TwDG.Control,TwDAT.Capability,TwMSG.Set,_cap);
                     if(_rc!=TwRC.Success) {
                         throw new TwainException(this._GetStatus());
                     }
@@ -733,8 +729,8 @@ namespace TwainWeb.Standalone.Twain
                 _pxfr.Count=0;
                 _hBitmap=IntPtr.Zero;
 
-                var _isXferDone=_DsImageXfer(this._appid,this._srcds,TwDG.Image,TwDAT.ImageNativeXfer,TwMSG.Get,ref _hBitmap)==TwRC.XferDone;
-                if(_DsPendingXfer(this._appid,this._srcds,TwDG.Control,TwDAT.PendingXfers,TwMSG.EndXfer,_pxfr)==TwRC.Success && _isXferDone) {
+                var _isXferDone=DsImageXfer(this._appid,this._srcds,TwDG.Image,TwDAT.ImageNativeXfer,TwMSG.Get,ref _hBitmap)==TwRC.XferDone;
+                if(DsPendingXfer(this._appid,this._srcds,TwDG.Control,TwDAT.PendingXfers,TwMSG.EndXfer,_pxfr)==TwRC.Success && _isXferDone) {
                     IntPtr _pBitmap=GlobalLock(_hBitmap);
                     try {
                         this._images.Add(_img=DibToImage.WithScan(_pBitmap));
@@ -748,7 +744,7 @@ namespace TwainWeb.Standalone.Twain
                 }
             }
             while(_pxfr.Count!=0);
-            var _rc=_DsPendingXfer(this._appid,this._srcds,TwDG.Control,TwDAT.PendingXfers,TwMSG.Reset,_pxfr);
+            var _rc=DsPendingXfer(this._appid,this._srcds,TwDG.Control,TwDAT.PendingXfers,TwMSG.Reset,_pxfr);
         }
 
         
@@ -764,17 +760,17 @@ namespace TwainWeb.Standalone.Twain
         private void _GetAllSorces() {
             List<TwIdentity> _src=new List<TwIdentity>();
             TwIdentity _item=new TwIdentity();
-            TwRC _rc=this._DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.GetFirst, _item);
+            TwRC _rc=this.DsmIdent(this._appid, IntPtr.Zero, TwDG.Control, TwDAT.Identity, TwMSG.GetFirst, _item);
             if(_rc==TwRC.Success) {
                 _src.Add(_item);
                 do {
                     _item=new TwIdentity();
-                    _rc=this._DsmIdent(this._appid,IntPtr.Zero,TwDG.Control,TwDAT.Identity,TwMSG.GetNext,_item);
+                    _rc=this.DsmIdent(this._appid,IntPtr.Zero,TwDG.Control,TwDAT.Identity,TwMSG.GetNext,_item);
                     if(_rc==TwRC.Success) {
                         _src.Add(_item);
                     }
                 } while(_rc!=TwRC.EndOfList);
-                _rc=this._DsmIdent(this._appid,IntPtr.Zero,TwDG.Control,TwDAT.Identity,TwMSG.GetDefault,this._srcds);
+                _rc=this.DsmIdent(this._appid,IntPtr.Zero,TwDG.Control,TwDAT.Identity,TwMSG.GetDefault,this._srcds);
             } else {
                 TwCC _state=this._GetStatus();
             }
@@ -808,7 +804,7 @@ namespace TwainWeb.Standalone.Twain
         /// <returns></returns>
         private TwCC _GetStatus() {
             TwStatus _status=new TwStatus();
-            TwRC _rc=this._DsStatus(this._appid,this._srcds,TwDG.Control,TwDAT.Status,TwMSG.Get,_status);
+            TwRC _rc=this.DsStatus(this._appid,this._srcds,TwDG.Control,TwDAT.Status,TwMSG.Get,_status);
             return _status.ConditionCode;
         }
 
@@ -1143,5 +1139,89 @@ namespace TwainWeb.Standalone.Twain
         #endregion
 
         #endregion
+
+		#region twain mehtods wrappers (MessageBoxHook используется для блокирования сообщений об ошибках, которые генерируются в отдельном окне и ожидают нажатия кнопки ОК)
+
+		#region DSM DAT_ variants
+
+		private TwRC DsmParent([In, Out] TwIdentity origin, IntPtr zeroptr, TwDG dg, TwDAT dat, TwMSG msg,
+		    ref IntPtr refptr)
+	    {
+		    using (new MessageBoxHook())
+		    {
+			    return _DsmParent(origin, zeroptr, dg, dat, msg, ref refptr);
+		    }
+	    }
+
+		private TwRC DsmIdent([In, Out] TwIdentity origin, IntPtr zeroptr, TwDG dg, TwDAT dat, TwMSG msg,
+		    [In, Out] TwIdentity idds)
+	    {
+		    using (new MessageBoxHook())
+		    {
+			    return _DsmIdent(origin, zeroptr, dg, dat, msg, idds);
+		    }
+	    }
+
+		#endregion
+
+		#region DS DAT_ variants to DS
+
+		private TwRC DsUI([In, Out] TwIdentity origin, [In, Out] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    TwUserInterface guif)
+	    {
+		    using (new MessageBoxHook())
+		    {
+				return _DsUI(origin, dest, dg, dat, msg, guif);
+		    }
+	    }
+
+		private TwRC DsStatus([In, Out] TwIdentity origin, [In] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    [In, Out] TwStatus dsmstat)
+	    {
+			using (new MessageBoxHook())
+			{
+				return _DsStatus(origin, dest, dg, dat, msg, dsmstat);
+			}
+	    }
+
+	    private TwRC DsCap([In, Out] TwIdentity origin, [In] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    [In, Out] TwCapability capa)
+	    {
+			using (new MessageBoxHook())
+			{
+				return _DsCap(origin, dest, dg, dat, msg, capa);
+			}
+	    }
+
+		private TwRC DsImageXfer([In, Out] TwIdentity origin, [In] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    ref IntPtr hbitmap)
+	    {
+			using (new MessageBoxHook())
+			{
+				return _DsImageXfer(origin, dest, dg, dat, msg, ref hbitmap);
+			}
+	    }
+
+		private TwRC DsPendingXfer([In, Out] TwIdentity origin, [In] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    [In, Out] TwPendingXfers pxfr)
+	    {
+		    using (new MessageBoxHook())
+		    {
+			    return _DsPendingXfer(origin, dest, dg, dat, msg, pxfr);
+		    }
+	    }
+
+		private TwRC DsImageLayuot([In, Out] TwIdentity origin, [In] TwIdentity dest, TwDG dg, TwDAT dat, TwMSG msg,
+		    [In, Out] TwImageLayout imageLayuot)
+	    {
+			using (new MessageBoxHook())
+			{
+				return _DsImageLayuot(origin, dest, dg, dat, msg, imageLayuot);
+			}
+	    }
+
+		#endregion
+
+		#endregion
     }
 }
