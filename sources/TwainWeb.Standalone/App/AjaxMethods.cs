@@ -68,14 +68,20 @@ namespace TwainWeb.Standalone.App
                             searchSetting = cashSettings.PushCurrentSource(_twain);
                     }
                     jsonResult += "\"sources\":{ \"selectedSource\": \"" + (needOfChangeSource ? sourceIndex.Value : _twain.SourceIndex) + "\", \"sourcesList\":[";
-                    for (int i = 0; i < _twain.SourcesCount; i++)
-                    {
-                        if (!needOfChangeSource && searchSetting == null)
-                        {
-                            searchSetting = this.ChangeSource(_twain, i, cashSettings);
-                        }
-                        jsonResult += "{ \"key\": \"" + i + "\", \"value\": \"" + _twain.GetSourceProduct(i).Name + "\"}" + (i != (_twain.SourcesCount - 1) ? "," : "");
-                    }
+
+	                var sources = GetSources(_twain);
+	                var sortedSources = SortSources(sources);
+
+	                var i = 0;
+	                foreach (var sortedSource in sortedSources)
+	                {
+						if (!needOfChangeSource && searchSetting == null)
+						{
+							searchSetting = this.ChangeSource(_twain, sortedSource.Key, cashSettings);
+						}
+						jsonResult += "{ \"key\": \"" + sortedSource.Key + "\", \"value\": \"" + sortedSource.Value + "\"}" + (i != (sortedSources.Count - 1) ? "," : "");
+		                i++;
+	                }
 
                     jsonResult += "]}";
 
@@ -87,7 +93,44 @@ namespace TwainWeb.Standalone.App
 
             
             return actionResult;
-        }        
+        }
+
+	    private Dictionary<int, string> GetSources(Twain32 twain)
+	    {
+		    var sourses = new Dictionary<int, string>();
+
+			for (var i = 0; i < twain.SourcesCount; i++)
+			{
+				sourses.Add(i, twain.GetSourceProduct(i).Name);
+			}
+		    return sourses;
+	    }
+
+		private Dictionary<int, string> SortSources(Dictionary<int, string> initialDictionary)
+		{
+			var sourses = new Dictionary<int, string>();
+
+			var soursesWithoutWia = new Dictionary<int, string>();
+
+			foreach (var sourse in initialDictionary)
+			{
+				if (sourse.Value.ToLower().Contains("wia"))
+				{
+					sourses.Add(sourse.Key, sourse.Value);
+				}
+				else
+				{
+					soursesWithoutWia.Add(sourse.Key, sourse.Value);
+				}
+			}
+
+			foreach (var otherSourse in soursesWithoutWia)
+			{
+				sourses.Add(otherSourse.Key, otherSourse.Value);
+			}
+
+			return sourses;
+		} 
     }
 }
 
