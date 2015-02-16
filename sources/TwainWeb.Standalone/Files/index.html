@@ -333,7 +333,7 @@
                             hintDPI.find('.max').text(responce.maxResolution);
                             hintDPI.removeClass('disp-no');
 							
-							if (responce.minResolution > 150){
+							if (responce.minResolution > $('#form #Form_DPI').val()*1){
 								$('#form').find('#Form_DPI').val(responce.minResolution);
 							}
                         }
