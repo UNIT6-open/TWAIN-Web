@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\AjaxMethods.cs" />
+    <Compile Include="App\AsyncWorker.cs" />
     <Compile Include="App\AsyncMethods.cs" />
     <Compile Include="App\CashSettings.cs" />
     <Compile Include="App\DownloadFileParam.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="FormForSetPort.Designer.cs">
       <DependentUpon>FormForSetPort.cs</DependentUpon>
     </Compile>
+    <Compile Include="IScannerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -134,6 +136,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Scanner\ISource.cs" />
     <Compile Include="ScanService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,6 +150,11 @@
     <Compile Include="Twain\TwainDefs.cs" />
     <Compile Include="Twain\TwainException.cs" />
     <Compile Include="Twain\TwainState.cs" />
+    <Compile Include="Wia\PixelType.cs" />
+    <Compile Include="Wia\WiaFormat.cs" />
+    <Compile Include="Wia\WiaProperty.cs" />
+    <Compile Include="Wia\WiaScannerManager.cs" />
+    <Compile Include="Wia\WiaSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FormForSetPort.resx">
@@ -236,6 +244,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <COMReference Include="WIA">
+      <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
@@ -267,6 +286,7 @@
       <Name>PdfSharp</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

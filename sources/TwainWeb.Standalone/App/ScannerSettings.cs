@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.Wia;
 
 namespace TwainWeb.Standalone.App
 {    
@@ -11,10 +12,10 @@ namespace TwainWeb.Standalone.App
         private float backlash = 0.3f;
         private string _name;
         private int? _id;
-        private Twain32.Enumeration _resolutions;
-        private Twain32.Enumeration _pixelTypes;
-        private List<FormatPage> allowedFormats;        
-        public ScannerSettings(int id, string name, Twain32.Enumeration resolutions = null, Twain32.Enumeration pixelTypes = null, float? maxHeight = null, float? maxWidth = null)
+		private List<float> _resolutions;
+		private Dictionary<int, string> _pixelTypes;
+        private List<FormatPage> allowedFormats;
+		public ScannerSettings(int id, string name, List<float> resolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null)
         {
             this._name = name;
             this._id = id;
@@ -96,15 +97,19 @@ namespace TwainWeb.Standalone.App
             if (_resolutions != null && _resolutions.Count > 0)
                 result += string.Format(",\"minResolution\": \"{0}\", \"maxResolution\": \"{1}\"", _resolutions[0], _resolutions[_resolutions.Count - 1]);
 
+	        var iter = 0;
             if (_pixelTypes != null && _pixelTypes.Count > 0)
             {
                 result += ",\"pixelTypes\": [";
-                for (int i = 0; i < _pixelTypes.Count; i++)
-                {
-                    result += "{ \"key\": \"" + (int)(TwPixelType)_pixelTypes[i] + "\", \"value\": \"" +
-                        (GlobalDictionaries.PixelTypes.ContainsKey((TwPixelType)_pixelTypes[i]) ? GlobalDictionaries.PixelTypes[(TwPixelType)_pixelTypes[i]] : _pixelTypes[i].ToString()) + "\"}"
-                        + (i != (_pixelTypes.Count - 1) ? "," : "");
-                }
+	            foreach (var pixelType in _pixelTypes)
+	            {
+		            result += "{ \"key\": \"" + pixelType.Key + "\", \"value\": \"" +
+                        pixelType.Value + "\"}"
+						+ (iter != (_pixelTypes.Count - 1) ? "," : "");
+
+					iter++;
+	            }
+	           
                 result += "]";
             }
             if (this.allowedFormats != null)

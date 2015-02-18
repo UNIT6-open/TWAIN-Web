@@ -1,110 +1,122 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using TwainWeb.Standalone.App;
 using TwainWeb.Standalone.Twain;
 
 namespace TwainWeb.Standalone.App
 {
-    public class AjaxMethods
-    {
-        public AjaxMethods(object markerAsync)
-        {
-            this.markerAsync = markerAsync;
-        }
-        private int waitTime = 30000;
-        private object markerAsync;     
+	public class AjaxMethods
+	{
+		public AjaxMethods(object markerAsync)
+		{
+			_markerAsync = markerAsync;
+		}
 
-        private ScannerSettings ChangeSource(Twain32 _twain, int sourceIndex, CashSettings cashSettings)
-        {            
-            var searchSetting = cashSettings.Search(_twain, sourceIndex);
-            if (searchSetting == null)
-            {
-                AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, waitTime, _twain.waitHandle);
-                if ( sourceIndex == _twain.SourceIndex && _twain.ChangeSourceResp == null)
-                    searchSetting = cashSettings.PushCurrentSource(_twain);                
-            }
-            return searchSetting;
-        }
+		private const int WaitTime = 30000;
+		private readonly object _markerAsync;
 
-        public ActionResult Scan(ScanForm command, Twain32 twain)
-        {
-            var scanResult = new ScanCommand(command, twain).Execute(markerAsync);
+/*		private ScannerSettings ChangeSource(Twain32 _twain, int sourceIndex, CashSettings cashSettings)
+		{
+			var searchSetting = cashSettings.Search(_twain, sourceIndex);
+			if (searchSetting == null)
+			{
+				AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, WaitTime, _twain.waitHandle);
+				if (sourceIndex == _twain.SourceIndex && _twain.ChangeSourceResp == null)
+					searchSetting = cashSettings.PushCurrentSource(_twain);
+			}
+			return searchSetting;
+		}*/
 
-            if (scanResult.Validate())
-                return new ActionResult { Content = scanResult.FileContent, ContentType = "text/json"};
-            else
-                throw new Exception(scanResult.Error);
-        }
+		private ScannerSettings ChangeSource(IScannerManager scannerManager, int sourceIndex, CashSettings cashSettings)
+		{
+			var searchSetting = cashSettings.Search(scannerManager, sourceIndex);
+			if (searchSetting == null)
+			{
+				scannerManager.ChangeSource(sourceIndex);
+				//AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, WaitTime, _twain.waitHandle);
+				if (sourceIndex == scannerManager.CurrentSource.Index)
+					searchSetting = cashSettings.PushCurrentSource(scannerManager);
+			}
+			return searchSetting;
+		}
 
-        public ActionResult GetScannerParameters(Twain32 _twain, CashSettings cashSettings, int? sourceIndex)
-        {
-            var actionResult = new ActionResult{ContentType="text/json"};
-            ScannerSettings searchSetting = null;
-            lock (markerAsync)
-            {
-                if (cashSettings.NeedUpdateNow(DateTime.UtcNow))
-                {
-                    int? currentSourceIndex = _twain.TwainState.IsOpenDataSource ? (int?)_twain.SourceIndex : null;
-                    cashSettings.Update(_twain);
-                    if (currentSourceIndex.HasValue)
-                        searchSetting = ChangeSource(_twain, currentSourceIndex.Value, cashSettings);
-                }
+		public ActionResult Scan(ScanForm command, IScannerManager scannerManager)
+		{
+			var scanResult = new ScanCommand(command, scannerManager).Execute(_markerAsync);
 
-                if (!_twain.OpenSM())
-                    return actionResult;
+			if (scanResult.Validate())
+				return new ActionResult {Content = scanResult.FileContent, ContentType = "text/json"};
 
-                var jsonResult = "{";
-                if (_twain.SourcesCount > 0)
-                {
-                    bool needOfChangeSource = sourceIndex.HasValue && sourceIndex != _twain.SourceIndex;
-                    if (needOfChangeSource)
-                        searchSetting = this.ChangeSource(_twain, sourceIndex.Value, cashSettings);
-                    else if (_twain.TwainState.IsOpenDataSource)
-                    {
-                        searchSetting = cashSettings.Search(_twain, _twain.SourceIndex);
-                        if (searchSetting == null)
-                            searchSetting = cashSettings.PushCurrentSource(_twain);
-                    }
-                    jsonResult += "\"sources\":{ \"selectedSource\": \"" + (needOfChangeSource ? sourceIndex.Value : _twain.SourceIndex) + "\", \"sourcesList\":[";
+			throw new Exception(scanResult.Error);
+		}
 
-	                var sources = GetSources(_twain);
-	                var sortedSources = SortSources(sources);
+		public ActionResult GetScannerParameters(IScannerManager scannerManager, CashSettings cashSettings, int? sourceIndex)
+		{
+			var actionResult = new ActionResult {ContentType = "text/json"};
+			lock (_markerAsync)
+			{
+				ScannerSettings searchSetting = null;
 
-	                var i = 0;
-	                foreach (var sortedSource in sortedSources)
-	                {
+				if (cashSettings.NeedUpdateNow(DateTime.UtcNow))
+				{
+					var currentSourceIndex = scannerManager.CurrentSourceIndex;
+
+					cashSettings.Update(scannerManager);
+					if (currentSourceIndex.HasValue)
+						searchSetting = ChangeSource(scannerManager, currentSourceIndex.Value, cashSettings);
+				}
+
+				var jsonResult = "{";
+				if (scannerManager.SourceCount > 0)
+				{
+					var needOfChangeSource = sourceIndex.HasValue && sourceIndex != scannerManager.CurrentSourceIndex;
+					if (needOfChangeSource)
+						searchSetting = ChangeSource(scannerManager, sourceIndex.Value, cashSettings);
+
+					else if (scannerManager.CurrentSourceIndex.HasValue)
+					{
+						searchSetting =
+							cashSettings.Search(scannerManager, scannerManager.CurrentSourceIndex.Value) 
+							?? cashSettings.PushCurrentSource(scannerManager);
+					}
+
+					var sources = scannerManager.GetSources();
+					jsonResult += "\"sources\":{ \"selectedSource\": \"" + sourceIndex + "\", \"sourcesList\":[";
+
+					var i = 0;
+					foreach (var sortedSource in sources)
+					{
 						if (!needOfChangeSource && searchSetting == null)
 						{
-							searchSetting = this.ChangeSource(_twain, sortedSource.Key, cashSettings);
+							searchSetting = ChangeSource(scannerManager, sortedSource.Index, cashSettings);
 						}
-						jsonResult += "{ \"key\": \"" + sortedSource.Key + "\", \"value\": \"" + sortedSource.Value + "\"}" + (i != (sortedSources.Count - 1) ? "," : "");
-		                i++;
-	                }
 
-                    jsonResult += "]}";
+						jsonResult += "{ \"key\": \"" + sortedSource.Index + "\", \"value\": \"" + sortedSource.Name + "\"}" +
+						              (i != (sources.Count - 1) ? "," : "");
+						i++;
+					}
 
-                    jsonResult += searchSetting != null ? searchSetting.Serialize() : "";
-                }
-                jsonResult += "}";
-                actionResult.Content = Encoding.UTF8.GetBytes(jsonResult);
-            }            
+					jsonResult += "]}";
 
-            
-            return actionResult;
-        }
+					jsonResult += searchSetting != null ? searchSetting.Serialize() : "";
+				}
+				jsonResult += "}";
+				actionResult.Content = Encoding.UTF8.GetBytes(jsonResult);
+			}
 
-	    private Dictionary<int, string> GetSources(Twain32 twain)
-	    {
-		    var sourses = new Dictionary<int, string>();
+
+			return actionResult;
+		}
+
+/*		private Dictionary<int, string> GetSources(Twain32 twain)
+		{
+			var sourses = new Dictionary<int, string>();
 
 			for (var i = 0; i < twain.SourcesCount; i++)
 			{
 				sourses.Add(i, twain.GetSourceProduct(i).Name);
 			}
-		    return sourses;
-	    }
+			return sourses;
+		}
 
 		private Dictionary<int, string> SortSources(Dictionary<int, string> initialDictionary)
 		{
@@ -130,7 +142,6 @@ namespace TwainWeb.Standalone.App
 			}
 
 			return sourses;
-		} 
-    }
+		}*/
+	}
 }
-

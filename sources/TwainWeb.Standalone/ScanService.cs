@@ -7,6 +7,7 @@ using System.Text;
 using TwainWeb.Standalone.App;
 using TwainWeb.Standalone.Properties;
 using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.Wia;
 
 namespace TwainWeb.Standalone
 {
@@ -53,12 +54,15 @@ namespace TwainWeb.Standalone
         }
         
         private Twain32 _twain;
+	    private IScannerManager _scannerManager;
         public ScanService(int port)
         {
             this.port = port;
             this.ServiceName = "TWAIN@Web";
             this._twain = new Twain32();
             this._twain.AppProductName = "Twain@Web";
+
+	        _scannerManager = new WiaScannerManager();
         }
 
         private HttpServer httpServer;
@@ -83,10 +87,10 @@ namespace TwainWeb.Standalone
                     switch (method)
                     {
                         case "GetScannerParameters":
-                            actionResult = ajaxMethods.GetScannerParameters(_twain, cashSettings, scanFormModelBinder.BindSourceIndex());
+                            actionResult = ajaxMethods.GetScannerParameters(_scannerManager, cashSettings, scanFormModelBinder.BindSourceIndex());
                             break;
-                        case "Scan": 
-                            actionResult = ajaxMethods.Scan(scanFormModelBinder.BindScanForm(), this._twain);
+                        case "Scan":
+							actionResult = ajaxMethods.Scan(scanFormModelBinder.BindScanForm(), _scannerManager);
                             break;
                         default: 
                             actionResult = new ActionResult { Content = new byte[0] };

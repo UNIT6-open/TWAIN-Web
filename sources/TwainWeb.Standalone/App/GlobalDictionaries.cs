@@ -42,7 +42,7 @@ namespace TwainWeb.Standalone.App
                 {
                     {TwPixelType.RGB, "Цветное"},
                     {TwPixelType.BW, "Черно/белое"},
-                    {TwPixelType.Gray, "Оттенки сервого"}
+                    {TwPixelType.Gray, "Оттенки серого"}
                 };
             }
         }
