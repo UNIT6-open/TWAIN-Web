@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace TwainWeb.Standalone.App
 {
     public class ScanResult : DownloadFile
     {
-        public byte[] FileContent { get { return this._fileContent; } }
+        public byte[] FileContent { get { return _fileContent; } }
         private byte[] _fileContent;        
         public string Error { get; set; }
 
@@ -17,7 +15,7 @@ namespace TwainWeb.Standalone.App
 
         public void FillContent()
         {
-            this._fileContent = Encoding.UTF8.GetBytes("{\"file\": \""+this.FileName.ToString()+"\", \"temp\": \""+this.TempFile+"\"}");
+            _fileContent = Encoding.UTF8.GetBytes("{\"file\": \""+FileName+"\", \"temp\": \""+TempFile+"\"}");
         }
     }
 }

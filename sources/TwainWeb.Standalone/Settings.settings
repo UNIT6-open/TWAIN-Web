@@ -2,11 +2,11 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TwainWeb.Standalone" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="ScannerManager" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">WIA</Value>
-    </Setting>
     <Setting Name="Port" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="ScannerManager" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">twain</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -16,7 +16,6 @@ namespace TwainWeb.Standalone.App
 	    public ScanCommand(ScanForm command, IScannerManager scannerManager)
         {                     
             _command = command;
-         
 	        _scannerManager = scannerManager;
         }
         private readonly ScanForm _command;

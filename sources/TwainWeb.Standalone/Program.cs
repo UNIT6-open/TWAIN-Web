@@ -21,8 +21,6 @@ namespace TwainWeb.Standalone
         static void Main(string[] args)
         {
 
-			
-
             if (args.Length == 0)
                 ServiceBase.Run(new ScanService(Settings.Default.Port));
             else

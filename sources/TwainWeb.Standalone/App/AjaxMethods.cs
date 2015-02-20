@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using log4net;
 using TwainWeb.Standalone.Scanner;
 
 namespace TwainWeb.Standalone.App
@@ -9,8 +10,10 @@ namespace TwainWeb.Standalone.App
 		public AjaxMethods(object markerAsync)
 		{
 			_markerAsync = markerAsync;
+			_logger = LogManager.GetLogger(typeof(HttpServer));
 		}
 
+		private readonly ILog _logger;
 		private const int WaitTime = 30000;
 		private readonly object _markerAsync;
 
@@ -69,6 +72,7 @@ namespace TwainWeb.Standalone.App
 						}
 						catch (Exception)
 						{
+							_logger.Error("Changing source failed");
 						}
 				}
 
@@ -83,6 +87,7 @@ namespace TwainWeb.Standalone.App
 						}
 						catch (Exception)
 						{
+							_logger.Error("Changing source failed");
 						}
 
 					else if (scannerManager.CurrentSourceIndex.HasValue)
@@ -106,6 +111,7 @@ namespace TwainWeb.Standalone.App
 							}
 							catch (Exception)
 							{
+								_logger.Error("Changing source failed");
 							}
 						}
 

@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using System.ServiceProcess;
+using log4net;
 using TwainWeb.Standalone.App;
 using TwainWeb.Standalone.Scanner;
-using TwainWeb.Standalone.Twain;
 
 namespace TwainWeb.Standalone
 {
     public class ScanService : ServiceBase
     {
-        public MyError CheckServer()
+		private readonly ILog _logger;
+
+	    public ScanService()
+	    {
+		    _logger = LogManager.GetLogger(typeof (HttpServer));
+	    }
+
+	    public MyError CheckServer()
         {
             var startResult = StartServer();
             if (startResult != null)
@@ -35,18 +42,23 @@ namespace TwainWeb.Standalone
             }
             catch (Exception ex)
             {
+				_logger.ErrorFormat("Code: {0}, Text: {1}", ((System.Net.HttpListenerException)ex).ErrorCode, ex);
                 return new MyError { Code = ((System.Net.HttpListenerException)ex).ErrorCode, Text = ex.ToString() };
             }
             return null;
         }
         private string StopServer()
         {
-            try
-            {
-                
-                httpServer.Stop();
-            }
-            catch (Exception ex) { return ex.Message; }
+	        try
+	        {
+
+		        httpServer.Stop();
+	        }
+	        catch (Exception ex)
+	        {
+				_logger.Error(ex);
+		        return ex.Message;
+	        }
             return null;
         }
         

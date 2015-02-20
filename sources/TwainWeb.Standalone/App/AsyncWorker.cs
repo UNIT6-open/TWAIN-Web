@@ -5,7 +5,7 @@ namespace TwainWeb.Standalone.App
 {
 	public class AsyncWorker<TArg, TRes>
 	{
-		private readonly System.ComponentModel.BackgroundWorker _backgroundWorker = new System.ComponentModel.BackgroundWorker();
+		private readonly System.ComponentModel.BackgroundWorker _backgroundWorker;
 		private AutoResetEvent _waitHandle;
 		private TRes _result;
 		private AsyncAction _method;
@@ -13,6 +13,11 @@ namespace TwainWeb.Standalone.App
 		private bool _wasException;
 
 		public delegate TRes AsyncAction(TArg argument);
+
+		public AsyncWorker()
+		{
+			_backgroundWorker = new System.ComponentModel.BackgroundWorker { WorkerSupportsCancellation = true};
+		} 
 		private void InitializeBackgroundWorker()
 		{
 			// Attach event handlers to the BackgroundWorker object.
@@ -44,6 +49,9 @@ namespace TwainWeb.Standalone.App
 			_backgroundWorker.RunWorkerAsync(argument);
 			_waitHandle.WaitOne(waitTime);
 
+			if (_backgroundWorker.IsBusy)
+				_backgroundWorker.CancelAsync();
+
 			_waitHandle.Reset();
 
 			if (_wasException)
@@ -54,6 +62,17 @@ namespace TwainWeb.Standalone.App
 
 		private void backgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
 		{
+			var child = new Thread(() =>
+			{
+				while (!_backgroundWorker.CancellationPending)
+				{
+
+				}
+				e.Cancel = true;
+
+			});
+			child.Start();
+
 			var arg = (TArg)e.Argument;
 			
 			// Return the value through the Result property.

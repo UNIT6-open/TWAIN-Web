@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
+using log4net;
 using TwainWeb.Standalone.App;
 
 namespace TwainWeb.Standalone
@@ -16,10 +17,13 @@ namespace TwainWeb.Standalone
         private readonly Thread _listenerThread;
         private readonly Thread[] _workers;
         private readonly ManualResetEvent _stop, _ready;
-        private Queue<HttpListenerContext> _queue;
+        private readonly Queue<HttpListenerContext> _queue;
+	    private readonly ILog _logger;
 
         public HttpServer(int maxThreads)
         {
+			_logger = LogManager.GetLogger(typeof(HttpServer));
+
             _workers = new Thread[maxThreads];
 
             _queue = new Queue<HttpListenerContext>();
@@ -67,20 +71,23 @@ namespace TwainWeb.Standalone
 
         private void ContextReady(IAsyncResult ar)
         {
-            try
-            {
-                lock (_queue)
-                {
-                    _queue.Enqueue(_listener.EndGetContext(ar));
-                    _ready.Set();
-                }
-            }
-            catch { return; }
+	        try
+	        {
+		        lock (_queue)
+		        {
+			        _queue.Enqueue(_listener.EndGetContext(ar));
+			        _ready.Set();
+		        }
+	        }
+	        catch (Exception e)
+	        {
+		        _logger.Error(e.ToString());
+	        }
         }
 
         private void Worker()
         {
-            WaitHandle[] wait = new[] { _ready, _stop };
+            WaitHandle[] wait = { _ready, _stop };
             while (0 == WaitHandle.WaitAny(wait))
             {
                 HttpListenerContext context;
@@ -100,11 +107,13 @@ namespace TwainWeb.Standalone
                 {
                     try
                     {
-                        var actionResult = new ActionResult { Content = Encoding.UTF8.GetBytes("<head><meta charset=\"utf-8\" /></head>" + e.ToString()), ContentType = "text/plain" };
+                        var actionResult = new ActionResult { Content = Encoding.UTF8.GetBytes("<head><meta charset=\"utf-8\" /></head>" + e), ContentType = "text/plain" };
                         context.Response.OutputStream.Write(actionResult.Content, 0, actionResult.Content.Length);
+						_logger.Error(e.ToString());
                     }
-                    catch
+                    catch (Exception ex)
                     {
+						_logger.Error(ex.ToString());
                     }
                 }
 
@@ -112,8 +121,9 @@ namespace TwainWeb.Standalone
                 {
                     context.Response.OutputStream.Close();
                 }
-                catch
+                catch (Exception e)
                 {
+					_logger.Error(e.ToString());
                 }
             }
         }

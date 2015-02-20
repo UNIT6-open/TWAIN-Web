@@ -25,19 +25,19 @@ namespace TwainWeb.Standalone {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("WIA")]
-        public string ScannerManager {
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public int Port {
             get {
-                return ((string)(this["ScannerManager"]));
+                return ((int)(this["Port"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("80")]
-        public int Port {
+        [global::System.Configuration.DefaultSettingValueAttribute("twain")]
+        public string ScannerManager {
             get {
-                return ((int)(this["Port"]));
+                return ((string)(this["ScannerManager"]));
             }
         }
     }
