@@ -58,6 +58,12 @@ namespace TwainWeb.Standalone.App
 			var actionResult = new ActionResult {ContentType = "text/json"};
 			lock (_markerAsync)
 			{
+				//если выбранный источник существует, выбираем его; если нет - выбираем первый
+				if (sourceIndex.HasValue && sourceIndex.Value > scannerManager.SourceCount - 1)
+				{
+					sourceIndex = scannerManager.SourceCount > 0 ? 0 : (int?)null;					
+				}
+
 				ScannerSettings searchSetting = null;
 
 				if (cashSettings.NeedUpdateNow(DateTime.UtcNow))
@@ -65,7 +71,9 @@ namespace TwainWeb.Standalone.App
 					var currentSourceIndex = scannerManager.CurrentSourceIndex;
 
 					cashSettings.Update(scannerManager);
+
 					if (currentSourceIndex.HasValue)
+					{
 						try
 						{
 							searchSetting = ChangeSource(scannerManager, currentSourceIndex.Value, cashSettings);
@@ -74,6 +82,7 @@ namespace TwainWeb.Standalone.App
 						{
 							_logger.Error("Changing source failed");
 						}
+					}
 				}
 
 				var jsonResult = "{";
