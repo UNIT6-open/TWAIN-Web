@@ -76,13 +76,15 @@ namespace TwainWeb.Standalone.Wia
 		
 		private void RefreshSources()
 		{
+			_sources.Clear();
+
 			var devices = new List<WiaSource>();
 			var manager = new DeviceManager();
 
 			var i = 0;
 			foreach (DeviceInfo info in manager.DeviceInfos)
 			{
-				devices.Add(new WiaSource(info, i));
+				devices.Add(new WiaSource(manager, info, i));
 				i++;
 			}
 			_sources = devices;

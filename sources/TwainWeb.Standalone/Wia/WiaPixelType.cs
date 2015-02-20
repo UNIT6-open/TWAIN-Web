@@ -2,7 +2,7 @@
 
 namespace TwainWeb.Standalone.Wia
 {
-	public enum PixelType
+	public enum WiaPixelType
 	{
 		[Description("Цветное")]
 		Color = 1,
@@ -11,10 +11,9 @@ namespace TwainWeb.Standalone.Wia
 		[Description("Черно-белое")]
 		BlackWhite = 4
 	}
-
 	public static class PixelTypeEnumExtensions
 	{
-		public static string GetDescription(PixelType enumValue)
+		public static string GetDescription(WiaPixelType enumValue)
 		{
 			var fi = enumValue.GetType().GetField(enumValue.ToString());
 

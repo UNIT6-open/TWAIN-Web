@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.ServiceProcess;
-using System.Text;
 using TwainWeb.Standalone.App;
-using TwainWeb.Standalone.Properties;
+using TwainWeb.Standalone.Scanner;
 using TwainWeb.Standalone.Twain;
-using TwainWeb.Standalone.Wia;
 
 namespace TwainWeb.Standalone
 {
@@ -15,12 +12,12 @@ namespace TwainWeb.Standalone
     {
         public MyError CheckServer()
         {
-            var startResult = this.StartServer();
+            var startResult = StartServer();
             if (startResult != null)
                 return startResult;
             for (var i = 0; i < 100; i++)
             {
-                if (this.StopServer() == null)
+                if (StopServer() == null)
                     break;
             }
             return null;
@@ -34,7 +31,7 @@ namespace TwainWeb.Standalone
                 httpServer = new HttpServer(10);
                 httpServer.ProcessRequest += httpServer_ProcessRequest;
                 cashSettings = new CashSettings();           
-                httpServer.Start("http://+:" + this.port + "/TWAIN@Web/");
+                httpServer.Start("http://+:" + _port + "/TWAIN@Web/");
             }
             catch (Exception ex)
             {
@@ -53,16 +50,14 @@ namespace TwainWeb.Standalone
             return null;
         }
         
-        private Twain32 _twain;
-	    private IScannerManager _scannerManager;
+	    private readonly IScannerManager _scannerManager;
         public ScanService(int port)
         {
-            this.port = port;
-            this.ServiceName = "TWAIN@Web";
-            this._twain = new Twain32();
-            this._twain.AppProductName = "Twain@Web";
+            _port = port;
+            ServiceName = "TWAIN@Web";
 
-	        _scannerManager = new WiaScannerManager();
+	        var smFactory = new ScannerManagerFactory();
+	        _scannerManager = smFactory.GetScannerManager();
         }
 
         private HttpServer httpServer;
@@ -71,9 +66,8 @@ namespace TwainWeb.Standalone
         {
             StartServer();
         }
-
-        private object markerAsynchrone = new object();
-        private int port;
+        private readonly object _markerAsynchrone = new object();
+        private readonly int _port;
         void httpServer_ProcessRequest(System.Net.HttpListenerContext ctx)
         {
             ActionResult actionResult;           
@@ -83,7 +77,7 @@ namespace TwainWeb.Standalone
                 if (ctx.Request.Url.AbsolutePath.Length > 11 && ctx.Request.Url.AbsolutePath.Substring(11) == "ajax")
                 {
                     var method = scanFormModelBinder.BindAjaxMethod();
-                    var ajaxMethods = new AjaxMethods(markerAsynchrone);
+                    var ajaxMethods = new AjaxMethods(_markerAsynchrone);
                     switch (method)
                     {
                         case "GetScannerParameters":
@@ -138,7 +132,7 @@ namespace TwainWeb.Standalone
             {
                 ctx.Response.OutputStream.Write(actionResult.Content, 0, actionResult.Content.Length);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -157,8 +151,8 @@ namespace TwainWeb.Standalone
             var postData = new Dictionary<string, string>();
             using (var reader = new StreamReader(request.InputStream))
             {
-                string postedData = reader.ReadToEnd();
-                this.parseQueriString(postedData, ref postData);
+                var postedData = reader.ReadToEnd();
+                parseQueriString(postedData, ref postData);
             }
 
             return postData;

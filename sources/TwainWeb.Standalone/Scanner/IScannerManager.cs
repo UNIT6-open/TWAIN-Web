@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using TwainWeb.Standalone.Scanner;
 
-
-
-namespace TwainWeb.Standalone
+namespace TwainWeb.Standalone.Scanner
 {
 	public interface IScannerManager
 	{

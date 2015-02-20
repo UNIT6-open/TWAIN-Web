@@ -108,7 +108,7 @@ namespace TwainWeb.Standalone
             if (!isSetParameters && firstShowEvent)
             {
                 firstShowEvent = false;
-                if (processCheckServer(Settings.Default.port))
+                if (processCheckServer(Settings.Default.Port))
                 {
                     this.Close();
                 }

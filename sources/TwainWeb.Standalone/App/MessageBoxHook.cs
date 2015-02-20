@@ -27,6 +27,7 @@ namespace TwainWeb.Standalone.App
 		public void Dispose()
 		{
 			_manager.Unregister(_hHook);
+			_hHook = IntPtr.Zero;
 		}
 
 		/// <summary>

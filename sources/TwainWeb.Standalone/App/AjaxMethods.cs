@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.Scanner;
 
 namespace TwainWeb.Standalone.App
 {
@@ -31,6 +31,7 @@ namespace TwainWeb.Standalone.App
 			var searchSetting = cashSettings.Search(scannerManager, sourceIndex);
 			if (searchSetting == null)
 			{
+				//todo: async
 				scannerManager.ChangeSource(sourceIndex);
 				//AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, WaitTime, _twain.waitHandle);
 				if (sourceIndex == scannerManager.CurrentSource.Index)
@@ -62,7 +63,13 @@ namespace TwainWeb.Standalone.App
 
 					cashSettings.Update(scannerManager);
 					if (currentSourceIndex.HasValue)
-						searchSetting = ChangeSource(scannerManager, currentSourceIndex.Value, cashSettings);
+						try
+						{
+							searchSetting = ChangeSource(scannerManager, currentSourceIndex.Value, cashSettings);
+						}
+						catch (Exception)
+						{
+						}
 				}
 
 				var jsonResult = "{";
@@ -70,7 +77,13 @@ namespace TwainWeb.Standalone.App
 				{
 					var needOfChangeSource = sourceIndex.HasValue && sourceIndex != scannerManager.CurrentSourceIndex;
 					if (needOfChangeSource)
-						searchSetting = ChangeSource(scannerManager, sourceIndex.Value, cashSettings);
+						try
+						{
+							searchSetting = ChangeSource(scannerManager, sourceIndex.Value, cashSettings);
+						}
+						catch (Exception)
+						{
+						}
 
 					else if (scannerManager.CurrentSourceIndex.HasValue)
 					{
@@ -87,7 +100,13 @@ namespace TwainWeb.Standalone.App
 					{
 						if (!needOfChangeSource && searchSetting == null)
 						{
-							searchSetting = ChangeSource(scannerManager, sortedSource.Index, cashSettings);
+							try
+							{
+								searchSetting = ChangeSource(scannerManager, sortedSource.Index, cashSettings);
+							}
+							catch (Exception)
+							{
+							}
 						}
 
 						jsonResult += "{ \"key\": \"" + sortedSource.Index + "\", \"value\": \"" + sortedSource.Name + "\"}" +
@@ -106,42 +125,5 @@ namespace TwainWeb.Standalone.App
 
 			return actionResult;
 		}
-
-/*		private Dictionary<int, string> GetSources(Twain32 twain)
-		{
-			var sourses = new Dictionary<int, string>();
-
-			for (var i = 0; i < twain.SourcesCount; i++)
-			{
-				sourses.Add(i, twain.GetSourceProduct(i).Name);
-			}
-			return sourses;
-		}
-
-		private Dictionary<int, string> SortSources(Dictionary<int, string> initialDictionary)
-		{
-			var sourses = new Dictionary<int, string>();
-
-			var soursesWithoutWia = new Dictionary<int, string>();
-
-			foreach (var sourse in initialDictionary)
-			{
-				if (sourse.Value.ToLower().Contains("wia"))
-				{
-					sourses.Add(sourse.Key, sourse.Value);
-				}
-				else
-				{
-					soursesWithoutWia.Add(sourse.Key, sourse.Value);
-				}
-			}
-
-			foreach (var otherSourse in soursesWithoutWia)
-			{
-				sourses.Add(otherSourse.Key, otherSourse.Value);
-			}
-
-			return sourses;
-		}*/
 	}
 }

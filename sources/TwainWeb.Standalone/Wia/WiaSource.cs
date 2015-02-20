@@ -42,12 +42,14 @@ namespace TwainWeb.Standalone.Wia
 		private Device _device;
 		private readonly int _sourceIndex;
 		private readonly string _name;
+		private readonly DeviceManager _manager;
 
-		public WiaSource(IDeviceInfo deviceInfo, int index)
+		public WiaSource(DeviceManager manager, IDeviceInfo deviceInfo, int index)
 		{
 			_sourceIndex = index;
 			var name = FindProperty(deviceInfo.Properties, WiaProperty.Name);
 			_name = (string)name.get_Value();
+			_manager = manager;
 
 			ConnectToDevice(deviceInfo.DeviceID);
 		}
@@ -162,8 +164,7 @@ namespace TwainWeb.Standalone.Wia
 		private void ConnectToDevice(string scannerId)
 		{
 			// select the correct scanner using the provided scannerId parameter
-			var manager = new DeviceManager();
-			foreach (DeviceInfo info in manager.DeviceInfos)
+			foreach (DeviceInfo info in _manager.DeviceInfos)
 			{
 				if (info.DeviceID == scannerId)
 				{
@@ -176,15 +177,8 @@ namespace TwainWeb.Standalone.Wia
 
 			if (_device == null)
 			{
-				// enumerate available devices
-				var availableDevices = "";
-				foreach (DeviceInfo info in manager.DeviceInfos)
-				{
-					availableDevices += info.DeviceID + "\n";
-				}
-
-				// show error with available devices
-				throw new Exception("The device with provided ID could not be found. Available Devices:\n" + availableDevices);
+				// show error
+				throw new Exception("The device with provided ID could not be found.");
 			}
 
 			if (_device.Items.Count == 0)
@@ -223,20 +217,28 @@ namespace TwainWeb.Standalone.Wia
 			var horizontalExtentMax = FindProperty(_source.Properties, WiaProperty.HorizontalExtent).SubTypeMax;
 			var verticalExtentMax = FindProperty(_source.Properties, WiaProperty.VerticalExtent).SubTypeMax;
 
-			var currentIntent = (PixelType)settings.pixelType;
+			var currentIntent = (WiaPixelType)settings.pixelType;
 
 			SetProperty(_source.Properties, WiaProperty.HorizontalExtent, horizontalExtent < horizontalExtentMax ? horizontalExtent : horizontalExtentMax);
 			SetProperty(_source.Properties, WiaProperty.VerticalExtent, verticalExtent < verticalExtentMax ? verticalExtent : verticalExtentMax);
 			SetProperty(_source.Properties, WiaProperty.CurrentIntent, currentIntent);
 
-			if (currentIntent == PixelType.Color)
-				SetProperty(_source.Properties, WiaProperty.BitsPerPixel, 24);
+			if (currentIntent == WiaPixelType.Color)
+				try
+				{
+					//Иногда сканер сканирует в черно-белом формате, если BitsPerPixel=1. Устанавливаем на всякий случай BitsPerPixel=24, чтобы сканировал в цвете. 
+					SetProperty(_source.Properties, WiaProperty.BitsPerPixel, 24);
+				}
+				//Некоторые сканеры не разрешают изменять это свойство
+				catch (Exception)
+				{
+				}
 		}
 
 		private Dictionary<int, string> GetAllowablePixelTypes()
 		{
 			var pixelTypes = new Dictionary<int, string>();
-			foreach (PixelType pixelType in Enum.GetValues(typeof(PixelType)))
+			foreach (WiaPixelType pixelType in Enum.GetValues(typeof(WiaPixelType)))
 			{
 				pixelTypes.Add((int)pixelType, PixelTypeEnumExtensions.GetDescription(pixelType));
 			}

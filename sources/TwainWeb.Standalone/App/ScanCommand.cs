@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using TwainWeb.Standalone.Scanner;
 using TwainWeb.Standalone.Twain;
 
 namespace TwainWeb.Standalone.App
@@ -10,7 +11,7 @@ namespace TwainWeb.Standalone.App
     public class ScanCommand
     {
         private int waitTimeForChangeSource = 15000;
-	    private const int WaitTimaeForScan = 30000;
+	    private const int WaitTimaeForScan = 300000;
 
 	    public ScanCommand(ScanForm command, IScannerManager scannerManager)
         {                     

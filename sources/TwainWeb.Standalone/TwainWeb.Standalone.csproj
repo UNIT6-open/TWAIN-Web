@@ -117,7 +117,7 @@
     <Compile Include="FormForSetPort.Designer.cs">
       <DependentUpon>FormForSetPort.cs</DependentUpon>
     </Compile>
-    <Compile Include="IScannerManager.cs" />
+    <Compile Include="Scanner\IScannerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -137,10 +137,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Scanner\ISource.cs" />
+    <Compile Include="Scanner\ScannerManagerFactory.cs" />
     <Compile Include="ScanService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HttpServer.cs" />
+    <Compile Include="Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Twain\DibToImage.cs" />
     <Compile Include="Twain\SettingsAcquire.cs" />
     <Compile Include="Twain\Source.cs" />
@@ -149,8 +155,10 @@
     </Compile>
     <Compile Include="Twain\TwainDefs.cs" />
     <Compile Include="Twain\TwainException.cs" />
+    <Compile Include="Twain\TwainScannerManager.cs" />
+    <Compile Include="Twain\TwainSource.cs" />
     <Compile Include="Twain\TwainState.cs" />
-    <Compile Include="Wia\PixelType.cs" />
+    <Compile Include="Wia\WiaPixelType.cs" />
     <Compile Include="Wia\WiaFormat.cs" />
     <Compile Include="Wia\WiaProperty.cs" />
     <Compile Include="Wia\WiaScannerManager.cs" />
@@ -275,6 +283,10 @@
     </None>
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
