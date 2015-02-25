@@ -66,7 +66,7 @@ namespace TwainWeb.Standalone.App
 			{
 				while (!_backgroundWorker.CancellationPending)
 				{
-
+					Thread.Sleep(100);
 				}
 				e.Cancel = true;
 
@@ -77,7 +77,7 @@ namespace TwainWeb.Standalone.App
 			
 			// Return the value through the Result property.
 			e.Result = _method(arg);
-			
+			_backgroundWorker.CancelAsync();
 		}
 
 		private void backgroundWorker_RunWorkerCompleted(

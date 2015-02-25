@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
+using log4net;
 
 namespace TwainWeb.Standalone.App
 {
@@ -12,8 +14,20 @@ namespace TwainWeb.Standalone.App
 		[DllImport("user32.dll")]
 		private static extern int EndDialog(IntPtr hDlg, IntPtr nResult);
 
+		[DllImport("user32.dll", SetLastError = false)]
+		public static extern IntPtr GetDlgItem(IntPtr hDlg, int nIDDlgItem);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+		public static extern IntPtr SendMessage(HandleRef hWnd, uint Msg, IntPtr wParam, string lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+		public const uint WM_SETTEXT = 0x000C;
 		private const int WM_INITDIALOG = 0x0110;
+
 		private readonly MessageBoxHookManager _manager;
+
 		[ThreadStatic] private static IntPtr _hHook;
 		public MessageBoxHook()
 		{
@@ -47,7 +61,13 @@ namespace TwainWeb.Standalone.App
 
 			if ((msg.message == WM_INITDIALOG))
 			{
-				//todo: write to log
+				var sb = new StringBuilder(260);
+
+				var hDialogText = GetDlgItem(msg.hwnd, 0xFFFF);
+				if (hDialogText != IntPtr.Zero)
+					GetWindowText(hDialogText, sb, sb.Capacity);
+
+				LogManager.GetLogger(typeof(MessageBoxHookManager)).ErrorFormat("Заблокировано окно, содержащее оповещение о системной ошибке: "+sb);
 				EndDialog(msg.hwnd, new IntPtr((int)MessageBoxButtons.OK));
 			}
 			return CallNextHookEx(_hHook, nCode, wParam, lParam);

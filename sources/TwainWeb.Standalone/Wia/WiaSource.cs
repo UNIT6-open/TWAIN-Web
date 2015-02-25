@@ -116,6 +116,8 @@ namespace TwainWeb.Standalone.Wia
 					// scan image
 					var image = (ImageFile)item.Transfer(FormatID.wiaFormatBMP);
 
+					if (image == null) throw new Exception("Не удалось отсканировать изображение");
+
 					// save to memory stream
 					var buffer = (byte[])image.FileData.get_BinaryData();
 					var stream = new MemoryStream(buffer);

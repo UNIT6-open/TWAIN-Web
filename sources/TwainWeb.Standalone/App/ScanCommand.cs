@@ -62,6 +62,8 @@ namespace TwainWeb.Standalone.App
 					if (images != null && images.Count == 1)
 					{
 						image = (Image)images[0].Clone();
+						images[0].Dispose();
+						
 						((Bitmap)image).SetResolution(_command.DPI, _command.DPI);
 					}
                 }
@@ -70,7 +72,9 @@ namespace TwainWeb.Standalone.App
                     scanResult.Error = "Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.";
                     return scanResult;
                 }                
-                SaveImage(ref scanResult, image);
+                
+				SaveImage(ref scanResult, image);
+				image.Dispose();
                 scanResult.FillContent();
             }
             catch (TwainException ex)

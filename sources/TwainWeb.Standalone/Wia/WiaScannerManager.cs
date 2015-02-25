@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using log4net;
 using TwainWeb.Standalone.Scanner;
 using WIA;
 
@@ -10,10 +11,12 @@ namespace TwainWeb.Standalone.Wia
 	{
 		private List<WiaSource> _sources;
 		private WiaSource _currentSource;
+		private ILog _log;
 
 		public WiaScannerManager()
 		{
 			_sources = new List<WiaSource>();
+			_log = LogManager.GetLogger(typeof(WiaScannerManager));
 		}
 
 		public void ChangeSource(int index)
@@ -84,7 +87,15 @@ namespace TwainWeb.Standalone.Wia
 			var i = 0;
 			foreach (DeviceInfo info in manager.DeviceInfos)
 			{
-				devices.Add(new WiaSource(manager, info, i));
+				try
+				{
+					devices.Add(new WiaSource(manager, info, i));
+				}
+				catch (Exception e)
+				{
+					_log.WarnFormat("Ошибка при добавлении источника: {0}", e);
+					continue;
+				}
 				i++;
 			}
 			_sources = devices;
