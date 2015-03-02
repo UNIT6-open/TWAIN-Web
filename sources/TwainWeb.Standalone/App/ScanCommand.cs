@@ -10,7 +10,7 @@ namespace TwainWeb.Standalone.App
 {
     public class ScanCommand
     {
-        private int waitTimeForChangeSource = 15000;
+	    private const int WaitTimeForChangeSource = 15000;
 	    private const int WaitTimaeForScan = 300000;
 
 	    public ScanCommand(ScanForm command, IScannerManager scannerManager)
@@ -43,7 +43,9 @@ namespace TwainWeb.Standalone.App
                 {
 					if (_scannerManager.CurrentSourceIndex != _command.Source)
 					{
-						_scannerManager.ChangeSource(_command.Source);
+						new AsyncWorker<int>().RunWorkAsync(_command.Source, "ChangeSource", _scannerManager.ChangeSource, WaitTimeForChangeSource);
+						
+						//_scannerManager.ChangeSource(_command.Source);
 
 						if (_scannerManager.CurrentSourceIndex != _command.Source)
 						{
@@ -55,7 +57,7 @@ namespace TwainWeb.Standalone.App
 					var settingAcquire = new SettingsAcquire { Format = _command.Format, Resolution = _command.DPI, pixelType = Extensions.SearchPixelType(_command.ColorMode, TwPixelType.BW) };
 
 
-					//var images = _scannerManager.Scan(settingAcquire);
+					//var images = _scannerManager.CurrentSource.Scan(settingAcquire);
 					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, "Asquire",
 		                _scannerManager.CurrentSource.Scan, WaitTimaeForScan);
 

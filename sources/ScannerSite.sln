@@ -1,11 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwainWeb.Standalone", "TwainWeb.Standalone\TwainWeb.Standalone.csproj", "{32ADEB05-77A1-466D-BF6C-12CC4AAD8CD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfSharp", "PdfSharp\PdfSharp.csproj", "{5384CE57-1F94-4D22-860D-2E9C1AC12DDF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWAIN@Web.Tests", "TWAIN@Web.Tests\TWAIN@Web.Tests.csproj", "{2ACD9C97-0B6B-46D7-815B-D5BEF43C35ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwainDotNet", "TwainDotNet\TwainDotNet.csproj", "{857B8891-2932-484D-A9A8-D38B47108CF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwainDotNet.WinFroms", "TwainDotNet.WinFroms\TwainDotNet.WinFroms.csproj", "{715EED8D-94FE-40ED-B3F7-59284FA6242B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1E7260A0-AB14-4DF9-8B9F-C7F70F43798B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +54,26 @@ Global
 		{2ACD9C97-0B6B-46D7-815B-D5BEF43C35ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2ACD9C97-0B6B-46D7-815B-D5BEF43C35ED}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
 		{2ACD9C97-0B6B-46D7-815B-D5BEF43C35ED}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{857B8891-2932-484D-A9A8-D38B47108CF0}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{715EED8D-94FE-40ED-B3F7-59284FA6242B}.SingleImage|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

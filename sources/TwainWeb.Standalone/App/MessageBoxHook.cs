@@ -38,6 +38,14 @@ namespace TwainWeb.Standalone.App
 
 		}
 
+		public MessageBoxHook(int threadId)
+		{
+			_manager = new MessageBoxHookManager();
+
+			if (_hHook == IntPtr.Zero)
+				_hHook = _manager.Register(MessageBoxHookProc, threadId);
+
+		}
 		public void Dispose()
 		{
 			_manager.Unregister(_hHook);
@@ -48,9 +56,9 @@ namespace TwainWeb.Standalone.App
 		/// Hook for autoclosing dialogs
 		/// </summary>
 		/// <param name="nCode">The code that the hook procedure uses to determine how to process the message. </param>
-		/// <param name="wParam">Depends on the nCode parameter. For details, see the following Remarks section.</param>
-		/// <param name="lParam">Depends on the nCode parameter. For details, see the following Remarks section.</param>
-		/// <returns>If nCode is less than zero, the hook procedure must return the value returned by CallNextHookEx. If nCode is greater than or equal to zero, it is highly recommended that you call CallNextHookEx and return the value it returns; otherwise, other applications that have installed WH_CALLWNDPROCRET hooks will not receive hook notifications and may behave incorrectly as a result. If the hook procedure does not call CallNextHookEx, the return value should be zero.</returns>
+		/// <param name="wParam">Depends on the nCode parameter.</param>
+		/// <param name="lParam">Depends on the nCode parameter.</param>
+		/// <returns>If nCode is less than zero, the hook procedure must return the value returned by CallNextHookEx.</returns>
 		private IntPtr MessageBoxHookProc(int nCode, IntPtr wParam, IntPtr lParam)
 		{
 			if (nCode < 0)
@@ -67,7 +75,7 @@ namespace TwainWeb.Standalone.App
 				if (hDialogText != IntPtr.Zero)
 					GetWindowText(hDialogText, sb, sb.Capacity);
 
-				LogManager.GetLogger(typeof(MessageBoxHookManager)).ErrorFormat("Заблокировано окно, содержащее оповещение о системной ошибке: "+sb);
+				LogManager.GetLogger(typeof(MessageBoxHookManager)).ErrorFormat("System dialog is blocked: \r\n"+sb);
 				EndDialog(msg.hwnd, new IntPtr((int)MessageBoxButtons.OK));
 			}
 			return CallNextHookEx(_hHook, nCode, wParam, lParam);

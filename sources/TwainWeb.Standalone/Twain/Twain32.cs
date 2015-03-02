@@ -205,7 +205,7 @@ namespace TwainWeb.Standalone.Twain
         {
             if (this.OpenSM() && this.OpenSource() && (this._TwainState & StateFlag.DSEnabled) == 0)
             {
-                TwRC _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd});
+                TwRC _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd, ShowUI = 0});
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState |= StateFlag.DSEnabled;
@@ -222,7 +222,7 @@ namespace TwainWeb.Standalone.Twain
         private bool _DisableSource() {
             if ((this._TwainState & StateFlag.DSEnabled) == 0)
                 return true;
-			var _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd });
+			var _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd, ShowUI = 0});
             if(_rc==TwRC.Success)
                 this._TwainState&=~StateFlag.DSEnabled;
             return (this._TwainState & StateFlag.DSEnabled) == 0;

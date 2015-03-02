@@ -14,29 +14,16 @@ namespace TwainWeb.Standalone.App
 		}
 
 		private readonly ILog _logger;
-		private const int WaitTime = 30000;
+		private const int WaitTime = 15000;
 		private readonly object _markerAsync;
-
-/*		private ScannerSettings ChangeSource(Twain32 _twain, int sourceIndex, CashSettings cashSettings)
-		{
-			var searchSetting = cashSettings.Search(_twain, sourceIndex);
-			if (searchSetting == null)
-			{
-				AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, WaitTime, _twain.waitHandle);
-				if (sourceIndex == _twain.SourceIndex && _twain.ChangeSourceResp == null)
-					searchSetting = cashSettings.PushCurrentSource(_twain);
-			}
-			return searchSetting;
-		}*/
 
 		private ScannerSettings ChangeSource(IScannerManager scannerManager, int sourceIndex, CashSettings cashSettings)
 		{
 			var searchSetting = cashSettings.Search(scannerManager, sourceIndex);
 			if (searchSetting == null)
 			{
-				//todo: async
-				scannerManager.ChangeSource(sourceIndex);
-				//AsyncMethods.asyncWithWaitTime<int>(sourceIndex, "ChangeSource", _twain.ChangeSource, WaitTime, _twain.waitHandle);
+				new AsyncWorker<int>().RunWorkAsync(sourceIndex, "ChangeSource", scannerManager.ChangeSource, WaitTime);
+
 				if (sourceIndex == scannerManager.CurrentSource.Index)
 					searchSetting = cashSettings.PushCurrentSource(scannerManager);
 			}

@@ -242,7 +242,7 @@ namespace TwainWeb.Standalone.Wia
 			var pixelTypes = new Dictionary<int, string>();
 			foreach (WiaPixelType pixelType in Enum.GetValues(typeof(WiaPixelType)))
 			{
-				pixelTypes.Add((int)pixelType, PixelTypeEnumExtensions.GetDescription(pixelType));
+				pixelTypes.Add((int)pixelType, EnumExtensions.GetDescription(pixelType));
 			}
 
 			return pixelTypes;

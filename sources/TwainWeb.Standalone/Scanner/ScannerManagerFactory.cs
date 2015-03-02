@@ -1,4 +1,6 @@
-﻿using TwainWeb.Standalone.Twain;
+﻿using TwainWeb.Standalone.MessageLoop;
+using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.TwainNet;
 using TwainWeb.Standalone.Wia;
 
 namespace TwainWeb.Standalone.Scanner
@@ -11,7 +13,7 @@ namespace TwainWeb.Standalone.Scanner
 		/// <summary>
 		/// В зависимости от настроек в App.config создает экземпляр менеджера сканнеров
 		/// </summary>
-		public IScannerManager GetScannerManager()
+		public IScannerManager GetScannerManager(WindowsMessageLoopThread messageLoop)
 		{
 			switch (Settings.Default.ScannerManager.ToLower())
 			{
@@ -19,7 +21,8 @@ namespace TwainWeb.Standalone.Scanner
 					return new WiaScannerManager();
 				case "twain":
 					return new TwainScannerManager();
-
+				case "twaindotnet":
+					return new TwainDotNetScannerManager(messageLoop);
 				default:
 					return new WiaScannerManager();
 			}
