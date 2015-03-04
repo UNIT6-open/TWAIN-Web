@@ -7,7 +7,7 @@ using TwainWeb.Standalone.Scanner;
 
 namespace TwainWeb.Standalone.TwainNet
 {
-	class TwainDotNetScannerManager:IScannerManager
+	public class TwainDotNetScannerManager:IScannerManager
 	{
 		private readonly WindowsMessageLoopThread _windowsMessageLoop;
 		private readonly TwainDotNet.Twain _twain;

@@ -219,7 +219,7 @@ namespace TwainWeb.Standalone.Wia
 			var horizontalExtentMax = FindProperty(_source.Properties, WiaProperty.HorizontalExtent).SubTypeMax;
 			var verticalExtentMax = FindProperty(_source.Properties, WiaProperty.VerticalExtent).SubTypeMax;
 
-			var currentIntent = (WiaPixelType)settings.pixelType;
+			var currentIntent = (WiaPixelType)settings.PixelType;
 
 			SetProperty(_source.Properties, WiaProperty.HorizontalExtent, horizontalExtent < horizontalExtentMax ? horizontalExtent : horizontalExtentMax);
 			SetProperty(_source.Properties, WiaProperty.VerticalExtent, verticalExtent < verticalExtentMax ? verticalExtent : verticalExtentMax);
@@ -228,10 +228,8 @@ namespace TwainWeb.Standalone.Wia
 			if (currentIntent == WiaPixelType.Color)
 				try
 				{
-					//Иногда сканер сканирует в черно-белом формате, если BitsPerPixel=1. Устанавливаем на всякий случай BitsPerPixel=24, чтобы сканировал в цвете. 
 					SetProperty(_source.Properties, WiaProperty.BitsPerPixel, 24);
 				}
-				//Некоторые сканеры не разрешают изменять это свойство
 				catch (Exception)
 				{
 				}

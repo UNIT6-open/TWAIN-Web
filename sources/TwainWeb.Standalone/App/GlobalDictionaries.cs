@@ -53,6 +53,12 @@ namespace TwainWeb.Standalone.App
             Archive
         }
 
+	    public static Dictionary<SaveAsValues, string> DefaultFileFormats = new Dictionary<SaveAsValues, string>
+	    {
+		    {SaveAsValues.Pictures, "jpg"},
+			{SaveAsValues.Pdf, "pdf"},
+			{SaveAsValues.Archive, "zip"}
+	    };
         public static List<FormatPage> Formats
         {
             get

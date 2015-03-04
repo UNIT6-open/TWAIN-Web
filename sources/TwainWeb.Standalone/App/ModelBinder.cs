@@ -29,7 +29,7 @@ namespace TwainWeb.Standalone.App
                 var TempFile = TryGet("fileId"+i);
                 if (FileName == null || TempFile == null)
                     break;
-                downloadParam.ListFiles.Add(new DownloadFile{ FileName = FileName, TempFile = TempFile });
+                downloadParam.ListFiles.Add(new DownloadFile(FileName,TempFile));
                 i++;
             };                        
             if(downloadParam.ListFiles.Count == 0)

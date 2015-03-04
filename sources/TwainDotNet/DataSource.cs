@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using TwainDotNet.TwainNative;
 
 namespace TwainDotNet
@@ -10,13 +9,17 @@ namespace TwainDotNet
         Identity _applicationId;
         IWindowsMessageHook _messageHook;
 
-	    public TwainState TwainState { get; private set; }
+	    /// <summary>
+		/// A Source never has a state less than 4 if it is open. If it is closed, it has no state.
+	    /// </summary>
+	    public TwainState? SourceState { get; set; }
 
         public DataSource(Identity applicationId, Identity sourceId, IWindowsMessageHook messageHook)
         {
             _applicationId = applicationId;
             SourceId = sourceId.Clone();
             _messageHook = messageHook;
+			SourceState = null;
         }
 
         ~DataSource()
@@ -34,7 +37,7 @@ namespace TwainDotNet
 			{
 				foreach (var res in resolutionCap)
 				{
-					resolutions.Add((float)res);
+					resolutions.Add(ValueConverter.ConvertToFix32(res));
 				}
 			}
 
@@ -55,7 +58,7 @@ namespace TwainDotNet
 
 			if (physicalHeightCap != null && physicalHeightCap.Count == 1)
 			{
-				physicalHeight = ((Fix32)physicalHeightCap[0]).ToFloat();
+				physicalHeight = ValueConverter.ConvertToFix32(physicalHeightCap[0]);
 			}
 
 			float physicalWidth = 0;
@@ -63,10 +66,8 @@ namespace TwainDotNet
 
 			if (physicalWidthCap != null && physicalWidthCap.Count == 1)
 			{
-				physicalWidth = ((Fix32)physicalWidthCap[0]).ToFloat();
+				physicalWidth = ValueConverter.ConvertToFix32(physicalWidthCap[0]);
 			}
-
-
 
 			return new SourceSettings(resolutions, pixelTypes, physicalHeight, physicalWidth);
 	    }
@@ -365,11 +366,11 @@ namespace TwainDotNet
                 NegotiatePageSize(settings);
                 NegotiateOrientation(settings);
             }
-
+/*
             if (settings.Area != null)
             {
                 NegotiateArea(settings);
-            }
+            }*/
 
             if (settings.Resolution != null)
             {
@@ -417,7 +418,7 @@ namespace TwainDotNet
 
 			if (physicalHeightCap != null && physicalHeightCap.Count == 1)
 			{
-				physicalHeight = ((Fix32)physicalHeightCap[0]).ToFloat();
+				physicalHeight = ValueConverter.ConvertToFix32(physicalHeightCap[0]);
 			}
 
 			float physicalWidth = 0;
@@ -425,7 +426,7 @@ namespace TwainDotNet
 
 			if (physicalWidthCap != null && physicalWidthCap.Count == 1)
 			{
-				physicalWidth = ((Fix32)physicalWidthCap[0]).ToFloat();
+				physicalWidth = ValueConverter.ConvertToFix32(physicalWidthCap[0]);
 			}
 
 			right = physicalWidth < area.Right ? physicalWidth : area.Right;
@@ -455,7 +456,7 @@ namespace TwainDotNet
             if (result != TwainResult.Success && result != TwainResult.CheckStatus)
             {
 				var condition = DataSourceManager.GetConditionCode(_applicationId, SourceId);
-				throw new TwainException("DsImageLayout.GetDefault error", result);
+				throw new TwainException("DsImageLayout.GetDefault error", result, condition);
             }
 
             return true;
@@ -477,7 +478,7 @@ namespace TwainDotNet
                 throw new TwainException("Error opening data source", result, conditionCode);
             }
 
-			TwainState = TwainState.SourceOpen;
+			SourceState = TwainState.SourceOpen;
         }
 
         public bool Enable(ScanSettings settings)
@@ -501,7 +502,7 @@ namespace TwainDotNet
                 return false;
             }
 
-			TwainState = TwainState.SourceEnabled;
+			SourceState = TwainState.SourceEnabled;
             return true;
         }
 
@@ -647,7 +648,7 @@ namespace TwainDotNet
 
 			    if (result != TwainResult.Failure)
 			    {
-				    TwainState = TwainState.SourceOpen;
+				    SourceState = TwainState.SourceOpen;
 				    return true;
 			    }
 			    return false;
@@ -668,7 +669,7 @@ namespace TwainDotNet
 
 	                if (result != TwainResult.Failure)
 	                {
-		                TwainState = TwainState.SourceManagerOpen;
+						SourceState = null;
 	                }
 
                 else

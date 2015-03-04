@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using TwainDotNet;
@@ -49,7 +50,10 @@ namespace TwainWeb.Standalone.TwainNet
 
 			var scanSettings = new ScanSettings
 			{
-				Resolution = new ResolutionSettings {Dpi = (int) settings.Resolution, ColourSetting = (ColourSetting)settings.pixelType},
+				Resolution = new ResolutionSettings {
+					Dpi = (int) settings.Resolution, 
+					ColourSetting = (ColourSetting)settings.PixelType
+				},
 				Area = new AreaSettings(Units.Inches, 0, 0, settings.Format.Height, settings.Format.Width),
 				ShowProgressIndicatorUI = false,
 				ShowTwainUI = false
@@ -69,7 +73,8 @@ namespace TwainWeb.Standalone.TwainNet
 				var img = e.Image;
 				if (_images == null) _images = new List<Image>();
 
-				_images.Add(img);
+				_images.Add((Image)img.Clone());
+				img.Dispose();
 			}
 		}
 

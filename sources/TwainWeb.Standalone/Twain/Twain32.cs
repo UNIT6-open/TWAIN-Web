@@ -177,7 +177,7 @@ namespace TwainWeb.Standalone.Twain
                             settingsAcquire.Format.Width = maxWidth;
                         this.ImageLayout = new RectangleF(0, 0, settingsAcquire.Format.Width, settingsAcquire.Format.Height);
                         this.SetResolutions(settingsAcquire.Resolution);
-                        this.SetPixelType(settingsAcquire.pixelType);                                           
+						this.SetPixelType(Extensions.SearchPixelType(settingsAcquire.PixelType, TwPixelType.BW));                                           
                         this._EnableSource();                        
                         this._ImageTransmission();
                         if (this._DisableSource())

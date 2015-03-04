@@ -1,11 +1,14 @@
-﻿using System.Text;
-
-namespace TwainWeb.Standalone.App
+﻿namespace TwainWeb.Standalone.App
 {
-    public class ScanResult : DownloadFile
+    public abstract class ScanResult
     {
-        public byte[] FileContent { get { return _fileContent; } }
-        private byte[] _fileContent;        
+		protected ScanResult()
+		{
+		}
+	    protected ScanResult(string error)
+	    {
+		    Error = error;
+	    }
         public string Error { get; set; }
 
         public bool Validate()
@@ -13,9 +16,7 @@ namespace TwainWeb.Standalone.App
             return Error == null;
         }
 
-        public void FillContent()
-        {
-            _fileContent = Encoding.UTF8.GetBytes("{\"file\": \""+FileName+"\", \"temp\": \""+TempFile+"\"}");
-        }
+		public abstract void FillContent(DownloadFile file);
+		public byte[] Content { get; protected set; }
     }
 }

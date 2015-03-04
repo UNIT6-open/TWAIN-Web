@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="TwainNative\TwainState.cs" />
     <Compile Include="TwainNative\Units.cs" />
+    <Compile Include="ValueConverter.cs" />
     <Compile Include="Win32\BitmapInfoHeader.cs" />
     <Compile Include="Win32\BitmapRenderer.cs" />
     <Compile Include="Win32\Gdi32Native.cs" />

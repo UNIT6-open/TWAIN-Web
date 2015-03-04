@@ -83,8 +83,7 @@ namespace TwainDotNet
             {
                 _messageHook.UseFilter = true;
                 scanning = DataSource.Open(settings);
-	            _twainState = DataSource.TwainState;
-            }
+	        }
             catch (TwainException e)
             {
 	            CloseDataSource();
@@ -104,7 +103,8 @@ namespace TwainDotNet
 	    private void CloseDataSource()
 	    {
 			DataSource.DisableAndClose();
-			_twainState = DataSource.TwainState;
+			if (DataSource.SourceState == null)
+				_twainState = TwainState.SourceManagerOpen;
 	    }
         protected IntPtr FilterMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
@@ -116,7 +116,7 @@ namespace TwainDotNet
 
             int pos = User32Native.GetMessagePos();
 
-            WindowsMessage message = new WindowsMessage();
+            var message = new WindowsMessage();
             message.hwnd = hwnd;
             message.message = msg;
             message.wParam = wParam;
@@ -148,7 +148,7 @@ namespace TwainDotNet
                     Exception exception = null;
                     try
                     {
-	                    _twainState = TwainState.TransferReady;
+	                    DataSource.SourceState = TwainState.TransferReady;
                         TransferPictures();
                     }
                     catch (Exception e)
@@ -182,17 +182,17 @@ namespace TwainDotNet
                 return;
             }
 
-            PendingXfers pendingTransfer = new PendingXfers();
+            var pendingTransfer = new PendingXfers();
             TwainResult result;
             try
             {
                 do
                 {
                     pendingTransfer.Count = 0;
-                    IntPtr hbitmap = IntPtr.Zero;
+                    var hbitmap = IntPtr.Zero;
 
                     // Get the image info
-                    ImageInfo imageInfo = new ImageInfo();
+                    var imageInfo = new ImageInfo();
                     result = Twain32Native.DsImageInfo(
                         ApplicationId,
                         DataSource.SourceId,
@@ -224,7 +224,7 @@ namespace TwainDotNet
                         break;
                     }
 
-	                _twainState = TwainState.Transfering;
+	                DataSource.SourceState = TwainState.Transfering;
 
                     // End pending transfers
                     result = Twain32Native.DsPendingTransfer(
@@ -241,7 +241,7 @@ namespace TwainDotNet
                         break;
                     }
 
-					_twainState = TwainState.TransferReady;
+					DataSource.SourceState = TwainState.TransferReady;
 
                     if (hbitmap == IntPtr.Zero)
                     {

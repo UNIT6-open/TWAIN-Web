@@ -15,6 +15,27 @@ namespace TwainDotNet.TwainNative
 	    {
 	    }
 
+		/// <summary>
+		/// Implicit float to Fix32 conversion operator
+		/// </summary>
+		/// <param name="f"></param>
+		/// <returns></returns>
+		public static implicit operator Fix32(float f)  // explicit byte to digit conversion operator
+		{
+			var value = new Fix32(f);
+			return value;
+		}
+
+		/// <summary>
+		/// Implicit Fix32 to float conversion operator
+		/// </summary>
+		/// <param name="f"></param>
+		/// <returns></returns>
+		public static implicit operator float(Fix32 f)  // implicit digit to byte conversion operator
+		{
+			return f.ToFloat();  // implicit conversion
+		}
+
 	    public Fix32(float f)
         {
             // http://www.dosadi.com/forums/archive/index.php?t-2534.html

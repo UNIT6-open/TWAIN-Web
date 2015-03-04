@@ -1,108 +1,185 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using TwainWeb.Standalone.Scanner;
+using TwainWeb.Standalone.Tools;
 using TwainWeb.Standalone.Twain;
 
 namespace TwainWeb.Standalone.App
 {
-    public class ScanCommand
-    {
-	    private const int WaitTimeForChangeSource = 15000;
-	    private const int WaitTimaeForScan = 300000;
+	public class ScanCommand
+	{
+		private const int WaitTimeForChangeSource = 15000;
+		private const int WaitTimaeForScan = 300000;
 
-	    public ScanCommand(ScanForm command, IScannerManager scannerManager)
-        {                     
-            _command = command;
-	        _scannerManager = scannerManager;
-        }
-        private readonly ScanForm _command;
-        private readonly IScannerManager _scannerManager;
+		public ScanCommand(ScanForm command, IScannerManager scannerManager)
+		{
+			_command = command;
+			_scannerManager = scannerManager;
+		}
 
-        private ImageCodecInfo GetEncoder(ImageFormat format)
-        {
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.FormatID == format.Guid)
-                {
-                    return codec;
-                }
-            }
-            return null;
-        }     
-        public ScanResult Execute(object markerAsynchrone)
-        {
-            var scanResult = new ScanResult();
-            try
-            {
-                Image image = null;
-                lock(markerAsynchrone)
-                {
+		private readonly ScanForm _command;
+		private readonly IScannerManager _scannerManager;
+
+		public ScanResult Execute(object markerAsynchrone)
+		{
+			ScanResult scanResult;
+			try
+			{
+				var scannedImages = new List<Image>();
+				lock (markerAsynchrone)
+				{
 					if (_scannerManager.CurrentSourceIndex != _command.Source)
 					{
-						new AsyncWorker<int>().RunWorkAsync(_command.Source, "ChangeSource", _scannerManager.ChangeSource, WaitTimeForChangeSource);
-						
-						//_scannerManager.ChangeSource(_command.Source);
+						new AsyncWorker<int>().RunWorkAsync(_command.Source, "ChangeSource", _scannerManager.ChangeSource,
+							WaitTimeForChangeSource);
 
 						if (_scannerManager.CurrentSourceIndex != _command.Source)
 						{
-							scanResult.Error = "Не удается изменить источник данных";
-							return scanResult;
+							return new SingleScanResult("Не удается изменить источник данных");
 						}
 					}
 
-					var settingAcquire = new SettingsAcquire { Format = _command.Format, Resolution = _command.DPI, pixelType = Extensions.SearchPixelType(_command.ColorMode, TwPixelType.BW) };
-
-
-					//var images = _scannerManager.CurrentSource.Scan(settingAcquire);
-					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, "Asquire",
-		                _scannerManager.CurrentSource.Scan, WaitTimaeForScan);
-
-					if (images != null && images.Count == 1)
+					var settingAcquire = new SettingsAcquire
 					{
-						image = (Image)images[0].Clone();
-						images[0].Dispose();
-						
-						((Bitmap)image).SetResolution(_command.DPI, _command.DPI);
-					}
-                }
-                if (image == null)
-                {
-                    scanResult.Error = "Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.";
-                    return scanResult;
-                }                
-                
-				SaveImage(ref scanResult, image);
-				image.Dispose();
-                scanResult.FillContent();
-            }
-            catch (TwainException ex)
-            {
-                scanResult.Error = ex.Message;
-            }
-            return scanResult;
-        }
+						Format = _command.Format,
+						Resolution = _command.DPI,
+						PixelType = _command.ColorMode
+					};
 
-        void SaveImage(ref ScanResult scanResult, Image image)
-        {
-            try
-            {
-                scanResult.FileName = _command.FileName+(String.IsNullOrEmpty(_command.FileCounter) ? "" : ("_" + _command.FileCounter));
-                if (_command.IsPackage == null || _command.SaveAs == (int)GlobalDictionaries.SaveAsValues.Pictures)
-                    scanResult.FileName += "." + GlobalDictionaries.SearchingKeyInImgFormats(_command.CompressionFormat.ImgFormat);
-                var jgpEncoder = GetEncoder(_command.CompressionFormat.ImgFormat);
-                var myEncoder = Encoder.Quality;
-                var parameters = new EncoderParameters(1);
-                parameters.Param[0] = new EncoderParameter(myEncoder, _command.CompressionFormat.compression);
-                var file = Path.GetTempFileName();
-                image.Save(file, jgpEncoder, parameters);
-                scanResult.TempFile = Path.GetFileName(file);
-                GlobalDictionaries.Scans.Add(scanResult.TempFile);
-            }
-            catch (Exception ex){ scanResult.Error = ex.Message; }
-        }        
-    }
+					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, "Asquire",
+						_scannerManager.CurrentSource.Scan, WaitTimaeForScan);
+
+					if (images != null)
+					{
+						foreach (var image in images)
+						{
+							var clonedImage = (Image) image.Clone();
+							image.Dispose();
+
+							((Bitmap) clonedImage).SetResolution(_command.DPI, _command.DPI);
+							scannedImages.Add(clonedImage);
+						}
+
+					}
+				}
+				if (scannedImages.Count == 0)
+				{
+					return new SingleScanResult(
+							"Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.");
+				}
+				
+				if (scannedImages.Count == 1)
+				{
+					var image = scannedImages[0];
+					scanResult = SaveImage(image);
+					image.Dispose();
+				}
+				else
+				{
+					foreach (var scannedImage in scannedImages)
+					{
+						scannedImage.Dispose();
+					}
+					return new SingleScanResult(
+							"Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.");
+
+				}
+			}
+			catch (TwainException ex)
+			{
+				return new SingleScanResult(ex.Message);
+			}
+			return scanResult;
+		}
+
+		private SingleScanResult SaveImage(Image image)
+		{
+			if (image == null) throw new ArgumentException("image");
+
+			var filename = ImageTools.CreateFilename(
+				_command.FileName, 
+				_command.FileCounter,
+				_command.IsPackage != null,
+				(GlobalDictionaries.SaveAsValues)_command.SaveAs,
+				_command.CompressionFormat.ImgFormat);
+
+			var file = Path.GetTempFileName();
+			var tempfile = Path.GetFileName(file);	
+
+			var downloadFile = new DownloadFile(filename, tempfile);
+
+			ImageTools.CompressAndSaveImage(image, file, _command.CompressionFormat);
+		
+			GlobalDictionaries.Scans.Add(downloadFile.TempFile);
+
+			var result = new SingleScanResult();
+			result.FillContent(downloadFile);
+			return result;
+		}
+
+		#region createZip
+		/*private ScanResult GetZip(List<Image> images)
+{
+	var imagesCount = images.Count;
+
+	do
+	{
+		var img = images[images.Count - 1];
+		images.Remove(img);
+		img.Dispose();
+	} while (images.Count > imagesCount/2);
+	
+	GC.Collect();
+	var downloadFile = new DownloadFile();
+	downloadFile.FileName = _command.FileName +
+							(String.IsNullOrEmpty(_command.FileCounter) ? "" : ("_" + _command.FileCounter));
+	if (_command.IsPackage == null || _command.SaveAs == (int)GlobalDictionaries.SaveAsValues.Pictures)
+		downloadFile.FileName += "." + "zip";
+		
+	var file = Path.GetTempFileName();
+		
+	downloadFile.TempFile = Path.GetFileName(file);
+	GlobalDictionaries.Scans.Add(downloadFile.TempFile);
+
+	var fZip = File.Create(file);
+	var zipOStream = new ZipOutputStream(fZip);
+	var i = 1;
+	foreach (var image in images)
+	{
+		using (var ms = new MemoryStream())
+		{
+			//image.Save(ms, ImageFormat.Bmp);
+			Bitmap bm = new Bitmap(image);
+			bm.Save(ms, ImageFormat.Bmp);
+				
+
+			ms.Position = 0;
+
+			var entry = new ZipEntry((i++ + ".jpg"));
+			zipOStream.PutNextEntry(entry);
+
+
+			int bytesRead;
+			var transferBuffer = new byte[1024];
+			do
+			{
+				bytesRead = ms.Read(transferBuffer, 0, transferBuffer.Length);
+				zipOStream.Write(transferBuffer, 0, bytesRead);
+			} while (bytesRead > 0);
+
+		}
+
+	}
+	zipOStream.Finish();
+	zipOStream.Close();
+
+	var result = new SingleScanResult();
+	result.FillContent(new List<DownloadFile> {downloadFile});
+	return result;
+}*/
+
+#endregion
+	}
 }

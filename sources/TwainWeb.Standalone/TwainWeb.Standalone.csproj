@@ -84,6 +84,9 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>-->
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net20-full\log4net.dll</HintPath>
@@ -108,8 +111,10 @@
     <Compile Include="App\EnumExtensions.cs" />
     <Compile Include="App\Extensions.cs" />
     <Compile Include="App\FormatPage.cs" />
+    <Compile Include="App\GetScannerParametersQuery.cs" />
     <Compile Include="App\GlobalDictionaries.cs" />
     <Compile Include="App\HomeController.cs" />
+    <Compile Include="Tools\ImageTools.cs" />
     <Compile Include="App\MessageBoxHookManager.cs" />
     <Compile Include="App\MessageBoxHook.cs" />
     <Compile Include="App\MyError.cs" />
@@ -118,6 +123,7 @@
     <Compile Include="App\ScanForm.cs" />
     <Compile Include="App\ModelBinder.cs" />
     <Compile Include="App\ScanResult.cs" />
+    <Compile Include="App\SingleScanResult.cs" />
     <Compile Include="FormForSetPort.cs">
       <SubType>Form</SubType>
     </Compile>
