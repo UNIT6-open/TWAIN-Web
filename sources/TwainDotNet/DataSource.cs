@@ -366,11 +366,10 @@ namespace TwainDotNet
                 NegotiatePageSize(settings);
                 NegotiateOrientation(settings);
             }
-/*
             if (settings.Area != null)
             {
                 NegotiateArea(settings);
-            }*/
+            }
 
             if (settings.Resolution != null)
             {
@@ -408,6 +407,7 @@ namespace TwainDotNet
             catch
             {
                 // Do nothing if the data source does not support the requested capability
+	            return false;
             }
 
 	        float right;
@@ -456,7 +456,8 @@ namespace TwainDotNet
             if (result != TwainResult.Success && result != TwainResult.CheckStatus)
             {
 				var condition = DataSourceManager.GetConditionCode(_applicationId, SourceId);
-				throw new TwainException("DsImageLayout.GetDefault error", result, condition);
+	            return false;
+				//throw new TwainException("DsImageLayout.GetDefault error", result, condition);
             }
 
             return true;

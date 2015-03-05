@@ -10,7 +10,7 @@ namespace TwainDotNet.WinFroms
     /// </summary>
     public class WinFormsWindowMessageHook : IWindowsMessageHook, IMessageFilter
     {
-        IntPtr _windowHandle;
+	    readonly IntPtr _windowHandle;
         bool _usingFilter;
 
         public WinFormsWindowMessageHook(IntPtr window)

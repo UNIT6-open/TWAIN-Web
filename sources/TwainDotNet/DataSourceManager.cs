@@ -184,82 +184,86 @@ namespace TwainDotNet
 
             var pendingTransfer = new PendingXfers();
             TwainResult result;
-            try
-            {
-                do
-                {
-                    pendingTransfer.Count = 0;
-                    var hbitmap = IntPtr.Zero;
+	        try
+	        {
+		        do
+		        {
+			        pendingTransfer.Count = 0;
+			        var hbitmap = IntPtr.Zero;
 
-                    // Get the image info
-                    var imageInfo = new ImageInfo();
-                    result = Twain32Native.DsImageInfo(
-                        ApplicationId,
-                        DataSource.SourceId,
-                        DataGroup.Image,
-                        DataArgumentType.ImageInfo,
-                        Message.Get,
-                        imageInfo);
+			        // Get the image info
+			        var imageInfo = new ImageInfo();
+			        result = Twain32Native.DsImageInfo(
+				        ApplicationId,
+				        DataSource.SourceId,
+				        DataGroup.Image,
+				        DataArgumentType.ImageInfo,
+				        Message.Get,
+				        imageInfo);
 
-                    if (result != TwainResult.Success)
-                    {
-						CloseDataSource();
-                        break;
-                    }
+			        if (result != TwainResult.Success)
+			        {
+				        CloseDataSource();
+				        break;
+			        }
 
-                    // Transfer the image from the device
-                    result = Twain32Native.DsImageTransfer(
-                        ApplicationId,
-                        DataSource.SourceId,
-                        DataGroup.Image,
-                        DataArgumentType.ImageNativeXfer,
-                        Message.Get,
-                        ref hbitmap);
+			        // Transfer the image from the device
+			        result = Twain32Native.DsImageTransfer(
+				        ApplicationId,
+				        DataSource.SourceId,
+				        DataGroup.Image,
+				        DataArgumentType.ImageNativeXfer,
+				        Message.Get,
+				        ref hbitmap);
 
-                    if (result != TwainResult.XferDone)
-                    {
-	                    var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
-						log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
-						CloseDataSource();
-                        break;
-                    }
+			        if (result != TwainResult.XferDone)
+			        {
+				        var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
+				        log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
+				        CloseDataSource();
+				        break;
+			        }
 
-	                DataSource.SourceState = TwainState.Transfering;
+			        DataSource.SourceState = TwainState.Transfering;
 
-                    // End pending transfers
-                    result = Twain32Native.DsPendingTransfer(
-                        ApplicationId,
-                        DataSource.SourceId,
-                        DataGroup.Control,
-                        DataArgumentType.PendingXfers,
-                        Message.EndXfer,
-                        pendingTransfer);
+			        // End pending transfers
+			        result = Twain32Native.DsPendingTransfer(
+				        ApplicationId,
+				        DataSource.SourceId,
+				        DataGroup.Control,
+				        DataArgumentType.PendingXfers,
+				        Message.EndXfer,
+				        pendingTransfer);
 
-                    if (result != TwainResult.Success)
-                    {
-						CloseDataSource();
-                        break;
-                    }
+			        if (result != TwainResult.Success)
+			        {
+				        CloseDataSource();
+				        break;
+			        }
 
-					DataSource.SourceState = TwainState.TransferReady;
+			        DataSource.SourceState = TwainState.TransferReady;
 
-                    if (hbitmap == IntPtr.Zero)
-                    {
-                        log.Warn("Transfer complete but bitmap pointer is still null.");
-                    }
-                    else
-                    {
-                        using (var renderer = new BitmapRenderer(hbitmap))
-                        {
-                            TransferImageEventArgs args = new TransferImageEventArgs(renderer.RenderToBitmap(), pendingTransfer.Count != 0);
-                            TransferImage(this, args);
-                            if (!args.ContinueScanning)
-                                break;
-                        }
-                    }
-                }
-                while (pendingTransfer.Count != 0);
-            }
+			        if (hbitmap == IntPtr.Zero)
+			        {
+				        log.Warn("Transfer complete but bitmap pointer is still null.");
+			        }
+			        else
+			        {
+				        using (var renderer = new BitmapRenderer(hbitmap))
+				        {
+					        TransferImageEventArgs args = new TransferImageEventArgs(renderer.RenderToBitmap(),
+						        pendingTransfer.Count != 0);
+					        TransferImage(this, args);
+					        if (!args.ContinueScanning)
+						        break;
+				        }
+			        }
+		        } while (pendingTransfer.Count != 0);
+	        }
+	        catch (Exception e)
+	        {
+		        
+	        }
             finally
             {
                 // Reset any pending transfers

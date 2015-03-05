@@ -1,6 +1,6 @@
-﻿namespace TwainWeb.Standalone.App
+﻿namespace TwainWeb.Standalone.App.Models
 {
-    public abstract class ScanResult
+    public abstract class ScanResult:Result
     {
 		protected ScanResult()
 		{
@@ -9,13 +9,7 @@
 	    {
 		    Error = error;
 	    }
-        public string Error { get; set; }
-
-        public bool Validate()
-        {
-            return Error == null;
-        }
-
+       
 		public abstract void FillContent(DownloadFile file);
 		public byte[] Content { get; protected set; }
     }

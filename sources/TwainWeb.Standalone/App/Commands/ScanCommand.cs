@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using TwainWeb.Standalone.App.Models;
 using TwainWeb.Standalone.Scanner;
 using TwainWeb.Standalone.Tools;
 using TwainWeb.Standalone.Twain;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Commands
 {
 	public class ScanCommand
 	{

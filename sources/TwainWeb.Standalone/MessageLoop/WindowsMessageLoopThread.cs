@@ -7,40 +7,28 @@ namespace TwainWeb.Standalone.MessageLoop
 {
 	public class WindowsMessageLoopThread
 	{
-		private readonly Thread _thread;
-		private readonly AutoResetEvent _startedEvent = new AutoResetEvent(false);
 		private Form _form;
 		private IntPtr _hwnd;
+		private ApplicationContext _threadContext;
 
 		public IntPtr Hwnd { get { return _hwnd; } }
 
 		public WindowsMessageLoopThread()
 		{
-			_thread = new Thread(ThreadFunction);
-			_thread.Start();
-			_startedEvent.WaitOne();
+			var messageLoop = new Thread(() =>
+			{
+				_form = new Form();
+				_hwnd = _form.Handle;
+				_threadContext = new ApplicationContext();
+				Application.Run(_threadContext);
+			});
+			messageLoop.Start();
 		}
 
 		public void Stop()
 		{
 			_form.BeginInvoke(new MethodInvoker(_form.Close));
-			_thread.Join();
-		}
-
-		private void ThreadFunction()
-		{
-		
-			_form = new Form
-			{
-				WindowState = FormWindowState.Minimized, 
-				ShowInTaskbar = false
-			};
-			_hwnd = _form.Handle;
-
-			_startedEvent.Set();
-			Application.Run(_form);
-
-			
+			_threadContext.ExitThread();
 		}
 
 		private delegate int GetThreadId();

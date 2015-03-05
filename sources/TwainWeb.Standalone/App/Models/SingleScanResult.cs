@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Models
 {
 	class SingleScanResult:ScanResult
 	{
