@@ -22,6 +22,7 @@ namespace TwainWeb.Standalone.MessageLoop
 				_threadContext = new ApplicationContext();
 				Application.Run(_threadContext);
 			});
+			messageLoop.SetApartmentState(ApartmentState.STA);
 			messageLoop.Start();
 		}
 

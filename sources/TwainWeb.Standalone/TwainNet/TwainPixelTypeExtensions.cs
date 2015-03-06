@@ -14,16 +14,18 @@ namespace TwainWeb.Standalone.TwainNet
 			foreach (var pixelType in pixelTypes)
 			{
 				TwainPixelType supportedPixelType;
+				string description;
 				try
 				{
 					supportedPixelType = (TwainPixelType) pixelType;
+					description = EnumExtensions.GetDescription(supportedPixelType);
 				}
 				catch (Exception)
 				{
 					continue;
 				}
 				
-				resultDictionary.Add((int)supportedPixelType, EnumExtensions.GetDescription(supportedPixelType));
+				resultDictionary.Add((int)supportedPixelType, description);
 			}
 
 			return resultDictionary;
@@ -36,7 +38,9 @@ namespace TwainWeb.Standalone.TwainNet
 			[Description("Оттенки серого")]
 			Grey = 1,
 			[Description("Цветное")]
-			RGB = 2
+			RGB = 2,
+			[Description("Палитра")]
+			Palette = 3
 		}
 	}
 }
