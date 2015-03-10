@@ -27,7 +27,8 @@ namespace TwainWeb.Standalone.App
             {"bmp", "image/bmp"},            
             {"gif", "image/gif"},
             {"pdf","application/pdf"},
-            {"zip","application/zip"}
+            {"zip","application/zip"},
+			{"ico", "image/x-icon"}
         };
 
         private static string FilesLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
