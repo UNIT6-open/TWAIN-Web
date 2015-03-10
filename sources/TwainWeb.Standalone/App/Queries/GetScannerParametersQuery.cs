@@ -15,6 +15,8 @@ namespace TwainWeb.Standalone.App.Queries
 		private const int WaitTime = 15000;
 		public GetScannerParametersQuery(IScannerManager scannerManager, CashSettings cashSettings, int? sourceIndex)
 		{
+			if (scannerManager == null) throw new Exception("Невозможно получить параметры сканирования, т.к. менеджер источников данных не был инициализирован");
+
 			_scannerManager = scannerManager;
 			_cashSettings = cashSettings;
 			_sourceIndex = sourceIndex;

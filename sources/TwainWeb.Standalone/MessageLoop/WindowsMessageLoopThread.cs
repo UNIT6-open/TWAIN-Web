@@ -10,6 +10,7 @@ namespace TwainWeb.Standalone.MessageLoop
 		private Form _form;
 		private IntPtr _hwnd;
 		private ApplicationContext _threadContext;
+		private AutoResetEvent _initComplete = new AutoResetEvent(false);
 
 		public IntPtr Hwnd { get { return _hwnd; } }
 
@@ -20,10 +21,12 @@ namespace TwainWeb.Standalone.MessageLoop
 				_form = new Form();
 				_hwnd = _form.Handle;
 				_threadContext = new ApplicationContext();
+				_initComplete.Set();
 				Application.Run(_threadContext);
 			});
 			messageLoop.SetApartmentState(ApartmentState.STA);
 			messageLoop.Start();
+			_initComplete.WaitOne();
 		}
 
 		public void Stop()

@@ -19,6 +19,7 @@ namespace TwainWeb.Standalone
         public FormForSetPort()
         {            
             InitializeComponent();
+	        this.port.Text = Settings.Default.Port.ToString();
         }
 
         public FormForSetPort(bool isSetParameters)
@@ -42,13 +43,13 @@ namespace TwainWeb.Standalone
                 {
                     for (int j = 0; j < configurationNode.ChildNodes[i].ChildNodes.Count; j++)
                     {
-                        if (configurationNode.ChildNodes[i].ChildNodes[j].Name == "TwainWeb.Standalone.Properties.Settings")
+                        if (configurationNode.ChildNodes[i].ChildNodes[j].Name == "TwainWeb.Standalone.Settings")
                         {
                             for (int k = 0; k < configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes.Count; k++)
                             {
                                 if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Name == "setting")
                                 {
-                                    if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"] != null && configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"].Value == "port")
+                                    if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"] != null && configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"].Value == "Port")
                                     {
                                         for (int l = 0; l < configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].ChildNodes.Count; l++)
                                         {

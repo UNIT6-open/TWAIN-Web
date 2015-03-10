@@ -4,6 +4,7 @@ using System.IO;
 using System.ServiceProcess;
 using log4net;
 using TwainWeb.Standalone.App;
+using TwainWeb.Standalone.App.Models;
 using TwainWeb.Standalone.MessageLoop;
 using TwainWeb.Standalone.Scanner;
 
@@ -11,14 +12,9 @@ namespace TwainWeb.Standalone
 {
 	public class ScanService : ServiceBase
 	{
-		private readonly ILog _logger;
+		private readonly ILog _logger = LogManager.GetLogger(typeof(HttpServer));
 		private WindowsMessageLoopThread _messageLoop;
-
-		public ScanService()
-		{
-			_logger = LogManager.GetLogger(typeof(HttpServer));
-		}
-
+		
 		public MyError CheckServer()
 		{
 			var startResult = StartServer();
@@ -79,7 +75,14 @@ namespace TwainWeb.Standalone
 		{
 			_messageLoop = new WindowsMessageLoopThread();
 			var smFactory = new ScannerManagerFactory();
-			_scannerManager = smFactory.GetScannerManager(_messageLoop);
+			try
+			{
+				_scannerManager = smFactory.GetScannerManager(_messageLoop);
+			}
+			catch (Exception e)
+			{
+				_logger.ErrorFormat(e.ToString());
+			}
 			StartServer();
 		}
 
