@@ -64,10 +64,8 @@ namespace TwainWeb.Standalone
 		public ScanService(int port)
 		{
 			_port = port;
-			ServiceName = "TWAIN@Web";
-
-			
-			}
+			ServiceName = "TWAIN@Web";		
+		}
 
 		private HttpServer httpServer;
 		private CashSettings cashSettings;

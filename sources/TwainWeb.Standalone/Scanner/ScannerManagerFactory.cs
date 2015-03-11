@@ -1,4 +1,5 @@
-﻿using TwainWeb.Standalone.MessageLoop;
+﻿using System;
+using TwainWeb.Standalone.MessageLoop;
 using TwainWeb.Standalone.Twain;
 using TwainWeb.Standalone.TwainNet;
 using TwainWeb.Standalone.Wia;
@@ -15,13 +16,26 @@ namespace TwainWeb.Standalone.Scanner
 		/// </summary>
 		public IScannerManager GetScannerManager(WindowsMessageLoopThread messageLoop)
 		{
-			switch (Settings.Default.ScannerManager.ToLower())
+
+			var scannerManagerSetting = Settings.Default.ScannerManager;
+			ScannerManager scannerManager;
+
+			try
 			{
-				case "wia":
+				scannerManager = (ScannerManager)Enum.Parse(typeof(ScannerManager), scannerManagerSetting, true);
+			}
+			catch (Exception)
+			{
+				scannerManager = ScannerManager.Wia;
+			}
+
+			switch (scannerManager)
+			{
+				case ScannerManager.Wia:
 					return new WiaScannerManager();
-				case "twain":
+				case ScannerManager.Twain:
 					return new TwainScannerManager();
-				case "twaindotnet":
+				case ScannerManager.TwainDotNet:
 					return new TwainDotNetScannerManager(messageLoop);
 				default:
 					return new WiaScannerManager();

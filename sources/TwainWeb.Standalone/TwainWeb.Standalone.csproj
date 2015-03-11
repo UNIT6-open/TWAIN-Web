@@ -122,6 +122,8 @@
     <Compile Include="App\HomeController.cs" />
     <Compile Include="App\Models\Result.cs" />
     <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
+    <Compile Include="RuntimeConfigurationManager.cs" />
+    <Compile Include="Scanner\ScannerManager.cs" />
     <Compile Include="Tools\ImageTools.cs" />
     <Compile Include="App\MessageBoxHookManager.cs" />
     <Compile Include="App\MessageBoxHook.cs" />
