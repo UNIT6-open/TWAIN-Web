@@ -34,7 +34,7 @@ namespace TwainWeb.Standalone {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("twaindotnet")]
+        [global::System.Configuration.DefaultSettingValueAttribute("wia")]
         public string ScannerManager {
             get {
                 return ((string)(this["ScannerManager"]));

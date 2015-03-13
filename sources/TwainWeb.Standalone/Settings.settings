@@ -6,7 +6,7 @@
       <Value Profile="(Default)">80</Value>
     </Setting>
     <Setting Name="ScannerManager" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">twaindotnet</Value>
+      <Value Profile="(Default)">wia</Value>
     </Setting>
   </Settings>
 </SettingsFile>
