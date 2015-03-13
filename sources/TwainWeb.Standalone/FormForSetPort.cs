@@ -1,98 +1,104 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Drawing;
-using System.Text;
+using System.Globalization;
 using System.Windows.Forms;
-using System.Xml;
-using TwainWeb.Standalone.Properties;
+using TwainWeb.Standalone.Scanner;
 
 
 namespace TwainWeb.Standalone
 {
     public partial class FormForSetPort : Form
     {
-        private bool isSetParameters;
-        private bool firstShowEvent;
+        private readonly bool _isSetParameters;
+        private bool _firstShowEvent;
         public FormForSetPort()
         {            
             InitializeComponent();
+			UpdatePort(Settings.Default.Port);
+
+			var scannerManagerSetting = Settings.Default.ScannerManager;
+			ScannerManager scannerManager;
+
+			try
+			{
+				scannerManager = (ScannerManager)Enum.Parse(typeof(ScannerManager), scannerManagerSetting, true);
+			}
+			catch (Exception)
+			{
+				scannerManager = ScannerManager.Wia;
+			}
+
+			UpdateScannerManager(scannerManager);
         }
 
         public FormForSetPort(bool isSetParameters)
             : this()
         {
-            this.isSetParameters = isSetParameters;
-            this.firstShowEvent = true;
+            _isSetParameters = isSetParameters;
+            _firstShowEvent = true;
         }
 
-        
-        private void SetPort(int port)
+		private void UpdatePort(int portNumber)
+	    {
+			port.Text = portNumber.ToString(CultureInfo.InvariantCulture);
+	    }
+
+	    private void UpdateScannerManager(ScannerManager scannerManager)
+	    {
+			switch (scannerManager)
+			{
+				case ScannerManager.TwainDotNet:
+					radioButtonTwain.Select();
+					break;
+				default:
+					radioButtonWia.Select();
+					break;
+			}
+	    }
+
+        private void UpdatePortSettings(int portNumber)
         {
-            var configDoc = new XmlDocument();
-            configDoc.Load("TwainWeb.Standalone.exe.config");
-            var configurationNode = configDoc.SelectSingleNode("configuration");
-            if (configurationNode == null)
-                return;
-            for (int i = 0; i < configurationNode.ChildNodes.Count; i++)
-            {
-                if (configurationNode.ChildNodes[i].Name == "applicationSettings")
-                {
-                    for (int j = 0; j < configurationNode.ChildNodes[i].ChildNodes.Count; j++)
-                    {
-                        if (configurationNode.ChildNodes[i].ChildNodes[j].Name == "TwainWeb.Standalone.Properties.Settings")
-                        {
-                            for (int k = 0; k < configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes.Count; k++)
-                            {
-                                if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Name == "setting")
-                                {
-                                    if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"] != null && configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].Attributes["name"].Value == "port")
-                                    {
-                                        for (int l = 0; l < configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].ChildNodes.Count; l++)
-                                        {
-                                            if (configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].ChildNodes[l].Name == "value")
-                                            {
-                                                configurationNode.ChildNodes[i].ChildNodes[j].ChildNodes[k].ChildNodes[l].InnerText = port.ToString();
-                                                this.port.Text = port.ToString();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            configDoc.Save("TwainWeb.Standalone.exe.config");
+			if (RuntimeConfigurationManager.UpdateAppSettings("Port", portNumber.ToString(CultureInfo.InvariantCulture)))
+				UpdatePort(portNumber);
         }
+
+		private void UpdateScannerManagerSettings(ScannerManager scannerManager)
+	    {
+			if (RuntimeConfigurationManager.UpdateAppSettings("ScannerManager", scannerManager.ToString()))
+				UpdateScannerManager(scannerManager);
+	    }
 
         private void button1_Click(object sender, EventArgs e)
-        {            
+        {
+			var newScannerManager = ScannerManager.Wia;
+			if (radioButtonTwain.Checked)
+				newScannerManager = ScannerManager.TwainDotNet;
+
+			UpdateScannerManagerSettings(newScannerManager);
+
+
             int processedPort;
             try
             {
                 processedPort = Convert.ToInt32(port.Text);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 processedPort = 80;
             }
-            this.SetPort(processedPort);
-            if(this.processCheckServer(processedPort))
-                this.Close();
+            UpdatePortSettings(processedPort);
+            if(processCheckServer(processedPort))
+                Close();
         }
 
-        private bool processCheckServer(int port)
+        private bool processCheckServer(int portNumber)
         {
-            var scanService = new ScanService(port);
+			var scanService = new ScanService(portNumber);
             var resultCheckServer = scanService.CheckServer();
             if (resultCheckServer != null)
             {
                 string error;
                 if (resultCheckServer.Code == 32)
-                   error = "Порт " + port + " занят другим процессом. ";                    
+					error = "Порт " + portNumber + " занят другим процессом. ";                    
                 else
                     error = "Не предусмотренная ошибка. Отправьте это сообщение разработчикам разработчикам." + Environment.NewLine + Environment.NewLine + resultCheckServer.Text + Environment.NewLine + Environment.NewLine;
                 error += "Попробуйте изменить или освободить порт.";
@@ -105,12 +111,12 @@ namespace TwainWeb.Standalone
 
         private void FormForSetPort_Shown(object sender, EventArgs e)
         {
-            if (!isSetParameters && firstShowEvent)
+            if (!_isSetParameters && _firstShowEvent)
             {
-                firstShowEvent = false;
-                if (processCheckServer(Settings.Default.port))
+                _firstShowEvent = false;
+                if (processCheckServer(Settings.Default.Port))
                 {
-                    this.Close();
+                    Close();
                 }
             }
         }

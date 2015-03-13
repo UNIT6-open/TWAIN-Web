@@ -26,7 +26,9 @@ namespace TwainWeb.Standalone.App
             {"jpg", "image/jpeg"},
             {"bmp", "image/bmp"},            
             {"gif", "image/gif"},
-            {"pdf","application/pdf"}
+            {"pdf","application/pdf"},
+            {"zip","application/zip"},
+			{"ico", "image/x-icon"}
         };
 
         private static string FilesLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
@@ -65,7 +67,6 @@ namespace TwainWeb.Standalone.App
             if (fileParam.SaveAs == (int)GlobalDictionaries.SaveAsValues.Pdf)
             {
                 fileId = MakePdf(fileParam.ListFiles);
-                fileName = Path.GetFileName(fileName) + ".pdf";
             }
             var file = Path.Combine(tempDir, fileId);
             if (File.Exists(file))

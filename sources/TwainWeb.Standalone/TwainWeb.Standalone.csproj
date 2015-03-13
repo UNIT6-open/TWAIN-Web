@@ -12,6 +12,7 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>C:\Users\vasiliy\Desktop\Work\ScannerSite\release\last\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -37,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -46,6 +48,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>TwainWeb.Standalone.Program</StartupObject>
@@ -65,6 +68,15 @@
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>TwainWebIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <Win32Resource>
+    </Win32Resource>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -81,8 +93,11 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>-->
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\log4net.2.0.3\lib\net20-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -95,27 +110,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\AjaxMethods.cs" />
+    <Compile Include="App\AsyncWorker.cs" />
     <Compile Include="App\AsyncMethods.cs" />
     <Compile Include="App\CashSettings.cs" />
     <Compile Include="App\DownloadFileParam.cs" />
+    <Compile Include="App\EnumExtensions.cs" />
     <Compile Include="App\Extensions.cs" />
     <Compile Include="App\FormatPage.cs" />
+    <Compile Include="App\Queries\GetScannerParametersQuery.cs" />
     <Compile Include="App\GlobalDictionaries.cs" />
     <Compile Include="App\HomeController.cs" />
+    <Compile Include="App\Models\Result.cs" />
+    <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
+    <Compile Include="RuntimeConfigurationManager.cs" />
+    <Compile Include="Scanner\ScannerManager.cs" />
+    <Compile Include="Tools\ImageTools.cs" />
     <Compile Include="App\MessageBoxHookManager.cs" />
     <Compile Include="App\MessageBoxHook.cs" />
-    <Compile Include="App\MyError.cs" />
-    <Compile Include="App\ScanCommand.cs" />
+    <Compile Include="App\Models\MyError.cs" />
+    <Compile Include="App\Commands\ScanCommand.cs" />
     <Compile Include="App\ScannerSettings.cs" />
     <Compile Include="App\ScanForm.cs" />
     <Compile Include="App\ModelBinder.cs" />
-    <Compile Include="App\ScanResult.cs" />
+    <Compile Include="App\Models\ScanResult.cs" />
+    <Compile Include="App\Models\SingleScanResult.cs" />
     <Compile Include="FormForSetPort.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormForSetPort.Designer.cs">
       <DependentUpon>FormForSetPort.cs</DependentUpon>
     </Compile>
+    <Compile Include="MessageLoop\WindowsMessageLoopThread.cs" />
+    <Compile Include="Scanner\IScannerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -134,10 +160,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Scanner\ISource.cs" />
+    <Compile Include="Scanner\ScannerManagerFactory.cs" />
     <Compile Include="ScanService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HttpServer.cs" />
+    <Compile Include="Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="TwainNet\TwainDotNetScannerManager.cs" />
+    <Compile Include="TwainNet\TwainDotNetSource.cs" />
+    <Compile Include="TwainNet\TwainPixelTypeExtensions.cs" />
     <Compile Include="Twain\DibToImage.cs" />
     <Compile Include="Twain\SettingsAcquire.cs" />
     <Compile Include="Twain\Source.cs" />
@@ -146,7 +182,14 @@
     </Compile>
     <Compile Include="Twain\TwainDefs.cs" />
     <Compile Include="Twain\TwainException.cs" />
+    <Compile Include="Twain\TwainScannerManager.cs" />
+    <Compile Include="Twain\TwainSource.cs" />
     <Compile Include="Twain\TwainState.cs" />
+    <Compile Include="Wia\WiaPixelType.cs" />
+    <Compile Include="Wia\WiaFormat.cs" />
+    <Compile Include="Wia\WiaProperty.cs" />
+    <Compile Include="Wia\WiaScannerManager.cs" />
+    <Compile Include="Wia\WiaSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FormForSetPort.resx">
@@ -219,6 +262,9 @@
     <Content Include="Files\Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Files\Content\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -234,6 +280,19 @@
     <Content Include="Files\Scripts\modernizr-2.6.2.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\TwainWebIcon.ico" />
+    <Content Include="TwainWebIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WIA">
+      <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -254,8 +313,13 @@
     <None Include="Files\bat\uninstall.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
@@ -266,7 +330,16 @@
       <Project>{5384ce57-1f94-4d22-860d-2e9c1ac12ddf}</Project>
       <Name>PdfSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TwainDotNet.WinFroms\TwainDotNet.WinFroms.csproj">
+      <Project>{715eed8d-94fe-40ed-b3f7-59284fa6242b}</Project>
+      <Name>TwainDotNet.WinFroms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TwainDotNet\TwainDotNet.csproj">
+      <Project>{857b8891-2932-484d-a9a8-d38b47108cf0}</Project>
+      <Name>TwainDotNet</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -177,7 +177,7 @@ namespace TwainWeb.Standalone.Twain
                             settingsAcquire.Format.Width = maxWidth;
                         this.ImageLayout = new RectangleF(0, 0, settingsAcquire.Format.Width, settingsAcquire.Format.Height);
                         this.SetResolutions(settingsAcquire.Resolution);
-                        this.SetPixelType(settingsAcquire.pixelType);                                           
+						this.SetPixelType(Extensions.SearchPixelType(settingsAcquire.PixelType, TwPixelType.BW));                                           
                         this._EnableSource();                        
                         this._ImageTransmission();
                         if (this._DisableSource())
@@ -205,7 +205,7 @@ namespace TwainWeb.Standalone.Twain
         {
             if (this.OpenSM() && this.OpenSource() && (this._TwainState & StateFlag.DSEnabled) == 0)
             {
-                TwRC _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd});
+                TwRC _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.EnableDS, new TwUserInterface{ParentHand = _hwnd, ShowUI = 0});
                 if (_rc == TwRC.Success)
                 {
                     this._TwainState |= StateFlag.DSEnabled;
@@ -222,7 +222,7 @@ namespace TwainWeb.Standalone.Twain
         private bool _DisableSource() {
             if ((this._TwainState & StateFlag.DSEnabled) == 0)
                 return true;
-			var _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd });
+			var _rc = this.DsUI(this._appid, this._srcds, TwDG.Control, TwDAT.UserInterface, TwMSG.DisableDS, new TwUserInterface { ParentHand = _hwnd, ShowUI = 0});
             if(_rc==TwRC.Success)
                 this._TwainState&=~StateFlag.DSEnabled;
             return (this._TwainState & StateFlag.DSEnabled) == 0;

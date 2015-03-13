@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
 //
 // Le informazioni sulla versione di un assembly sono costituite dai seguenti quattro valori:

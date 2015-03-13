@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.ServiceProcess;
-using System.Text;
 using System.Windows.Forms;
-using TwainWeb.Standalone.Properties;
+
 
 namespace TwainWeb.Standalone
 {
@@ -19,12 +16,12 @@ namespace TwainWeb.Standalone
         static void Main(string[] args)
         {
             if (args.Length == 0)
-                ServiceBase.Run(new ScanService(Settings.Default.port));
+                ServiceBase.Run(new ScanService(Settings.Default.Port));
             else
             {
                 if (args[0] == "config")
                 {
-                    ProcessStartInfo proc = new ProcessStartInfo();
+                    var proc = new ProcessStartInfo();
                     proc.UseShellExecute = true;
                     proc.WorkingDirectory = Environment.CurrentDirectory;
                     proc.FileName = Application.ExecutablePath;
@@ -34,7 +31,7 @@ namespace TwainWeb.Standalone
                     {
                         Process.Start(proc);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                     }
 
@@ -53,8 +50,8 @@ namespace TwainWeb.Standalone
                         Process.Start(Environment.CurrentDirectory + "/Files/bat/start.bat");
                 }
                 else if (args[0] == "run")
-                    System.Diagnostics.Process.Start("http://127.0.0.1:" + Settings.Default.port + "/TWAIN@Web/");
-            }          
+                    Process.Start("http://127.0.0.1:" + Settings.Default.Port + "/TWAIN@Web/");
+            }         
         }        
     }
 }

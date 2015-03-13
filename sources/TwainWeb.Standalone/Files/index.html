@@ -1,453 +1,503 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>TWAIN@Web</title>
-    <link href="Content/bootstrap.min.css" rel="stylesheet"/>
-<link href="Content/bootstrap-responsive.min.css" rel="stylesheet"/>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<title>TWAIN@Web</title>
+	<link rel="shortcut icon" type="image/x-icon" href="Content/favicon.ico" />
+	<link rel="icon" href="Content/favicon.ico" />
+	<link href="Content/bootstrap.min.css" rel="stylesheet" />
+	<link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
 
-    <link href="Content/site.css?ver=04.12.2013" rel="stylesheet"/>
+	<link href="Content/site.css?ver=04.12.2013" rel="stylesheet" />
 
-    <script src="Scripts/modernizr-2.6.2.js"></script>
+	<script src="Scripts/modernizr-2.6.2.js"></script>
 
-    
-    <link href="Content/Home/Scan.css?ver=04.12.2013" rel="stylesheet"/>
 
+	<link href="Content/Home/Scan.css?ver=04.12.2013" rel="stylesheet" />
+	
 
 </head>
-    <body>        
-        <section class="header">
-            <div class="container">
-                <div class="row">
-                    <div class="span12">
-                        <div class="logo">
-                            <a href="http://unit6.ru/twain-web">
-                                <h1>TWAIN<span>@Web</span></h1>
-                            </a>
-                        </div>
-                        <ul class="nav">
-                            <li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
-                            <li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <section class="body">
-            <div class="container"><div class="row">
-             
-<form method="post" id="form" class="span6">
-    <h2>Параметры сканирования</h2>
-    
-    <fieldset>      
-        <div class="form-field">
-            <select id="Form_Source" name="Form.Source">
-                <option value="0">Устройство не определено</option>
-            </select>
-        </div>
-        <div class="form-field">
-            <input id="Form_FileName" name="Form.FileName" type="text" value="Скан" />
-        </div>
-        <div class="form-field">
-            <input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
-        </div>        
-        <div class="form-field DPI">
-            <div class="form-field-hint disp-no">
-                Диапазон: <span class="min"></span>-<span class="max"></span>
-            </div>
-            <input data-val="true" data-val-number="The field DPI must be a number." data-val-required="Требуется поле DPI." id="Form_DPI" name="Form.DPI" type="text" value="150" />
-        </div>
-        <div class="form-field">
-            <select id="Form_ColorMode" name="Form.ColorMode">
-                <option selected="selected" value="RGB">Цветное изображение</option>
-                <option value="GRAY">Оттенки серого</option>
-                <option value="BW">Черно-белое изображение</option>
-            </select>
-        </div>
-        <div class="form-field">
-            <select id="Form_CompressionFormat" name="Form.CompressionFormat">
-                <option selected="selected" value="100*jpg">JPEG 100%</option>
-                <option value="75*jpg">JPEG 75%</option>
-                <option value="50*jpg">JPEG 50%</option>
-                <option value="25*jpg">JPEG 25%</option>
-                <option value="100*Bmp">BMP</option>
-            </select>
-        </div>
-        <div class="form-field">
-            <select id="Form_Format" name="Form.Format">
-                    <option value="33.11*46.81f">A0</option>
-                    <option value="23.39*33.11f">A1</option>
-                    <option value="16.54*23.39f">A2</option>                    
-                    <option value="11.69*16.54f">A3</option>
-                    <option value="8.27*11.69f">A4</option>
-                    <option value="5.83*8.27f">A5</option>
-                    <option value="4.13*5.84f">A6</option>
-            </select>
-        </div>
-        <div class="form-field mode-switch-container">
-            <button type="button" changeAction="addClass('disp-no')" id="conventional-scan" class="mode-switch enable">Обычное сканирование</button><button changeAction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch disable">Пакетное сканирование</button>
-        </div>
-        <div class="form-field  disp-no package-setting">
-            <input id="Form_CountScans" type="text" value="001" />
-        </div> 
-        <div class="form-field disp-no package-setting">
-            <input id="Form_ScanInterval" type="text" value="001" />
-        </div>         
-        <div class="form-field disp-no package-setting">
-            <select id="Form_SaveAs" name="Form.SaveAs">
-                <option value="0">Сохранить как Картинки</option>
-                <option value="1">Сохранить как PDF</option>
-            </select>
-        </div>
-        <div class="form-field">
-            <input type="submit" value="Сканируем!" />
-        </div>
-    </fieldset>
-    
-</form>
+<body>
+	<section class="header">
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<div class="logo">
+						<a href="http://unit6.ru/twain-web">
+							<h1>TWAIN<span>@Web</span></h1>
+						</a>
+					</div>
+					<ul class="nav">
+						<li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
+						<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="body">
+		<div class="container">
+			<div class="row">
+
+				<form method="post" id="form" class="span6">
+					<h2>Параметры сканирования</h2>
+
+					<fieldset>
+						<div class="form-field">
+							<select id="Form_Source" name="Form.Source">
+								<option value="0">Устройство не определено</option>
+							</select>
+						</div>
+						<div class="form-field">
+							<input id="Form_FileName" name="Form.FileName" type="text" value="Скан" />
+						</div>
+						<div class="form-field">
+							<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
+						</div>
+						<div class="form-field DPI">
+							<div class="form-field-hint disp-no">
+								Диапазон: <span class="min"></span>-<span class="max"></span>
+							</div>
+							<input data-val="true" data-val-number="The field DPI must be a number." data-val-required="Требуется поле DPI." id="Form_DPI" name="Form.DPI" type="text" value="150" />
+						</div>
+						<div class="form-field">
+							<select id="Form_ColorMode" name="Form.ColorMode">
+								<option selected="selected" value="RGB">Цветное изображение</option>
+								<option value="GRAY">Оттенки серого</option>
+								<option value="BW">Черно-белое изображение</option>
+							</select>
+						</div>
+						<div class="form-field">
+							<select id="Form_CompressionFormat" name="Form.CompressionFormat">
+								<option selected="selected" value="100*jpg">JPEG 100%</option>
+								<option value="75*jpg">JPEG 75%</option>
+								<option value="50*jpg">JPEG 50%</option>
+								<option value="25*jpg">JPEG 25%</option>
+								<option value="100*Bmp">BMP</option>
+							</select>
+						</div>
+						<div class="form-field">
+							<select id="Form_Format" name="Form.Format">
+								<option value="33.11*46.81f">A0</option>
+								<option value="23.39*33.11f">A1</option>
+								<option value="16.54*23.39f">A2</option>
+								<option value="11.69*16.54f">A3</option>
+								<option value="8.27*11.69f">A4</option>
+								<option value="5.83*8.27f">A5</option>
+								<option value="4.13*5.84f">A6</option>
+							</select>
+						</div>
+						<div class="form-field mode-switch-container">
+							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch enable">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch disable">Пакетное сканирование</button>
+						</div>
+						<div class="form-field  disp-no package-setting">
+							<input id="Form_CountScans" type="text" value="001" />
+						</div>
+						<div class="form-field disp-no package-setting">
+							<input id="Form_ScanInterval" type="text" value="001" />
+						</div>
+						<div class="form-field disp-no package-setting">
+							<select id="Form_SaveAs" name="Form.SaveAs">
+								<option value="0">Сохранить как Картинки</option>
+								<option value="1">Сохранить как PDF</option>
+							</select>
+						</div>
+						<div class="form-field">
+							<input type="submit" value="Сканируем!" />
+						</div>
+					</fieldset>
+
+				</form>
 
 
-<div id="news" class="span5">
-</div>
+				<div id="news" class="span5">
+				</div>
 
-            </div></div>
-        </section>
+			</div>
+		</div>
+	</section>
 
-        <script src="Scripts/jquery-1.9.1.min.js"></script>
+	<script src="Scripts/jquery-1.9.1.min.js"></script>
 
-        <script src="Scripts/bootstrap.min.js"></script>
-
-        
-    <script>
-        $(function () {
-            var GlobalScanSettingsName = "GlobalScanSettings";
-            var changeMode = function (enableID) {
-                var switches = $('#form .mode-switch-container .mode-switch');
-                for (var i = 0; i < switches.length; i++) {
-                    if ($(switches[i]).attr('id') == enableID) {
-                        $(switches[i]).removeClass('disable').addClass('enable');
-                        eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
-                    }
-                    else {
-                        $(switches[i]).removeClass('enable').addClass('disable');
-                    }
-                }
-            }
-
-            $('#form .mode-switch').click(function () {
-                if ($(this).is('.disable')) {
-                    changeMode($(this).attr('id'));
-                }
-            });
-            function pad(num, size) {
-                var s = num + "";
-                while (s.length < size) s = "0" + s;
-                return s;
-            }
-            var counterModify = function () {
-                var fileCounter = $("#Form_FileCounter").val();
-                fileCounter = pad(fileCounter * 1 + 1, fileCounter.length);
-                UpdateGlobalSetting(GetGlobalSettings(), { "FileName": $('#Form_FileName').val(), "CountScans": fileCounter });
-                $("#Form_FileCounter").val(fileCounter);
-            }
-            var downloadFile = function (downloadFiles, save_as) {
-                save_as = save_as == undefined ? "" : "saveAs="+ save_as;
-                var query = "?";
-                for (var i = 0; i < downloadFiles.length; i++) {
-                    query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
-                }
-                query +=  save_as;
-                window.open(encodeURI('download' + query), '_self');
-                counterModify();
-            }
+	<script src="Scripts/bootstrap.min.js"></script>
 
 
-            var setSetting = function (setting, defaultSetting) {
-                return (setting == undefined || setting == null) ? defaultSetting : setting;
-            }
-            var ModeSwitch = function (modeSwitch) {
-                var self = this;
-                self.id = setSetting(modeSwitch.id, 'conventional-scan');
-                self.countScans = setSetting(modeSwitch.countScans, '1');
-                self.timeout = setSetting(modeSwitch.timeout, '5');
-                self.saveAs = setSetting(modeSwitch.saveAs, '0');
-            }
-            var NameSetting = function (nameSetting) {
-                var self = this;
-                self.FileName = nameSetting.FileName;
-                self.CountScans = nameSetting.CountScans;
-            }
-            var GlobalScanSettings = function (settings) {
-                var self = this;
-                self.NamesSettings = [];
-                if(settings != undefined) {
-                    for(var key in settings) {
-                        self.NamesSettings.push(new NameSetting(settings[key]));
-                    }
-                }             
-            }
+	<script>
+		$(function () {
+			var GlobalScanSettingsName = "GlobalScanSettings";
+			var changeMode = function (enableID) {
+				var switches = $('#form .mode-switch-container .mode-switch');
+				for (var i = 0; i < switches.length; i++) {
+					if ($(switches[i]).attr('id') == enableID) {
+						$(switches[i]).removeClass('disable').addClass('enable');
+						eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
+					}
+					else {
+						$(switches[i]).removeClass('enable').addClass('disable');
+					}
+				}
+			}
 
-            var ApplyGlobalSettings = function (globalSettings, fileName) {
-                var key = SearchGlobalSetting(globalSettings, fileName);
-                if (key != null) {
-                    $('#Form_FileCounter').val(globalSettings.NamesSettings[key].CountScans);
-                    return true;
-                }
-                return false;
-            }
-
-            var SearchGlobalSetting = function (globalSettings, fileName) {
-                for (var key in globalSettings.NamesSettings) {
-                    if (globalSettings.NamesSettings[key].FileName == fileName) {
-                        return key;
-                    }
-                }
-                return null;
-            }
-
-            var UpdateGlobalSetting = function (globalSettings ,nameSetting) {
-                var key = SearchGlobalSetting(globalSettings, nameSetting.FileName);
-                if (key == null)
-                    globalSettings.NamesSettings.push(new NameSetting(nameSetting));
-                else
-                    globalSettings.NamesSettings[key].CountScans = nameSetting.CountScans;
-                localStorage.setItem(GlobalScanSettingsName, JSON.stringify(globalSettings.NamesSettings));
-            }
-
-            var ScanSettings = function (settings) {
-                var self = this;
-                self.source = setSetting(settings.source, "0");
-                self.fileName = setSetting(settings.fileName, "Скан");
-                self.dpi = setSetting(settings.dpi, "150");
-                self.pixelType = setSetting(settings.pixelType, "2");
-                self.compressionFormat = setSetting(settings.compressionFormat, "100*Jpeg");
-                self.format = setSetting(settings.format, "8,5*11,7");
-                self.Counter = setSetting(settings.Counter, '001');
-                self.modeSwitch = new ModeSwitch(setSetting(settings.modeSwitch, {}));
-            }
-
-            var canScan = false;
-            var localSettingsName = "ScanSettings";
-            var GetGlobalSettings = function () {
-                var globalSettings = localStorage.getItem(GlobalScanSettingsName);
-                return globalSettings != null ? new GlobalScanSettings(JSON.parse(globalSettings)) : new GlobalScanSettings();
-            }
-            var GetLocalSettings = function () {
-                var localSettings = localStorage.getItem(localSettingsName);
-                return localSettings != null ? new ScanSettings(JSON.parse(localSettings)) : new ScanSettings({});
-            }
-            var SetLocalSettings = function (source, fileName, dpi, pixelType, compressionFormat, format, counter, modeSwitch) {
-                var settings = new ScanSettings({"source": source, "fileName": fileName, "dpi": dpi, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
-                localStorage.setItem(localSettingsName, JSON.stringify(settings));
-                return settings;
-            }
-            var ApplyLocalSettings = function (settings, defaultScanSettings) {
-                settings = new ScanSettings(settings);
-                $('#form').find('#Form_DPI').val(settings.dpi);
-                $('#form').find('#Form_CompressionFormat').val(settings.compressionFormat);
-                $('#form').find('#Form_FileName').val(settings.fileName);
-                if (!ApplyGlobalSettings(GetGlobalSettings(), settings.fileName))
-                    $('#form').find('#Form_FileCounter').val(settings.Counter);
-                $('#form').find("#Form_ColorMode").val(settings.pixelType);
-                $('#form').find("#Form_Format option:contains(" + settings.format + ")").attr('selected', 'selected');
-                $('#form').find('#Form_CountScans').val(settings.modeSwitch.countScans);
-                $('#form').find('#Form_ScanInterval').val(settings.modeSwitch.timeout);
-                $('#form').find('#Form_SaveAs').val(settings.modeSwitch.saveAs);
-                changeMode(settings.modeSwitch.id);
-            }
-            var ActivateScanForm = function () {
-                $('#form [type="submit"]').val("Сканируем!");
-                $('#form select, #form input').removeAttr("disabled");
-                canScan = true;
-            };
-            var DisactivateScanForm = function () {
-                $('#form [type="submit"]').val("Идет сканирование!");
-                $('#form select, #form input').attr("disabled", "disabled");
-                
-                canScan = false;
-            };
-
-            var GetScanFormData = function () {
-                var scanParameters = $('#form [name]');
-                var values = "";
-                for (var i = 0; i < scanParameters.length; i++) {
-                    values += $(scanParameters[i]).attr("name") + "=" + $(scanParameters[i]).val();
-                    values += i < (scanParameters.length - 1) ? "&" : "";
-                }
-                return values;
-            }
-
-            var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction) {
-                if (method != undefined) {
-                    doneFunction = doneFunction == undefined ? function () { } : doneFunction;
-                    failFunction = failFunction == undefined ? function () { } : failFunction;
-                    completeFunction = completeFunction == undefined ? function () { } : completeFunction;
-                    data = data == undefined ? "" : "&" + data;
-                    $.ajax({
-                        async: async,
-                        url: document.URL + "/ajax",
-                        type: 'POST',
-                        dataType: 'json',
-                        data: "method=" + method + data,
-                        success: function (responce) {
-                            doneFunction(responce);
-                        },
-                        error: function (xhr, msg) {
-                            failFunction(msg);
-                        },
-                        complete: function (resp) {
-                            completeFunction();
-                        }
-                    })
-                }
-            }
-
-            var GetScanParameters = function (newSourceIndex) {
-                var localSettings = GetLocalSettings();
-                var fillSelect = function (element, list, selectedValue) {
-                    element.empty();
-                    for (var index in list) {
-                        var isSelected = selectedValue == list[index].key ? "selected=selected" : "";
-                        element.append("<option " + isSelected + " value='" + list[index].key + "'>" + list[index].value + "</option>");
-                    }
-                }
-                var sourceIndex = "sourceIndex=";                 
-                if (newSourceIndex != undefined) {
-                    sourceIndex += newSourceIndex;
-                } else {
-                    sourceIndex += localSettings.source;
-                }
-                var doneFunction = function (responce) {
-                    if (responce.sources != undefined && responce.sources.sourcesList != undefined && responce.sources.selectedSource != undefined && responce.sources.sourcesList.length > 0) {
-                        var form = $('#form');
-                        var defaultScanSettings = new ScanSettings({});
-                        var selectSources = form.find("#Form_Source");
-                        //var selectedSources = (firstRun && localSettings != null) ? localSettings.source : responce.sources.selectedSource;
-                        var selectedSources = responce.sources.selectedSource;
-                        fillSelect(selectSources, responce.sources.sourcesList, selectedSources);
-                        if (responce.minResolution != undefined && responce.minResolution != undefined) {
-                            var hintDPI = $('#form .DPI').find(".form-field-hint");
-                            hintDPI.find('.min').text(responce.minResolution);
-                            hintDPI.find('.max').text(responce.maxResolution);
-                            hintDPI.removeClass('disp-no');
-							
-							if (responce.minResolution > $('#form #Form_DPI').val()*1){
-								$('#form').find('#Form_DPI').val(responce.minResolution);
-							}
-                        }
-
-                        if (responce.pixelTypes != undefined) {
-                            var selectTypePixel = $('#form').find("#Form_ColorMode");
-                            fillSelect(selectTypePixel, responce.pixelTypes);
-                        }
-
-                        if (responce.allowedFormats != undefined) {
-                            var selectAllowedFormats = $('#form').find("#Form_Format");
-                            fillSelect(selectAllowedFormats, responce.allowedFormats);
-                        }
-                        ApplyLocalSettings(localSettings);
-                    } else {
-                        alert("Не найдено ни одного подходящего устройства. Проверьте подключение.");
-                    }
-                }
-                sendAjax("GetScannerParameters", doneFunction, sourceIndex, true);
-            }
-
-            $("#form").find("#Form_FileName").on('change', function () {
-                if (!ApplyGlobalSettings(GetGlobalSettings(), $(this).val()))
-                    $("#form").find("#Form_FileCounter").val(new ScanSettings({}).Counter);
-            });
-
-            $("#form").find("#Form_Source").on('change', function () {
-                GetScanParameters($(this).val());
-            });
+			$('#form .mode-switch').click(function () {
+				if ($(this).is('.disable')) {
+					changeMode($(this).attr('id'));
+				}
+			});
+			function pad(num, size) {
+				var s = num + "";
+				while (s.length < size) s = "0" + s;
+				return s;
+			}
+			var counterModify = function () {
+				var fileCounter = $("#Form_FileCounter").val();
+				fileCounter = pad(fileCounter * 1 + 1, fileCounter.length);
+				UpdateGlobalSetting(GetGlobalSettings(), { "FileName": $('#Form_FileName').val(), "CountScans": fileCounter });
+				$("#Form_FileCounter").val(fileCounter);
+			}
+			var downloadFile = function (downloadFiles, save_as) {
+				save_as = save_as == undefined ? "" : "saveAs=" + save_as;
+				var query = "?";
+				for (var i = 0; i < downloadFiles.length; i++) {
+					query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
+				}
+				query += save_as;
+				window.open(encodeURI('download' + query), '_self');
+				counterModify();
+			}
 
 
-            var FileForDownload = function(resp){
-                var self = this;
-                self.temp = resp.temp;
-                self.file = resp.file;
-            }
+			var setSetting = function (setting, defaultSetting) {
+				return (setting == undefined || setting == null) ? defaultSetting : setting;
+			}
+			var ModeSwitch = function (modeSwitch) {
+				var self = this;
+				self.id = setSetting(modeSwitch.id, 'conventional-scan');
+				self.countScans = setSetting(modeSwitch.countScans, '1');
+				self.timeout = setSetting(modeSwitch.timeout, '5');
+				self.saveAs = setSetting(modeSwitch.saveAs, '0');
+			}
+			var NameSetting = function (nameSetting) {
+				var self = this;
+				self.FileName = nameSetting.FileName;
+				self.CountScans = nameSetting.CountScans;
+			}
+			var GlobalScanSettings = function (settings) {
+				var self = this;
+				self.NamesSettings = [];
+				if (settings != undefined) {
+					for (var key in settings) {
+						self.NamesSettings.push(new NameSetting(settings[key]));
+					}
+				}
+			}
 
-            $("#form").submit(function () {
-                try {
-                    DisactivateScanForm();
-                    var save_as = $('#form #Form_SaveAs').val();
-                    SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
+			var ApplyGlobalSettings = function (globalSettings, fileName) {
+				var key = SearchGlobalSetting(globalSettings, fileName);
+				if (key != null) {
+					$('#Form_FileCounter').val(globalSettings.NamesSettings[key].CountScans);
+					return true;
+				}
+				return false;
+			}
+
+			var SearchGlobalSetting = function (globalSettings, fileName) {
+				for (var key in globalSettings.NamesSettings) {
+					if (globalSettings.NamesSettings[key].FileName == fileName) {
+						return key;
+					}
+				}
+				return null;
+			}
+
+			var UpdateGlobalSetting = function (globalSettings, nameSetting) {
+				var key = SearchGlobalSetting(globalSettings, nameSetting.FileName);
+				if (key == null)
+					globalSettings.NamesSettings.push(new NameSetting(nameSetting));
+				else
+					globalSettings.NamesSettings[key].CountScans = nameSetting.CountScans;
+				localStorage.setItem(GlobalScanSettingsName, JSON.stringify(globalSettings.NamesSettings));
+			}
+
+			var ScanSettings = function (settings) {
+				var self = this;
+				self.source = setSetting(settings.source, "0");
+				self.fileName = setSetting(settings.fileName, "Скан");
+				self.dpi = setSetting(settings.dpi, "150");
+				self.pixelType = setSetting(settings.pixelType, "2");
+				self.compressionFormat = setSetting(settings.compressionFormat, "100*Jpeg");
+				self.format = setSetting(settings.format, "8,5*11,7");
+				self.Counter = setSetting(settings.Counter, '001');
+				self.modeSwitch = new ModeSwitch(setSetting(settings.modeSwitch, {}));
+			}
+
+			var canScan = false;
+			var localSettingsName = "ScanSettings";
+			var GetGlobalSettings = function () {
+				var globalSettings = localStorage.getItem(GlobalScanSettingsName);
+				return globalSettings != null ? new GlobalScanSettings(JSON.parse(globalSettings)) : new GlobalScanSettings();
+			}
+			var GetLocalSettings = function () {
+				var localSettings = localStorage.getItem(localSettingsName);
+				return localSettings != null ? new ScanSettings(JSON.parse(localSettings)) : new ScanSettings({});
+			}
+			var SetLocalSettings = function (source, fileName, dpi, pixelType, compressionFormat, format, counter, modeSwitch) {
+				var settings = new ScanSettings({ "source": source, "fileName": fileName, "dpi": dpi, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
+				localStorage.setItem(localSettingsName, JSON.stringify(settings));
+				return settings;
+			}
+			var ApplyLocalSettings = function (settings, defaultScanSettings) {
+				settings = new ScanSettings(settings);
+
+				var hintDPI = $('#form .DPI').find(".form-field-hint");
+				var minDpi = hintDPI.find('.min').text();
+				var maxDpi = hintDPI.find('.max').text();
+
+				function isEmpty(str) {
+					return (!str || 0 === str.length);
+				}
+
+				var selectedDpi;
+				if (minDpi != undefined && !isEmpty(minDpi) && minDpi * 1 > settings.dpi * 1)
+					selectedDpi = minDpi;
+				else if (maxDpi != undefined && !isEmpty(maxDpi) && maxDpi * 1 < settings.dpi * 1)
+					selectedDpi = maxDpi;
+				else
+					selectedDpi = settings.dpi;
+
+
+				$('#form').find('#Form_DPI').val(selectedDpi);
+				$('#form').find('#Form_CompressionFormat').val(settings.compressionFormat);
+				$('#form').find('#Form_FileName').val(settings.fileName);
+				if (!ApplyGlobalSettings(GetGlobalSettings(), settings.fileName))
+					$('#form').find('#Form_FileCounter').val(settings.Counter);
+				$('#form').find("#Form_ColorMode").val(settings.pixelType);
+				$('#form').find("#Form_Format option:contains(" + settings.format + ")").attr('selected', 'selected');
+				$('#form').find('#Form_CountScans').val(settings.modeSwitch.countScans);
+				$('#form').find('#Form_ScanInterval').val(settings.modeSwitch.timeout);
+				$('#form').find('#Form_SaveAs').val(settings.modeSwitch.saveAs);
+				changeMode(settings.modeSwitch.id);
+			}
+			var ActivateScanForm = function () {
+				$('#form [type="submit"]').val("Сканируем!");
+				$('#form select, #form input').removeAttr("disabled");
+				canScan = true;
+			};
+			var DisactivateScanForm = function () {
+				$('#form [type="submit"]').val("Идет сканирование!");
+				$('#form select, #form input').attr("disabled", "disabled");
+
+				canScan = false;
+			};
+
+			var GetScanFormData = function () {
+				var scanParameters = $('#form [name]');
+				var values = "";
+				for (var i = 0; i < scanParameters.length; i++) {
+					values += $(scanParameters[i]).attr("name") + "=" + $(scanParameters[i]).val();
+					values += i < (scanParameters.length - 1) ? "&" : "";
+				}
+				return values;
+			}
+
+			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction) {
+				if (method != undefined) {
+					doneFunction = doneFunction == undefined ? function () { } : doneFunction;
+					failFunction = failFunction == undefined ? function () { } : failFunction;
+					completeFunction = completeFunction == undefined ? function () { } : completeFunction;
+					data = data == undefined ? "" : "&" + data;
+					$.ajax({
+						async: async,
+						url: document.URL + "/ajax",
+						type: 'POST',
+						dataType: 'json',
+						data: "method=" + method + data,
+						success: function (responce) {
+							doneFunction(responce);
+						},
+						error: function (xhr, msg) {
+							failFunction(msg);
+						},
+						complete: function (resp) {
+							completeFunction();
+						}
+					})
+				}
+			}
+
+			var GetScanParameters = function (newSourceIndex) {
+				var localSettings = GetLocalSettings();
+				var fillSelect = function(element, list, selectedValue) {
+					element.empty();
+					for (var index in list) {
+						var isSelected = selectedValue == list[index].key ? "selected=selected" : "";
+						element.append("<option " + isSelected + " value='" + list[index].key + "'>" + list[index].value + "</option>");
+					}
+				};
+
+				var colorModeDefaults = [];
+				colorModeDefaults.push({ key: "RGB", value: "Цветное изображение" });
+				colorModeDefaults.push({ key: "GRAY", value: "Оттенки серого" });
+				colorModeDefaults.push({ key: "BW", value: "Черно-белое изображение" });
+
+				var compressionFormatDefaults = [];
+				compressionFormatDefaults.push({ key: "100*jpg", value: "JPEG 100%" });
+				compressionFormatDefaults.push({ key: "75*jpg", value: "JPEG 75%" });
+				compressionFormatDefaults.push({ key: "50*jpg", value: "JPEG 50%" });
+				compressionFormatDefaults.push({ key: "25*jpg", value: "JPEG 25%" });
+				compressionFormatDefaults.push({ key: "100*Bmp", value: "BMP" });
+				
+				var formatDefaults = [];
+				formatDefaults.push({ key: "33.11*46.81f", value: "A0" });
+				formatDefaults.push({ key: "23.39*33.11f", value: "A1" });
+				formatDefaults.push({ key: "16.54*23.39f", value: "A2" });
+				formatDefaults.push({ key: "11.69*16.54f", value: "A3" });
+				formatDefaults.push({ key: "8.27*11.69f", value: "A4" });
+				formatDefaults.push({ key: "5.83*8.27f", value: "A5" });
+				formatDefaults.push({ key: "4.13*5.84f", value: "A6" });
+
+				var sourceIndex = "sourceIndex=";
+				if (newSourceIndex != undefined) {
+					sourceIndex += newSourceIndex;
+				} else {
+					sourceIndex += localSettings.source;
+				}
+				var doneFunction = function (responce) {
+					if (responce.sources != undefined && responce.sources.sourcesList != undefined && responce.sources.selectedSource != undefined && responce.sources.sourcesList.length > 0) {
+						var form = $('#form');
+						var defaultScanSettings = new ScanSettings({});
+						var selectSources = form.find("#Form_Source");
+						//var selectedSources = (firstRun && localSettings != null) ? localSettings.source : responce.sources.selectedSource;
+						var selectedSources = responce.sources.selectedSource;
+						fillSelect(selectSources, responce.sources.sourcesList, selectedSources);
+						
+						var hintDPI = $('#form .DPI').find(".form-field-hint");
+						if (responce.minResolution != undefined && responce.minResolution != undefined) {
+							hintDPI.find('.min').text(responce.minResolution);
+							hintDPI.find('.max').text(responce.maxResolution);
+							hintDPI.removeClass('disp-no');
+						} else {
+							hintDPI.find('.min').text("");
+							hintDPI.find('.max').text("");
+							hintDPI.addClass('disp-no');
+						}
+
+						var selectTypePixel = $('#form').find("#Form_ColorMode");
+						if (responce.pixelTypes != undefined) {							
+							fillSelect(selectTypePixel, responce.pixelTypes);
+						} else {
+							fillSelect(selectTypePixel, colorModeDefaults);
+						}
+
+						var selectAllowedFormats = $('#form').find("#Form_Format");
+						if (responce.allowedFormats != undefined) {							
+							fillSelect(selectAllowedFormats, responce.allowedFormats);
+						} else {
+							fillSelect(selectAllowedFormats, formatDefaults);
+						}
+						ApplyLocalSettings(localSettings);
+					} else {
+						alert("Не найдено ни одного подходящего устройства. Проверьте подключение.");
+					}
+				}
+				sendAjax("GetScannerParameters", doneFunction, sourceIndex, true);
+			}
+
+			$("#form").find("#Form_FileName").on('change', function () {
+				if (!ApplyGlobalSettings(GetGlobalSettings(), $(this).val()))
+					$("#form").find("#Form_FileCounter").val(new ScanSettings({}).Counter);
+			});
+
+			$("#form").find("#Form_Source").on('change', function () {
+				GetScanParameters($(this).val());
+			});
+
+
+			var FileForDownload = function (resp) {
+				var self = this;
+				self.temp = resp.temp;
+				self.file = resp.file;
+			}
+
+			$("#form").submit(function () {
+				try {
+					DisactivateScanForm();
+					var save_as = $('#form #Form_SaveAs').val();
+					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
                                     $(this).find('#Form_FileCounter').val(),
 								    {
-								        "id": $('#form .mode-switch.enable').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
-								        "saveAs": save_as});
+								    	"id": $('#form .mode-switch.enable').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
+								    	"saveAs": save_as
+								    });
 
-                    if ($('#form #package-scan').is('.enable')) {
-                        var countScans = $('#form #Form_CountScans').val();
-                        var timeout = $('#form #Form_ScanInterval').val();
-                       
-                        if ((countScans * 1) != undefined && (timeout * 1) != undefined) {
-                            var i = 1;
-                            var DownloadFiles = [];
-                            setTimeout(function scan() {
-                                sendAjax("Scan",
+					if ($('#form #package-scan').is('.enable')) {
+						var countScans = $('#form #Form_CountScans').val();
+						var timeout = $('#form #Form_ScanInterval').val();
+
+						if ((countScans * 1) != undefined && (timeout * 1) != undefined) {
+							var i = 1;
+							var DownloadFiles = [];
+							setTimeout(function scan() {
+								sendAjax("Scan",
                                     function (responce) {
-                                        DownloadFiles.push(new FileForDownload(responce));
-                                        if (save_as == '0' || i == countScans * 1) { downloadFile(DownloadFiles, save_as); DownloadFiles = [];}
-                                        
+                                    	DownloadFiles.push(new FileForDownload(responce));
+                                    	if (save_as == '0' || i == countScans * 1) { downloadFile(DownloadFiles, save_as); DownloadFiles = []; }
+
                                     },
-                                    GetScanFormData()+'&isPackage=true', true, function (msg) { alert("Сканирование завершилось неудачей! Попробуйте выбрать другое устройство.") },
+                                    GetScanFormData() + '&isPackage=true', true, function (msg) { alert("Сканирование завершилось неудачей! Попробуйте выбрать другое устройство.") },
                                     function () {
-                                        if (i < countScans) { setTimeout(scan, (timeout * 1000)); } else { ActivateScanForm(); }                                            
-                                        ++i;
+                                    	if (i < countScans) { setTimeout(scan, (timeout * 1000)); } else { ActivateScanForm(); }
+                                    	++i;
                                     });
-                            
-                            }
+
+							}
                             , (timeout * 1000));
-                        }
-                    } else {
-                        sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert("Сканирование завершилось неудачей! Попробуйте выбрать другое устройство.") }, ActivateScanForm);
-                    }
-                }
-                catch (ex) { console && console.log(ex); }
+						}
+					} else {
+						sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert("Сканирование завершилось неудачей! Попробуйте выбрать другое устройство.") }, ActivateScanForm);
+					}
+				}
+				catch (ex) { console && console.log(ex); }
 
-                return false;
-            });
-            $("#Form_FileName").focus();
-            GetScanParameters();
-        });
+				return false;
+			});
+			$("#Form_FileName").focus();
+			GetScanParameters();
+		});
 
-        $(function () {
-            var trueAjax = (function () {
-                var result = true;
-                if (navigator.appName == 'Microsoft Internet Explorer') {
-                    var ua = navigator.userAgent;
-                    var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-                    if (re.exec(ua) != null) {
-                        rv = parseFloat(RegExp.$1);
-                        if (rv * 1 <= 9)
-                            result = false;
-                    }
-                }
-                return result;
-            })();
+		$(function () {
+			var trueAjax = (function () {
+				var result = true;
+				if (navigator.appName == 'Microsoft Internet Explorer') {
+					var ua = navigator.userAgent;
+					var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+					if (re.exec(ua) != null) {
+						rv = parseFloat(RegExp.$1);
+						if (rv * 1 <= 9)
+							result = false;
+					}
+				}
+				return result;
+			})();
 
-            if (trueAjax) {
-                $("#news").load("http://unit6.ru/twain-web?content=news&ver=1.3", function (a, b, c) {
-                    if (b != "error")
-                        $("#news").addClass("news");
-                });
-            }
-            else {
-                var xdr = new XDomainRequest();
-                xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.3");
-                xdr.onload = function () {
-                    $("#news").html(xdr.responseText);
-                    $("#news").addClass("news");
-                }
-                xdr.send();
-            }
-        });
-	</script>    
+			if (trueAjax) {
+				$("#news").load("http://unit6.ru/twain-web?content=news&ver=1.3", function (a, b, c) {
+					if (b != "error")
+						$("#news").addClass("news");
+				});
+			}
+			else {
+				var xdr = new XDomainRequest();
+				xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.3");
+				xdr.onload = function () {
+					$("#news").html(xdr.responseText);
+					$("#news").addClass("news");
+				}
+				xdr.send();
+			}
+		});
+	</script>
 
-    </body>
+</body>
 </html>
