@@ -482,14 +482,14 @@
 			})();
 
 			if (trueAjax) {
-				$("#news").load("http://unit6.ru/twain-web?content=news&ver=1.3", function (a, b, c) {
+				$("#news").load("http://unit6.ru/twain-web?content=news&ver=1.5", function (a, b, c) {
 					if (b != "error")
 						$("#news").addClass("news");
 				});
 			}
 			else {
 				var xdr = new XDomainRequest();
-				xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.3");
+				xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.5");
 				xdr.onload = function () {
 					$("#news").html(xdr.responseText);
 					$("#news").addClass("news");

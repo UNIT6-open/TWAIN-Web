@@ -277,7 +277,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Удалить TWAIN@WEB</>
+                                 <shfile >Удалить TWAIN@Web</>
                                  <path >inst</>
                                  <file >Uninstall.exe</>
                                  <cmdline ></>
@@ -310,7 +310,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Конфигурация TWAIN@WEB</>
+                                 <shfile >Конфигурация TWAIN@Web</>
                                  <path >inst</>
                                  <file >TwainWeb.Standalone.exe</>
                                  <cmdline >config</>
