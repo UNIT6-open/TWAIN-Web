@@ -1,4 +1,4 @@
-﻿<project version = 9 civer = 6.4.0 winver = "2.12/6.2.9200" >
+﻿<project version = 9 civer = 6.1.0 winver = "2.12/6.2.9200" >
    <autorun >1</>
    <autoclose >0</>
    <compname >UNIT6.ru</>
@@ -9,8 +9,8 @@
    <dlgfont >verdana</>
    <headlogo >default - 1</>
    <dlgfontsize >s8</>
-   <output >D:\Works\unit6\projects\ScannerSite new\release\installer</>
-   <exename >TWAIN@Web-v1beta5-setup.exe</>
+   <output >d:\Works\TWAIN@Web\git\installer</>
+   <exename >TWAIN@Web-v1beta4-setup.exe</>
    <beffile ></>
    <aftfile ></>
    <uninclude >1</>
@@ -148,56 +148,28 @@
                         <srclist >
                            <rows rel = unpack >
                               <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainWeb.Standalone.exe</>
+                                 <filename >d:\Works\TWAIN@Web\git\installer\release\TwainWeb.Standalone.exe</>
                                  <recurse >0</>
                                  <justfile >1</>
                                  <emptydir >0</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\Interop.WIA.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude ></>
-                              </>
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\log4net.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude ></>
-                              </>
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainDotNet.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude ></>
-                              </>
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainDotNet.WinFroms.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude ></>
-                              </>
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\Files</>
+                                 <filename >d:\Works\TWAIN@Web\git\installer\release\Files</>
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >1</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\PdfSharp.dll</>
+                                 <filename >d:\Works\TWAIN@Web\git\installer\release\PdfSharp.dll</>
                                  <recurse >0</>
                                  <justfile >1</>
                                  <emptydir >0</>
                                  <exclude ></>
                               </>
                               <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainWeb.Standalone.exe.config</>
+                                 <filename >d:\Works\TWAIN@Web\git\installer\release\TwainWeb.Standalone.exe.config</>
                                  <recurse >0</>
                                  <justfile >1</>
                                  <emptydir >0</>
@@ -207,43 +179,6 @@
                         </>
                         <varlist >
                            <rows ></>
-                        </>
-                     </>
-                     <_ tag = 0 id = unpack >
-                        <desc ></>
-                        <comptype >default</>
-                        <ratio >r5</>
-                        <solid >1</>
-                        <path >sys</>
-                        <custpath ></>
-                        <ifexist >skip</>
-                        <if ></>
-                        <srclist >
-                           <rows >
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\Wiaautsdk\wiaaut.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude ></>
-                              </>
-                           </>
-                        </>
-                        <varlist >
-                           <rows ></>
-                        </>
-                     </>
-                     <_ tag = 0 id = regdll >
-                        <desc >Регистрация wiaaut.dll</>
-                        <dlllist >
-                           <rows >
-                              <_ >
-                                 <path >sys</>
-                                 <file >wiaaut.dll</>
-                                 <regsvr >1</>
-                                 <if ></>
-                              </>
-                           </>
                         </>
                      </>
                      <_ id = shcut >
@@ -277,7 +212,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Удалить TWAIN@Web</>
+                                 <shfile >Uninstall</>
                                  <path >inst</>
                                  <file >Uninstall.exe</>
                                  <cmdline ></>
@@ -310,7 +245,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Конфигурация TWAIN@Web</>
+                                 <shfile >Конфигурация</>
                                  <path >inst</>
                                  <file >TwainWeb.Standalone.exe</>
                                  <cmdline >config</>
@@ -330,7 +265,6 @@
                         <name ></>
                         <path >inst</>
                         <ifile ></>
-                        <forcu >0</>
                      </>
                      <_ tag = 0 id = run >
                         <desc ></>
@@ -409,7 +343,7 @@
                   <if >runtwainweb</>
                </>
             </>
-            <icofile >default - 1</>
+            <icofile >default</>
             <resfile ></>
             <leftimg >install - 1</>
             <caption ></>
@@ -528,219 +462,4 @@
    </>
    <tozip >0</>
    <zipfile ></>
-   <updateroot sorttype = 0 >
-      <children >
-         <update id = update expanded = 2 >
-            <children >
-               <_ tag = 0 id = varset >
-                  <desc ></>
-                  <varlist >
-                     <rows >
-                        <_ >
-                           <varname >silent</>
-                           <value >0</>
-                           <if ></>
-                           <subst ></>
-                        </>
-                        <_ >
-                           <varname >param</>
-                           <value >#updatexml#</>
-                           <if ></>
-                           <subst ></>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = if expanded = 2 >
-                  <children >
-                     <_ tag = 0 id = varset >
-                        <desc ></>
-                        <varlist >
-                           <rows >
-                              <_ >
-                                 <varname >silent</>
-                                 <value >1</>
-                                 <if ></>
-                                 <subst ></>
-                              </>
-                           </>
-                        </>
-                     </>
-                  </>
-                  <desc ></>
-                  <else ></>
-                  <condlist >
-                     <rows >
-                        <_ >
-                           <varname ></>
-                           <iftype >ifcommand</>
-                           <not >0</>
-                           <value >-s</>
-                           <orand >and</>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = download >
-                  <desc ></>
-                  <url ></>
-                  <filelist >
-                     <rows >
-                        <_ >
-                           <urlfile >#updatexml#</>
-                           <path >temp</>
-                           <custpath ></>
-                           <file >update.ini</>
-                           <if ></>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = iniget >
-                  <desc ></>
-                  <path >temp</>
-                  <ifile >update.ini</>
-                  <section >main</>
-                  <inilist >
-                     <rows >
-                        <_ >
-                           <key >version</>
-                           <varname >newver</>
-                           <defval >0</>
-                        </>
-                        <_ >
-                           <key >url</>
-                           <varname >url</>
-                           <defval ></>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = if expanded = 2 >
-                  <children >
-                     <_ tag = 0 id = if expanded = 2 >
-                        <children >
-                           <_ tag = 0 id = exit >
-                              <desc ></>
-                              <extype >exit</>
-                              <code >1</>
-                              <msg ></>
-                           </>
-                        </>
-                        <desc ></>
-                        <else ></>
-                        <condlist >
-                           <rows >
-                              <_ >
-                                 <varname >silent</>
-                                 <iftype >notempty</>
-                                 <not >0</>
-                                 <value ></>
-                                 <orand >and</>
-                              </>
-                           </>
-                        </>
-                     </>
-                     <_ tag = 0 id = if expanded = 2 >
-                        <children >
-                           <_ tag = 0 id = exit >
-                              <desc ></>
-                              <extype >exit</>
-                              <code >1</>
-                              <msg >#luperrdown#</>
-                           </>
-                        </>
-                        <desc ></>
-                        <else ></>
-                        <condlist >
-                           <rows >
-                              <_ >
-                                 <varname >silent</>
-                                 <iftype >empty</>
-                                 <not >0</>
-                                 <value ></>
-                                 <orand >and</>
-                              </>
-                           </>
-                        </>
-                     </>
-                  </>
-                  <desc ></>
-                  <else ></>
-                  <condlist >
-                     <rows >
-                        <_ >
-                           <varname >newver</>
-                           <iftype >empty</>
-                           <not >0</>
-                           <value ></>
-                           <orand >and</>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = if expanded = 2 >
-                  <children >
-                     <_ tag = 0 id = message expanded = 2 >
-                        <children >
-                           <_ tag = 0 id = shell >
-                              <desc ></>
-                              <path >custom</>
-                              <name >#url#</>
-                              <if ></>
-                              <runasadmin >0</>
-                           </>
-                        </>
-                        <desc ></>
-                        <type >quest</>
-                        <caption >#lupcaption#</>
-                        <text >#lupnewer#</>
-                        <btns >yesno</>
-                        <resvar >msgret</>
-                        <msgif >yes</>
-                        <if ></>
-                     </>
-                  </>
-                  <desc ></>
-                  <else >lowerver</>
-                  <condlist >
-                     <rows >
-                        <_ >
-                           <varname >newver</>
-                           <iftype >greaterver</>
-                           <not >0</>
-                           <value >#ver#</>
-                           <orand >and</>
-                        </>
-                     </>
-                  </>
-               </>
-               <_ tag = 0 id = function expanded = 2 >
-                  <children >
-                     <_ tag = 0 id = message expanded = 2 >
-                        <children >
-                           <_ tag = 0 id = empty ></>
-                        </>
-                        <desc ></>
-                        <type >info</>
-                        <caption >#lupcaption#</>
-                        <text >#lupok#</>
-                        <btns >def</>
-                        <resvar >msgret</>
-                        <msgif >def</>
-                        <if >!silent</>
-                     </>
-                  </>
-                  <desc ></>
-                  <name >lowerver</>
-               </>
-            </>
-            <upicon >update</>
-            <resfile ></>
-            <leftimg >update - 1</>
-            <caption ></>
-            <noadmin >1</>
-         </>
-      </>
-   </>
 </>
