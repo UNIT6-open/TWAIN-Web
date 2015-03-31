@@ -1,6 +1,7 @@
 sources/*/obj/
 sources/*/bin/
 sources/packages
+installer/release
 
 #ignore thumbnails created by windows
 Thumbs.db
