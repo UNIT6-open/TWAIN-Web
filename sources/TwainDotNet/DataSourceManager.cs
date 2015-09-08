@@ -14,7 +14,7 @@ namespace TwainDotNet
         /// <summary>
         /// The logger for this class.
         /// </summary>
-        static ILog log = LogManager.GetLogger(typeof(DataSourceManager));
+        static ILog _log = LogManager.GetLogger(typeof(DataSourceManager));
 
         IWindowsMessageHook _messageHook;
         Event _eventMessage;
@@ -47,19 +47,134 @@ namespace TwainDotNet
                 Message.OpenDSM,
                 ref windowHandle);
 
+			_log.Debug(string.Format("OpenDSM, result: {0}", result));
             if (result == TwainResult.Success)
             {
                 //according to the 2.0 spec (2-10) if (applicationId.SupportedGroups
                 // | DataGroup.Dsm2) > 0 then we should call DM_Entry(id, 0, DG_Control, DAT_Entrypoint, MSG_Get, wh)
                 //right here
+				
 	            _twainState = TwainState.SourceManagerOpen;
-                DataSource = DataSource.GetDefault(ApplicationId, _messageHook);
+                DataSource = GetDefault(ApplicationId);
             }
             else
             {
                 throw new TwainException("Error initialising DSM: " + result, result);
             }
         }
+
+		public DataSource GetDefault(Identity applicationId)
+		{
+			var defaultSourceId = new Identity();
+
+			// Attempt to get information about the system default source
+			var result = Twain32Native.DsmIdentity(
+				applicationId,
+				IntPtr.Zero,
+				DataGroup.Control,
+				DataArgumentType.Identity,
+				Message.GetDefault,
+				defaultSourceId);
+
+			if (result != TwainResult.Success)
+			{
+
+				var status = GetConditionCode(applicationId, null);
+
+				_log.Debug(string.Format("GetDefault, result: {0}, conditionCode: {1}", result, status));
+				throw new TwainException("Error getting information about the default source: " + result, result, status);
+			}
+			_log.Debug(string.Format("GetDefault, result: {0}", result));
+			return new DataSource(applicationId, defaultSourceId,_messageHook, _log);
+		}
+
+		public static DataSource UserSelected(Identity applicationId, IWindowsMessageHook messageHook)
+		{
+			var defaultSourceId = new Identity();
+
+			// Show the TWAIN interface to allow the user to select a source
+			var result = Twain32Native.DsmIdentity(
+				applicationId,
+				IntPtr.Zero,
+				DataGroup.Control,
+				DataArgumentType.Identity,
+				Message.UserSelect,
+				defaultSourceId);
+
+			_log.Debug(string.Format("UserSelect, result: {0}", result));
+			return new DataSource(applicationId, defaultSourceId, messageHook, _log);
+		}
+
+		public List<DataSource> GetAllSources()
+		{
+			var sources = new List<DataSource>();
+			var id = new Identity();
+
+			// Get the first source
+			var result = Twain32Native.DsmIdentity(
+				ApplicationId,
+				IntPtr.Zero,
+				DataGroup.Control,
+				DataArgumentType.Identity,
+				Message.GetFirst,
+				id);
+
+			_log.Debug(string.Format("GetFirst (GetAllSources), result: {0}", result));
+			if (result == TwainResult.EndOfList)
+			{
+				return sources;
+			}
+			if (result != TwainResult.Success)
+			{
+				throw new TwainException("Error getting first source.", result);
+			}
+			
+			sources.Add(new DataSource(ApplicationId, id, _messageHook, _log));
+			
+
+			while (true)
+			{
+				// Get the next source
+				result = Twain32Native.DsmIdentity(
+					ApplicationId,
+					IntPtr.Zero,
+					DataGroup.Control,
+					DataArgumentType.Identity,
+					Message.GetNext,
+					id);
+
+				_log.Debug(string.Format("GetNext (GetAllSources), result: {0}", result));
+				if (result == TwainResult.EndOfList)
+				{
+					break;
+				}
+				if (result != TwainResult.Success)
+				{
+					throw new TwainException("Error enumerating sources.", result);
+				}
+
+				sources.Add(new DataSource(ApplicationId, id, _messageHook, _log));
+			}
+
+			return sources;
+		}
+
+		public DataSource GetSource(string sourceProductName, Identity applicationId, IWindowsMessageHook messageHook)
+		{
+			// A little slower than it could be, if enumerating unnecessary sources is slow. But less code duplication.
+			foreach (var source in GetAllSources())
+			{
+				if (sourceProductName.Equals(source.SourceId.ProductName, StringComparison.InvariantCultureIgnoreCase))
+				{
+					return source;
+				}
+			}
+
+			return null;
+		}
+
+
+
 
         ~DataSourceManager()
         {
@@ -136,6 +251,7 @@ namespace TwainDotNet
                 Message.ProcessEvent,
                 ref _eventMessage);
 
+			_log.Debug(string.Format("ProcessEvent, result: {0}", result));
             if (result == TwainResult.NotDSEvent)
             {
                 handled = false;
@@ -201,6 +317,7 @@ namespace TwainDotNet
 				        Message.Get,
 				        imageInfo);
 
+					_log.Debug(string.Format("Get(ImageInfo), result: {0}", result));
 			        if (result != TwainResult.Success)
 			        {
 				        CloseDataSource();
@@ -216,10 +333,12 @@ namespace TwainDotNet
 				        Message.Get,
 				        ref hbitmap);
 
+					_log.Debug(string.Format("Get(ImageNativeXfer), result: {0}", result));
+
 			        if (result != TwainResult.XferDone)
 			        {
 				        var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
-				        log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
+				        _log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
 				        CloseDataSource();
 				        break;
 			        }
@@ -235,6 +354,7 @@ namespace TwainDotNet
 				        Message.EndXfer,
 				        pendingTransfer);
 
+					_log.Debug(string.Format("EndXfer(PendingXfers), result: {0}", result));
 			        if (result != TwainResult.Success)
 			        {
 				        CloseDataSource();
@@ -245,7 +365,7 @@ namespace TwainDotNet
 
 			        if (hbitmap == IntPtr.Zero)
 			        {
-				        log.Warn("Transfer complete but bitmap pointer is still null.");
+				        _log.Warn("Transfer complete but bitmap pointer is still null.");
 			        }
 			        else
 			        {
@@ -275,6 +395,7 @@ namespace TwainDotNet
                     Message.Reset,
                     pendingTransfer);
 
+				_log.Debug(string.Format("Reset(PendingXfers), result: {0}", result));
 	            if (result == TwainResult.Success)
 	            {
 		            _twainState = TwainState.SourceEnabled;
@@ -303,7 +424,7 @@ namespace TwainDotNet
         public void SelectSource()
         {
             DataSource.Dispose();
-            DataSource = DataSource.UserSelected(ApplicationId, _messageHook);
+            DataSource = UserSelected(ApplicationId, _messageHook);
         }
 
         public void SelectSource(DataSource dataSource)
@@ -338,6 +459,8 @@ namespace TwainDotNet
                         DataArgumentType.Parent,
                         Message.CloseDSM,
                         ref windowHandle);
+
+					_log.Debug(string.Format("CloseDSM, result: {0}", result));
 
 	                if (result != TwainResult.Failure)
 	                {

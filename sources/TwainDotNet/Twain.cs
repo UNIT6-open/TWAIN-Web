@@ -58,7 +58,7 @@ namespace TwainDotNet
         /// <param name="sourceName">The source product name.</param>
         public void SelectSource(string sourceName)
         {
-            var source = DataSource.GetSource(
+			var source = _dataSourceManager.GetSource(
                 sourceName,
                 _dataSourceManager.ApplicationId,
                 _dataSourceManager.MessageHook);
@@ -88,7 +88,7 @@ namespace TwainDotNet
         {
             get
             {
-                using (var source = DataSource.GetDefault(_dataSourceManager.ApplicationId, _dataSourceManager.MessageHook))
+				using (var source = _dataSourceManager.GetDefault(_dataSourceManager.ApplicationId))
                 {
                     return source.SourceId.ProductName;
                 }
@@ -103,14 +103,12 @@ namespace TwainDotNet
             get
             {
                 var result = new List<string>();
-                var sources = DataSource.GetAllSources(
-                    _dataSourceManager.ApplicationId,
-                    _dataSourceManager.MessageHook);
+				var sources = _dataSourceManager.GetAllSources();
 
                 foreach (var source in sources)
                 {
                     result.Add(source.SourceId.ProductName);
-                    source.Dispose();
+                 //   source.Dispose();
                 }
 
                 return result;

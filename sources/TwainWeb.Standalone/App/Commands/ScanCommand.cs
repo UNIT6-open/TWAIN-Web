@@ -12,7 +12,7 @@ namespace TwainWeb.Standalone.App.Commands
 	public class ScanCommand
 	{
 		private const int WaitTimeForChangeSource = 15000;
-		private const int WaitTimaeForScan = 300000;
+		private const int WaitTimaeForScan = 50000;
 
 		public ScanCommand(ScanForm command, IScannerManager scannerManager)
 		{

@@ -107,7 +107,7 @@ namespace TwainWeb.Standalone
                 {
                     try
                     {
-                        var actionResult = new ActionResult { Content = Encoding.UTF8.GetBytes("<head><meta charset=\"utf-8\" /></head>" + e), ContentType = "text/plain" };
+                        var actionResult = new ActionResult { Content = Encoding.UTF8.GetBytes(e.Message), ContentType = "text/plain" };
                         context.Response.OutputStream.Write(actionResult.Content, 0, actionResult.Content.Length);
 						_logger.Error(e.ToString());
                     }

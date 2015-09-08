@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App.Models;
 using TwainWeb.Standalone.Scanner;
@@ -28,7 +29,7 @@ namespace TwainWeb.Standalone.App.Queries
 			ScannerSettings searchSetting = null;
 			List<ISource> sources = null;
 
-			lock (markerAsync)
+			if (Monitor.TryEnter(markerAsync))
 			{
 				try
 				{
@@ -51,7 +52,7 @@ namespace TwainWeb.Standalone.App.Queries
 
 						try
 						{
-							searchSetting = GetScannerSettings(_scannerManager, sourceIndex, _cashSettings);
+							searchSetting = GetScannerSettings(sourceIndex);
 						}
 						catch (Exception)
 						{
@@ -65,23 +66,34 @@ namespace TwainWeb.Standalone.App.Queries
 				{
 					return new ScannerParametersQueryResult(string.Format("Ошибка при получении информации об источниках: {0}", e));
 				}
+				finally
+				{
+					Monitor.Exit(markerAsync);
+				}
+			}
+			else
+			{
+				return new ScannerParametersQueryResult(string.Format("Не удалось получить информацию об источниках: сканер занят"));
 			}
 
 			return new ScannerParametersQueryResult(sources, searchSetting, _sourceIndex);
 		}
 
-		private ScannerSettings GetScannerSettings(IScannerManager scannerManager, int sourceIndex, CashSettings cashSettings)
+		private ScannerSettings GetScannerSettings(int sourceIndex)
 		{
-			var searchSetting = cashSettings.Search(scannerManager, sourceIndex);
+			var searchSetting = _cashSettings.Search(_scannerManager, sourceIndex);
 			if (searchSetting != null) return searchSetting;
 
 			var needOfChangeSource = _sourceIndex.HasValue && _sourceIndex != _scannerManager.CurrentSourceIndex;
 
 			if (needOfChangeSource)
-				new AsyncWorker<int>().RunWorkAsync(sourceIndex, "ChangeSource", scannerManager.ChangeSource, WaitTime);
+				new AsyncWorker<int>().RunWorkAsync(sourceIndex, "ChangeSource", _scannerManager.ChangeSource, WaitTime);
 
-			if (sourceIndex == scannerManager.CurrentSource.Index)
-				searchSetting = cashSettings.PushCurrentSource(scannerManager);
+			if (_scannerManager.CurrentSource == null)
+				throw new Exception("Не удалось выбрать источник");
+
+			if (sourceIndex == _scannerManager.CurrentSource.Index)
+				searchSetting = _cashSettings.PushCurrentSource(_scannerManager);
 
 			return searchSetting;
 		}

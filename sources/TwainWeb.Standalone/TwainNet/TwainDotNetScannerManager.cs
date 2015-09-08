@@ -28,14 +28,13 @@ namespace TwainWeb.Standalone.TwainNet
 
 			var init = new Init(Initialize);
 			_twain = (TwainDotNet.Twain)_windowsMessageLoop.Invoke(init, new object[]{ _windowsMessageLoop.Hwnd});
+
+			RefreshSources();
 		}
 		public int SourceCount
 		{
 			get
 			{
-				if (_sources.Count == 0)
-					RefreshSources();
-
 				return _sources == null ? 0 : _sources.Count;
 			}
 		}

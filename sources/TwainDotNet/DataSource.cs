@@ -1,25 +1,30 @@
 using System;
 using System.Collections.Generic;
+using log4net;
 using TwainDotNet.TwainNative;
 
 namespace TwainDotNet
 {
     public class DataSource : IDisposable
     {
-        Identity _applicationId;
-        IWindowsMessageHook _messageHook;
+	    readonly Identity _applicationId;
+	    readonly IWindowsMessageHook _messageHook;
+		private readonly ILog _log;
 
+		
+		public bool IsDisposed { get; private set; }
 	    /// <summary>
 		/// A Source never has a state less than 4 if it is open. If it is closed, it has no state.
 	    /// </summary>
 	    public TwainState? SourceState { get; set; }
 
-        public DataSource(Identity applicationId, Identity sourceId, IWindowsMessageHook messageHook)
+        public DataSource(Identity applicationId, Identity sourceId, IWindowsMessageHook messageHook, ILog logger)
         {
             _applicationId = applicationId;
             SourceId = sourceId.Clone();
             _messageHook = messageHook;
 			SourceState = null;
+	        _log = logger;
         }
 
         ~DataSource()
@@ -68,6 +73,8 @@ namespace TwainDotNet
 			{
 				physicalWidth = ValueConverter.ConvertToFix32(physicalWidthCap[0]);
 			}
+
+			_log.Debug("GetCapabilities, result: Success");
 
 			return new SourceSettings(resolutions, pixelTypes, physicalHeight, physicalWidth);
 	    }
@@ -473,18 +480,21 @@ namespace TwainDotNet
                    Message.OpenDS,
                    SourceId);
 
-            if (result != TwainResult.Success)
-            {
-				var conditionCode = DataSourceManager.GetConditionCode(_applicationId, SourceId);
-                throw new TwainException("Error opening data source", result, conditionCode);
-            }
+			if (result != TwainResult.Success)
+	        {
+		        var conditionCode = DataSourceManager.GetConditionCode(_applicationId, SourceId);
+				_log.Debug(string.Format("OpenDS, result: {0}, conditionCode: {1}", result, conditionCode));
+		        throw new TwainException("Error opening data source", result, conditionCode);
+	        }
 
+			_log.Debug("OpenDS, result: " + result);
+	        
 			SourceState = TwainState.SourceOpen;
         }
 
         public bool Enable(ScanSettings settings)
         {
-            UserInterface ui = new UserInterface();
+            var ui = new UserInterface();
             ui.ShowUI = (short)(settings.ShowTwainUI ? 1 : 0);
             ui.ModalUI = 0;
             ui.ParentHand = _messageHook.WindowHandle;
@@ -497,6 +507,7 @@ namespace TwainDotNet
                 Message.EnableDS,
                 ui);
 
+			_log.Debug(string.Format("EnableDS, result: {0}", result));
             if (result != TwainResult.Success)
             {
                 Dispose();
@@ -507,116 +518,16 @@ namespace TwainDotNet
             return true;
         }
 
-        public static DataSource GetDefault(Identity applicationId, IWindowsMessageHook messageHook)
-        {
-            var defaultSourceId = new Identity();
 
-            // Attempt to get information about the system default source
-            var result = Twain32Native.DsmIdentity(
-                applicationId,
-                IntPtr.Zero,
-                DataGroup.Control,
-                DataArgumentType.Identity,
-                Message.GetDefault,
-                defaultSourceId);
-
-            if (result != TwainResult.Success)
-            {
-                var status = DataSourceManager.GetConditionCode(applicationId, null);
-                throw new TwainException("Error getting information about the default source: " + result, result, status);
-            }
-
-            return new DataSource(applicationId, defaultSourceId, messageHook);
-        }
-
-        public static DataSource UserSelected(Identity applicationId, IWindowsMessageHook messageHook)
-        {
-            var defaultSourceId = new Identity();
-
-            // Show the TWAIN interface to allow the user to select a source
-            Twain32Native.DsmIdentity(
-                applicationId,
-                IntPtr.Zero,
-                DataGroup.Control,
-                DataArgumentType.Identity,
-                Message.UserSelect,
-                defaultSourceId);
-
-            return new DataSource(applicationId, defaultSourceId, messageHook);
-        }
-
-        public static List<DataSource> GetAllSources(Identity applicationId, IWindowsMessageHook messageHook)
-        {
-            var sources = new List<DataSource>();
-            Identity id = new Identity();
-
-            // Get the first source
-            var result = Twain32Native.DsmIdentity(
-                applicationId,
-                IntPtr.Zero,
-                DataGroup.Control,
-                DataArgumentType.Identity,
-                Message.GetFirst,
-                id);
-
-            if (result == TwainResult.EndOfList)
-            {
-                return sources;
-            }
-            else if (result != TwainResult.Success)
-            {
-                throw new TwainException("Error getting first source.", result);
-            }
-            else
-            {
-                sources.Add(new DataSource(applicationId, id, messageHook));
-            }
-
-            while (true)
-            {
-                // Get the next source
-                result = Twain32Native.DsmIdentity(
-                    applicationId,
-                    IntPtr.Zero,
-                    DataGroup.Control,
-                    DataArgumentType.Identity,
-                    Message.GetNext,
-                    id);
-
-                if (result == TwainResult.EndOfList)
-                {
-                    break;
-                }
-                else if (result != TwainResult.Success)
-                {
-                    throw new TwainException("Error enumerating sources.", result);
-                }
-
-                sources.Add(new DataSource(applicationId, id, messageHook));
-            }
-
-            return sources;
-        }
-
-        public static DataSource GetSource(string sourceProductName, Identity applicationId, IWindowsMessageHook messageHook)
-        {
-            // A little slower than it could be, if enumerating unnecessary sources is slow. But less code duplication.
-            foreach (var source in GetAllSources(applicationId, messageHook))
-            {
-                if (sourceProductName.Equals(source.SourceId.ProductName, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return source;
-                }
-            }
-
-            return null;
-        }
 
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+	        if (!IsDisposed)
+	        {
+		        Dispose(true);
+		        GC.SuppressFinalize(this);
+	        }
         }
 
         protected void Dispose(bool disposing)
@@ -625,6 +536,7 @@ namespace TwainDotNet
             {
                 DisableAndClose();
             }
+	        IsDisposed = true;
         }
 
 	    public void DisableAndClose()
@@ -635,26 +547,35 @@ namespace TwainDotNet
 
 	    public bool Disable()
 	    {
-		    if (SourceId.Id != 0)
+		    if (SourceState != null && SourceState >= TwainState.SourceEnabled)
 		    {
-			    var userInterface = new UserInterface();
-
-			    TwainResult result = Twain32Native.DsUserInterface(
-				    _applicationId,
-				    SourceId,
-				    DataGroup.Control,
-				    DataArgumentType.UserInterface,
-				    Message.DisableDS,
-				    userInterface);
-
-			    if (result != TwainResult.Failure)
+			    if (SourceId.Id != 0)
 			    {
-				    SourceState = TwainState.SourceOpen;
-				    return true;
+				    var userInterface = new UserInterface();
+
+				    TwainResult result = Twain32Native.DsUserInterface(
+					    _applicationId,
+					    SourceId,
+					    DataGroup.Control,
+					    DataArgumentType.UserInterface,
+					    Message.DisableDS,
+					    userInterface);
+
+
+				    if (result != TwainResult.Failure)
+				    {
+					    _log.Debug(string.Format("DisableDS, result: {0}", result));
+					    SourceState = TwainState.SourceOpen;
+					    return true;
+				    }
+				    var condition = DataSourceManager.GetConditionCode(_applicationId, SourceId);
+				    _log.Debug(string.Format("DisableDS, result: {0}, conditionCode: {1}", result, condition));
+				    return false;
 			    }
-			    return false;
+				return false;
 		    }
-			return false;
+		    
+			return false;		   
 	    }
 
         public void Close()
@@ -668,14 +589,16 @@ namespace TwainDotNet
                         Message.CloseDS,
                         SourceId);
 
-	                if (result != TwainResult.Failure)
-	                {
-						SourceState = null;
-	                }
-
+				
+	            if (result != TwainResult.Failure)
+	            {
+					_log.Debug(string.Format("CloseDS, result: {0}", result));
+					SourceState = null;
+	            }
                 else
                 {
 					var condition = DataSourceManager.GetConditionCode(_applicationId, SourceId);
+					_log.Debug(string.Format("CloseDS, result: {0}, conditionCode: {1}", result, condition));
                 }
 			
             
