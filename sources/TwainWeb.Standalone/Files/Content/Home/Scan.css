@@ -167,6 +167,12 @@
     outline:none;
 }
 
+#form input:disabled, #form select:disabled, #form button:disabled {
+    background-color: #404040;
+    color: #808080;
+    box-shadow: none !important;
+    outline:none;
+}
 
 #form input[type="submit"] {
     background: #57801d;
@@ -193,6 +199,13 @@
 
 #form input[type="submit"]:focus {
     background: #78b127;
+    box-shadow: none !important;
+    outline:none;
+}
+
+#form input[type="submit"]:disabled {
+    background: #4D6D20;
+	color: #aaaaaa;
     box-shadow: none !important;
     outline:none;
 }
@@ -244,7 +257,7 @@
 
 .overlay {
     position:fixed;
-    top:0;
+	top: 0;
     bottom:0;
     left:0;
     right:0;
@@ -253,8 +266,8 @@
     z-index:3;
 }
 
-.overlay-message{
-    position: fixed;
+.overlay-content{
+	position: fixed;
 	vertical-align: middle;
 	text-align: center;
     left:0;
@@ -262,10 +275,13 @@
     right:0;
     z-index:4;
 }
+.overlay-message{ 
+	color: #AAAAAA;
+}
 
 .loader {
  z-index:1002;
-	top: 10px;
+	top:50%;
 	margin: 0 auto 20px;
 	display: block;
 	width: 60px;
