@@ -24,7 +24,7 @@ namespace TwainWeb.Standalone.App.Queries
 			_cashSettings = cashSettings;
 			_sourceIndex = sourceIndex;
 
-			_logger = LogManager.GetLogger(typeof(HttpServer));
+			_logger = LogManager.GetLogger(typeof(GetScannerParametersQuery));
 		}
 		public ScannerParametersQueryResult Execute(object markerAsync)
 		{

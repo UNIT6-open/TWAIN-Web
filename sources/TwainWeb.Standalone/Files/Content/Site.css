@@ -86,3 +86,12 @@ ul.nav li a {
     -moz-transition: color linear .2s, background linear .2s;
     -o-transition: color linear .2s, background linear .2s;
 }
+
+ul.nav .dropdown  li a {
+width:inherit;
+    padding: 3px 20px;
+    color: #333333;
+    -webkit-transition: color linear .2s, background linear .2s;
+    -moz-transition: color linear .2s, background linear .2s;
+    -o-transition: color linear .2s, background linear .2s;
+}

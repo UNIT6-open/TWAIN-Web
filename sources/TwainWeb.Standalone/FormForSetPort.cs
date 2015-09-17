@@ -100,7 +100,7 @@ namespace TwainWeb.Standalone
                 if (resultCheckServer.Code == 32)
 					error = "Порт " + portNumber + " занят другим процессом. ";                    
                 else
-                    error = "Не предусмотренная ошибка. Отправьте это сообщение разработчикам разработчикам." + Environment.NewLine + Environment.NewLine + resultCheckServer.Text + Environment.NewLine + Environment.NewLine;
+                    error = "Непредусмотренная ошибка. Отправьте это сообщение разработчикам." + Environment.NewLine + Environment.NewLine + resultCheckServer.Text + Environment.NewLine + Environment.NewLine;
                 error += "Попробуйте изменить или освободить порт.";
                 MessageBox.Show(error);
                 
