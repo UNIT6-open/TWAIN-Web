@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using log4net;
 
 namespace TwainWeb.Standalone.App
 {
@@ -10,11 +11,13 @@ namespace TwainWeb.Standalone.App
 		private AsyncAction _method;
 		private Exception _exception;
 		private bool _wasException;
+		private ILog _logger;
 
 		public delegate void AsyncAction(TArg argument);
 
 		public AsyncWorker()
 		{
+			_logger = LogManager.GetLogger(typeof(AsyncWorker<TArg>));
 			_backgroundWorker = new System.ComponentModel.BackgroundWorker { WorkerSupportsCancellation = true };
 		}
 		private void InitializeBackgroundWorker()
@@ -24,7 +27,7 @@ namespace TwainWeb.Standalone.App
 			_backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
 		}
 
-		public void RunWorkAsync(TArg argument, string nameThread, AsyncAction meth)
+		public void RunWorkAsync(TArg argument, AsyncAction meth)
 		{
 			_method = meth;
 			_waitHandle = new AutoResetEvent(false);
@@ -37,7 +40,7 @@ namespace TwainWeb.Standalone.App
 				throw _exception;
 		}
 
-		public void RunWorkAsync(TArg argument, string nameThread, AsyncAction meth, int waitTime)
+		public void RunWorkAsync(TArg argument, AsyncAction meth, int waitTime)
 		{
 			_method = meth;
 			_waitHandle = new AutoResetEvent(false);
@@ -47,7 +50,10 @@ namespace TwainWeb.Standalone.App
 			_waitHandle.WaitOne(waitTime);
 
 			if (_backgroundWorker.IsBusy)
+			{
 				_backgroundWorker.CancelAsync();
+				_logger.Error("Превышено время ожидания выполнения асинхронной операции: " + meth.Method.Name);
+			}
 
 			_waitHandle.Reset();
 
@@ -65,7 +71,7 @@ namespace TwainWeb.Standalone.App
 					Thread.Sleep(100);
 				}
 				e.Cancel = true;
-
+				
 			});
 			child.Start();
 
@@ -99,11 +105,13 @@ namespace TwainWeb.Standalone.App
 		private AsyncAction _method;
 		private Exception _exception;
 		private bool _wasException;
+		private ILog _logger;
 
 		public delegate TRes AsyncAction(TArg argument);
 
 		public AsyncWorker()
 		{
+			_logger = LogManager.GetLogger(typeof(AsyncWorker<TArg>));
 			_backgroundWorker = new System.ComponentModel.BackgroundWorker { WorkerSupportsCancellation = true};
 		} 
 		private void InitializeBackgroundWorker()
@@ -113,7 +121,7 @@ namespace TwainWeb.Standalone.App
 			_backgroundWorker.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
 		}
 
-		public TRes RunWorkAsync(TArg argument, string nameThread, AsyncAction meth)
+		public TRes RunWorkAsync(TArg argument, AsyncAction meth)
 		{
 			_method = meth;
 			_waitHandle = new AutoResetEvent(false);
@@ -128,7 +136,7 @@ namespace TwainWeb.Standalone.App
 			return _result;
 		}
 
-		public TRes RunWorkAsync(TArg argument, string nameThread, AsyncAction meth, int waitTime)
+		public TRes RunWorkAsync(TArg argument, AsyncAction meth, int waitTime)
 		{
 			_method = meth;
 			_waitHandle = new AutoResetEvent(false);
@@ -138,7 +146,10 @@ namespace TwainWeb.Standalone.App
 			_waitHandle.WaitOne(waitTime);
 
 			if (_backgroundWorker.IsBusy)
+			{
+				_logger.Error("Превышено время ожидания выполнения асинхронной операции: " + meth.Method.Name);
 				_backgroundWorker.CancelAsync();
+			}
 
 			_waitHandle.Reset();
 

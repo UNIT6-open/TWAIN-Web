@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.ServiceProcess;
+using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App;
 using TwainWeb.Standalone.App.Models;
@@ -71,6 +72,25 @@ namespace TwainWeb.Standalone
 		private CashSettings cashSettings;
 		protected override void OnStart(string[] args)
 		{
+			_logger.InfoFormat("Start service on port: {0}", _port);
+			_messageLoop = new WindowsMessageLoopThread();
+			var smFactory = new ScannerManagerFactory();
+			try
+			{
+				_scannerManager = smFactory.GetScannerManager(_messageLoop);
+			}
+			catch (Exception e)
+			{
+				_logger.ErrorFormat(e.ToString());
+			}
+			StartServer();
+			var sdf = new Thread(() => _logger.InfoFormat("Http server started"));
+			sdf.Start();
+		}
+
+		public void Start()
+		{
+		
 			_messageLoop = new WindowsMessageLoopThread();
 			var smFactory = new ScannerManagerFactory();
 			try
@@ -103,6 +123,12 @@ namespace TwainWeb.Standalone
 							break;
 						case "Scan":
 							actionResult = ajaxMethods.Scan(scanFormModelBinder.BindScanForm(), _scannerManager);
+							break;
+						case "RestartWia":
+							actionResult = ajaxMethods.RestartWia();
+							break;
+						case "Restart":
+							actionResult = ajaxMethods.Restart();
 							break;
 						default:
 							actionResult = new ActionResult { Content = new byte[0] };
@@ -193,8 +219,14 @@ namespace TwainWeb.Standalone
 
 		protected override void OnStop()
 		{
+			_logger.InfoFormat("Stop server...");
 			_messageLoop.Stop();
 			StopServer();
+			_logger.InfoFormat("Service stopped");
+			foreach (var appender in _logger.Logger.Repository.GetAppenders())
+			{
+				appender.Close();
+			}
 		}
 	}
 

@@ -38,40 +38,41 @@ namespace TwainWeb.Standalone.Wia
 		}
 		#endregion
 
-		private Item _source;
-		private Device _device;
+		private readonly string _deviceId;
 		private readonly int _sourceIndex;
 		private readonly string _name;
-		private readonly DeviceManager _manager;
 
-		public WiaSource(DeviceManager manager, IDeviceInfo deviceInfo, int index)
+		public WiaSource(int index, string name, string deviceId)
 		{
 			_sourceIndex = index;
-			var name = FindProperty(deviceInfo.Properties, WiaProperty.Name);
-			_name = (string)name.get_Value();
-			_manager = manager;
-
-			ConnectToDevice(deviceInfo.DeviceID);
+			_name = name;
+			_deviceId = deviceId;
+			
+			//ConnectToDevice(deviceInfo.DeviceID);
 		}
-		public string DeviceId { get { return _source.ItemID; } }
+		public string DeviceId { get { return _deviceId; } }
 		public string Name { get { return _name; } }
 		public int Index { get { return _sourceIndex; } }
 
 
 		public ScannerSettings GetScannerSettings()
 		{
-			if (_source == null)
+			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
 			}
 
+			// connect to scanner
+			var device = ConnectToDevice();
+			var source = device.Items[1];
+
 			var settings = new ScannerSettings(
 				_sourceIndex,
 				_name,
-				GetAllowableResolutions(),
+				GetAllowableResolutions(source),
 				GetAllowablePixelTypes(),
-				GetMaxHeight(),
-				GetMaxWidth());
+				GetMaxHeight(device),
+				GetMaxWidth(device));
 
 			return settings;
 		}
@@ -83,17 +84,15 @@ namespace TwainWeb.Standalone.Wia
 		public List<Image> Scan(SettingsAcquire settings)
 		{
 
-			if (_source == null)
+			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
 			}
 
-			if (_device == null)
-				ConnectToDevice(_source.ItemID);
+			var device = ConnectToDevice();
+			SetAcquireSettings(device, settings);
 
-			SetAcquireSettings(settings);
-
-			return Scan();
+			return Scan(device);
 		}
 
 
@@ -101,15 +100,16 @@ namespace TwainWeb.Standalone.Wia
 		/// Use scanner to scan an image (scanner is selected by its unique id).
 		/// </summary>
 		/// <returns>Scanned images.</returns>
-		private List<Image> Scan()
+		private List<Image> Scan(Device device)
 		{
+		
 			var images = new List<Image>();
 
 			var hasMorePages = true;
 			while (hasMorePages)
 			{
 
-				var item = _source;
+				var item = device.Items[1];;
 
 				try
 				{
@@ -136,7 +136,7 @@ namespace TwainWeb.Standalone.Wia
 					Property documentHandlingSelect = null;
 					Property documentHandlingStatus = null;
 
-					foreach (Property prop in _device.Properties)
+					foreach (Property prop in device.Properties)
 					{
 						if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_SELECT)
 							documentHandlingSelect = prop;
@@ -163,72 +163,81 @@ namespace TwainWeb.Standalone.Wia
 			return images;
 		}
 
-		private void ConnectToDevice(string scannerId)
+		private DeviceInfo DeviceInfo
 		{
-			// select the correct scanner using the provided scannerId parameter
-			foreach (DeviceInfo info in _manager.DeviceInfos)
+			get
 			{
-				if (info.DeviceID == scannerId)
+				var manager = new DeviceManager();
+				// select the correct scanner using the provided scannerId parameter
+				foreach (DeviceInfo info in manager.DeviceInfos)
 				{
-					// connect to scanner
-					_device = info.Connect();
-
-					break;
+					if (info.DeviceID == _deviceId)
+					{
+						return info;
+					}
 				}
+				return null;
 			}
+		}
 
-			if (_device == null)
+		private Device ConnectToDevice()
+		{
+			
+			// connect to scanner
+			var device = DeviceInfo.Connect();
+			
+			if (device == null)
 			{
 				// show error
 				throw new Exception("The device with provided ID could not be found.");
 			}
 
-			if (_device.Items.Count == 0)
+			if (device.Items.Count == 0)
 				throw new Exception("The device hasn't any device info");
 
-			_source = _device.Items[1];
+			return device;
 		}
 
-		private float GetMaxHeight()
+		private float GetMaxHeight(IDevice device)
 		{
-			var verticalBedSize = FindProperty(_device.Properties, WiaProperty.VerticalBedSize);
+			var verticalBedSize = FindProperty(device.Properties, WiaProperty.VerticalBedSize);
 			var vertical = verticalBedSize.get_Value();
 			var maxHeight = (float)(int)vertical / 1000;
 			return maxHeight;
-		}		
+		}
 
-		private float GetMaxWidth()
+		private float GetMaxWidth(IDevice device)
 		{
-			var horizontalBedSize = FindProperty(_device.Properties, WiaProperty.HorizontalBedSize);
+			var horizontalBedSize = FindProperty(device.Properties, WiaProperty.HorizontalBedSize);
 			var horizontal = horizontalBedSize.get_Value();
 			var maxWidth = (float)(int)horizontal / 1000;
 			return maxWidth;
 		}
 
-		private void SetAcquireSettings(SettingsAcquire settings)
+		private void SetAcquireSettings(Device device, SettingsAcquire settings)
 		{
+			var source = device.Items[1];
+			if (source == null) throw new Exception("Current sourse not found");
 
-			if (_source == null) throw new Exception("Current sourse not found");
-
-			SetProperty(_source.Properties, WiaProperty.HorizontalResolution, (int)settings.Resolution);
-			SetProperty(_source.Properties, WiaProperty.VerticalResolution, (int)settings.Resolution);
+			SetProperty(source.Properties, WiaProperty.HorizontalResolution, (int)settings.Resolution);
+			SetProperty(source.Properties, WiaProperty.VerticalResolution, (int)settings.Resolution);
 
 			var horizontalExtent = (int)(settings.Format.Width * settings.Resolution);
 			var verticalExtent = (int)(settings.Format.Height * settings.Resolution);
 
-			var horizontalExtentMax = FindProperty(_source.Properties, WiaProperty.HorizontalExtent).SubTypeMax;
-			var verticalExtentMax = FindProperty(_source.Properties, WiaProperty.VerticalExtent).SubTypeMax;
+			var horizontalExtentMax = FindProperty(source.Properties, WiaProperty.HorizontalExtent).SubTypeMax;
+			var verticalExtentMax = FindProperty(source.Properties, WiaProperty.VerticalExtent).SubTypeMax;
 
 			var currentIntent = (WiaPixelType)settings.PixelType;
 
-			SetProperty(_source.Properties, WiaProperty.HorizontalExtent, horizontalExtent < horizontalExtentMax ? horizontalExtent : horizontalExtentMax);
-			SetProperty(_source.Properties, WiaProperty.VerticalExtent, verticalExtent < verticalExtentMax ? verticalExtent : verticalExtentMax);
-			SetProperty(_source.Properties, WiaProperty.CurrentIntent, currentIntent);
+			SetProperty(source.Properties, WiaProperty.HorizontalExtent, horizontalExtent < horizontalExtentMax ? horizontalExtent : horizontalExtentMax);
+			SetProperty(source.Properties, WiaProperty.VerticalExtent, verticalExtent < verticalExtentMax ? verticalExtent : verticalExtentMax);
+			SetProperty(source.Properties, WiaProperty.CurrentIntent, currentIntent);
 
 			if (currentIntent == WiaPixelType.Color)
 				try
 				{
-					SetProperty(_source.Properties, WiaProperty.BitsPerPixel, 24);
+					SetProperty(source.Properties, WiaProperty.BitsPerPixel, 24);
 				}
 				catch (Exception)
 				{
@@ -246,10 +255,10 @@ namespace TwainWeb.Standalone.Wia
 			return pixelTypes;
 		}
 
-		private List<float> GetAllowableResolutions()
+		private List<float> GetAllowableResolutions(IItem source)
 		{
-			var verticalResolution = FindProperty(_source.Properties, WiaProperty.VerticalResolution);
-			var horizontalResolution = FindProperty(_source.Properties, WiaProperty.HorizontalResolution);
+			var verticalResolution = FindProperty(source.Properties, WiaProperty.VerticalResolution);
+			var horizontalResolution = FindProperty(source.Properties, WiaProperty.HorizontalResolution);
 
 			if (verticalResolution == null || horizontalResolution == null) throw new Exception("Не удалось получить допустимые разрешения сканера");
 

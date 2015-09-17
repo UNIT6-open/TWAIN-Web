@@ -35,6 +35,8 @@
 						</a>
 					</div>
 					<ul class="nav">
+						<li><input type="button" value="Перезапуск Wia" id="restartWiaLink" />
+						<li><input type="button" value="Перезапуск приложения" id="restartLink" />
 						<li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
 						<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
 					</ul>
@@ -301,7 +303,7 @@
 				}
 				return values;
 			};
-			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg) {
+			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg, showOverlay) {
 				if (method != undefined) {
 					doneFunction = doneFunction == undefined ? function () {
 					} : doneFunction;
@@ -310,9 +312,11 @@
 					completeFunction = completeFunction == undefined ? function () {
 					} : completeFunction;
 					data = data == undefined ? "" : "&" + data;
-					$(".overlay-message").text(statusMsg);
-					$(".overlay, .overlay-message").show();
-					DisactivateScanForm();
+					if (showOverlay) {
+						$(".overlay-message").text(statusMsg);
+						$(".overlay, .overlay-message").show();
+						DisactivateScanForm();
+					}
 					$.ajax({
 						async: async,
 						url: document.URL + "/ajax",
@@ -332,8 +336,10 @@
 						},
 						complete: function (resp) {
 							completeFunction();
-							$(".overlay-message").text("");
-							$(".overlay, .overlay-message").hide();
+							if (showOverlay) {
+								$(".overlay-message").text("");
+								$(".overlay, .overlay-message").hide();
+							}
 						}
 					});
 				}
@@ -400,7 +406,7 @@
 						alert("Не найдено ни одного подходящего устройства. Проверьте подключение или попробуйте изменить тип драйвера в конфигурации TWAIN@WEB.");
 					}
 				};
-				sendAjax("GetScannerParameters", doneFunction, sourceIndex, true, function (msg) { alert(msg); }, null, "Загрузка параметров сканера...");
+				sendAjax("GetScannerParameters", doneFunction, sourceIndex, true, function (msg) { alert(msg); }, null, "Загрузка параметров сканера...", true);
 			};
 
 			$("#form").find("#Form_FileName").on('change', function () {
@@ -454,7 +460,7 @@
 								, (timeout * 1000));
 						}
 					} else {
-						sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...");
+						sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...", true);
 					}
 				}
 				catch (ex) { console && console.log(ex); }
@@ -463,6 +469,30 @@
 			});
 			$("#Form_FileName").focus();
 			GetScanParameters();
+
+			var refreshPage = function () {
+				$.ajax({
+					url: "",
+					context: document.body,
+					success: function (s, x) {
+						alert("Приложение успешно перезапущено");
+						$(this).html(s);
+					},
+					error: function () {
+						setTimeout(refreshPage, 500)
+					}
+				});
+			};
+
+			$("#restartLink").click(function () {
+				$(".overlay-message").text("Перезапуск приложения...");
+				$(".overlay, .overlay-message").show();
+				sendAjax("Restart", function () { setTimeout(refreshPage, 2000); }, null, true, function () { setTimeout(refreshPage, 2000); }, null, "Перезапуск приложения...", false);
+			});
+
+			$("#restartWiaLink").click(function () {
+				sendAjax("RestartWia", function () { alert("Служба WIA успешно перезапущена"); }, null, true, function () { alert("Не удалось перезапустить службу WIA"); }, null, "Перезапуск WIA...", true);
+			});
 		});
 
 		$(function () {

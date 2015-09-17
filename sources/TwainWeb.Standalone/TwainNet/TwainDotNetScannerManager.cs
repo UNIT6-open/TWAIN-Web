@@ -27,7 +27,7 @@ namespace TwainWeb.Standalone.TwainNet
 			_log = LogManager.GetLogger(typeof(TwainDotNetScannerManager));
 
 			var init = new Init(Initialize);
-			_twain = (TwainDotNet.Twain)_windowsMessageLoop.Invoke(init, new object[]{ _windowsMessageLoop.Hwnd});
+			_twain = _windowsMessageLoop.Invoke<TwainDotNet.Twain>(init, new object[] { _windowsMessageLoop.Hwnd });
 
 			RefreshSources();
 		}

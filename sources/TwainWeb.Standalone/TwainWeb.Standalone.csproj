@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{32ADEB05-77A1-466D-BF6C-12CC4AAD8CD6}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TwainWeb.Standalone</RootNamespace>
     <AssemblyName>TwainWeb.Standalone</AssemblyName>
@@ -111,7 +111,6 @@
   <ItemGroup>
     <Compile Include="App\AjaxMethods.cs" />
     <Compile Include="App\AsyncWorker.cs" />
-    <Compile Include="App\AsyncMethods.cs" />
     <Compile Include="App\CashSettings.cs" />
     <Compile Include="App\DownloadFileParam.cs" />
     <Compile Include="App\EnumExtensions.cs" />
@@ -124,6 +123,7 @@
     <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
     <Compile Include="RuntimeConfigurationManager.cs" />
     <Compile Include="Scanner\ScannerManager.cs" />
+    <Compile Include="ServiceHelper.cs" />
     <Compile Include="Tools\ImageTools.cs" />
     <Compile Include="App\MessageBoxHookManager.cs" />
     <Compile Include="App\MessageBoxHook.cs" />
@@ -337,6 +337,10 @@
     <ProjectReference Include="..\TwainDotNet\TwainDotNet.csproj">
       <Project>{857b8891-2932-484d-a9a8-d38b47108cf0}</Project>
       <Name>TwainDotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TwainWeb.ServiceManager\TwainWeb.ServiceManager.csproj">
+      <Project>{662a04dc-98d3-4e1a-ad6b-027b20878431}</Project>
+      <Name>TwainWeb.ServiceManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
