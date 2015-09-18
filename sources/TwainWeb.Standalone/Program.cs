@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Windows.Forms;
 
@@ -11,11 +12,7 @@ namespace TwainWeb.Standalone
         
         static void Main(string[] args)
         {
-	        foreach (var s in args)
-	        {
-		        File.AppendAllText("D://test.txt", s + "\r\n");
-	        }
-			File.AppendAllText("D://test.txt", "\r\n");
+	      
 			//запуск службы
 	        if (!Environment.UserInteractive || args.Length == 0)
 	        {
@@ -113,8 +110,15 @@ namespace TwainWeb.Standalone
 				RunServiceManager("-start").WaitForExit();
 	    }
 
+		
+		[DllImport("kernel32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool AllocConsole();
+
+
 	    private static void RunFromConsole()
 	    {
+			AllocConsole();
 		    var service = new ScanService(Settings.Default.Port);
 		    try
 		    {
