@@ -11,21 +11,39 @@ namespace TwainWeb.ServiceManager
 	class ServiceHelper
 	{
 		private readonly string _serviceName;
+		private readonly string _serviceFilename;
 		private readonly ServiceController _service;
 		private readonly bool _isInstalled;
-		internal ServiceHelper(string servcieName)
+		internal ServiceHelper(string servcieName, string serviceFilename)
 		{
+			_serviceFilename = serviceFilename;
 			_serviceName = servcieName;
 			_service = new ServiceController(_serviceName);
-			_isInstalled = _service != null;
+
+
+			try
+			{
+				// actually we need to try access ANY of service properties
+				// at least once to trigger an exception
+				// not neccessarily its name
+				string serviceName = _service.DisplayName;
+				_isInstalled = true;
+			}
+			catch (InvalidOperationException) { }
+			finally
+			{
+				_service.Close();
+			}
+
 		}
 		internal void Install()
 		{
+			var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
 			if (_isInstalled)
 			{
-				ManagedInstallerClass.InstallHelper(new[] { "/u", Assembly.GetExecutingAssembly().Location });
+				ManagedInstallerClass.InstallHelper(new[] { "/u", exeFile });
 			}
-			ManagedInstallerClass.InstallHelper(new[] { Assembly.GetExecutingAssembly().Location });
+			ManagedInstallerClass.InstallHelper(new[] { exeFile });
 
 			SetRecoveryOptions(_serviceName);
 		}
@@ -34,39 +52,45 @@ namespace TwainWeb.ServiceManager
 		{
 			if (_isInstalled)
 			{
-				ManagedInstallerClass.InstallHelper(new[] { "/u", Assembly.GetExecutingAssembly().Location });
+				var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
+				ManagedInstallerClass.InstallHelper(new[] { "/u", exeFile });
 			}
 		}
 
+		private static string AssemblyDirectory
+		{
+			get
+			{
+				string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+				UriBuilder uri = new UriBuilder(codeBase);
+				string path = Uri.UnescapeDataString(uri.Path);
+				return Path.GetDirectoryName(path);
+			}
+		}
 		internal void Start()
 		{
-			File.AppendAllText("D:\\logSH.txt", "start\r\n");
+			
 			if (_isInstalled && 
 				(_service.Status == ServiceControllerStatus.Stopped || 
 				_service.Status == ServiceControllerStatus.StopPending))
 			{
-				File.AppendAllText("D:\\logSH.txt", "status before: " + _service.Status + "\r\n");
 				_service.Start();
 				_service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(50));
-				File.AppendAllText("D:\\logSH.txt", "status after: " + _service.Status + "\r\n");
+				
 			}
 		}
 		internal void Stop()
 		{
-			File.AppendAllText("D:\\logSH.txt", "stop\r\n");
 			if (_isInstalled && _service.CanStop)
 			{
-				File.AppendAllText("D:\\logSH.txt", "status before: " + _service.Status + "\r\n");
 				_service.Stop();
 				_service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(50));
-				File.AppendAllText("D:\\logSH.txt", "status after: " + _service.Status + "\r\n");
 			}
 		}
 		internal void Restart()
 		{
-			File.AppendAllText("D:\\logSH.txt", "restart\r\n");
 			Stop();
-			Thread.Sleep(TimeSpan.FromSeconds(5));
+			Thread.Sleep(TimeSpan.FromSeconds(1));
 			Start();
 		}
 

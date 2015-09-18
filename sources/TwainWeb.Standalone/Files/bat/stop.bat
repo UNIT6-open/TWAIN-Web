@@ -1,1 +1,0 @@
-net stop twain@web

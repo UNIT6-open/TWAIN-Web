@@ -8,7 +8,7 @@ namespace TwainWeb.ServiceManager
 		static void Main(string[] args)
 		{
 
-			var serviceHelper = new ServiceHelper("TWAIN@Web");
+			var serviceHelper = new ServiceHelper("TWAIN@Web", "TwainWeb.Standalone.exe");
 
 			var parameter = string.Concat(args);
 			switch (parameter)
@@ -21,6 +21,9 @@ namespace TwainWeb.ServiceManager
 					return;
 				case "-start":
 					serviceHelper.Start();
+					return;
+				case "-stop":
+					serviceHelper.Stop();
 					return;
 				case "-restart":
 					serviceHelper.Restart();
