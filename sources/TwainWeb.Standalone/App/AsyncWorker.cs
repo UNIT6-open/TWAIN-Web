@@ -47,7 +47,7 @@ namespace TwainWeb.Standalone.App
 			InitializeBackgroundWorker();
 
 			_backgroundWorker.RunWorkerAsync(argument);
-			_waitHandle.WaitOne(waitTime);
+			_waitHandle.WaitOne(waitTime, false);
 
 			if (_backgroundWorker.IsBusy)
 			{
@@ -143,7 +143,7 @@ namespace TwainWeb.Standalone.App
 			InitializeBackgroundWorker();
 
 			_backgroundWorker.RunWorkerAsync(argument);
-			_waitHandle.WaitOne(waitTime);
+			_waitHandle.WaitOne(waitTime, false);
 
 			if (_backgroundWorker.IsBusy)
 			{
