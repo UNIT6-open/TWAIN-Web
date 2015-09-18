@@ -93,7 +93,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 
 			var i = 0;
 			var sources = new List<TwainDotNetSource>();
-			foreach (var sourceName in _twain.SourceNames)
+			foreach (var sourceName in SortSources(_twain.SourceNames))
 			{
 				sources.Add(new TwainDotNetSource(i, sourceName, _twain, _windowsMessageLoop));
 				i++;
@@ -101,5 +101,32 @@ namespace TwainWeb.Standalone.App.TwainNet
 
 			_sources = sources;	
 		}
+
+		private IEnumerable<string> SortSources(IEnumerable<string> initialSources)
+		{
+			if (initialSources == null) throw new ArgumentNullException("initialSources");
+
+			var sourses = new List<string>();
+
+			var soursesWithoutWia = new List<string>();
+
+			foreach (var sourse in initialSources)
+			{
+				if (sourse.ToLower().Contains("wia"))
+				{
+					sourses.Add(sourse);
+				}
+				else
+				{
+					soursesWithoutWia.Add(sourse);
+				}
+			}
+			foreach (var otherSourse in soursesWithoutWia)
+			{
+				sourses.Add(otherSourse);
+			}
+
+			return sourses;
+		} 
 	}
 }
