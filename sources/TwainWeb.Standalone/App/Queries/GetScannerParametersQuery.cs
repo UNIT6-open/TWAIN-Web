@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using log4net;
+using TwainWeb.Standalone.App.Cache;
 using TwainWeb.Standalone.App.Models;
-using TwainWeb.Standalone.Scanner;
+using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Queries
 {
 	public class GetScannerParametersQuery
 	{
 		private readonly IScannerManager _scannerManager;
-		private readonly CashSettings _cashSettings;
+		private readonly CacheSettings _cashSettings;
 		private int? _sourceIndex;
 		private readonly ILog _logger;
 		private const int ChangeSourceWaitTime = 15000;
 		private const int PushSettingsWaitTime = 5000;
-		public GetScannerParametersQuery(IScannerManager scannerManager, CashSettings cashSettings, int? sourceIndex)
+		public GetScannerParametersQuery(IScannerManager scannerManager, CacheSettings cashSettings, int? sourceIndex)
 		{
 			if (scannerManager == null) throw new Exception("Невозможно получить параметры сканирования, т.к. менеджер источников данных не был инициализирован");
 

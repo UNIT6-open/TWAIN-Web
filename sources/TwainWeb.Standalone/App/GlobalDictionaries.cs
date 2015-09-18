@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing.Imaging;
-using System.Text;
-using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.App.Twain;
 
 namespace TwainWeb.Standalone.App
 {
@@ -25,8 +23,8 @@ namespace TwainWeb.Standalone.App
 
         public static string SearchingKeyInImgFormats(ImageFormat value)
         {
-            string resultKey = value.ToString();
-            foreach(var el in GlobalDictionaries.ImgFormats)
+            var resultKey = value.ToString();
+            foreach(var el in ImgFormats)
             {
                 if (value == el.Value)
                     resultKey = el.Key;

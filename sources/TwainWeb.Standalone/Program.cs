@@ -4,6 +4,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Windows.Forms;
+using TwainWeb.Standalone.Configurator;
+using TwainWeb.Standalone.Host;
 
 namespace TwainWeb.Standalone
 {

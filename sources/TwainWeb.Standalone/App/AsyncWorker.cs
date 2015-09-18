@@ -11,7 +11,7 @@ namespace TwainWeb.Standalone.App
 		private AsyncAction _method;
 		private Exception _exception;
 		private bool _wasException;
-		private ILog _logger;
+		private readonly ILog _logger;
 
 		public delegate void AsyncAction(TArg argument);
 
@@ -105,7 +105,7 @@ namespace TwainWeb.Standalone.App
 		private AsyncAction _method;
 		private Exception _exception;
 		private bool _wasException;
-		private ILog _logger;
+		private readonly ILog _logger;
 
 		public delegate TRes AsyncAction(TArg argument);
 

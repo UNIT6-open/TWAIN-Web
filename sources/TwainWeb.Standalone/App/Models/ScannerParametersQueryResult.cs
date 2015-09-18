@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using TwainWeb.Standalone.Scanner;
+using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Models
 {

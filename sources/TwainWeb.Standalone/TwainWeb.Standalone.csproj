@@ -109,39 +109,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\AjaxMethods.cs" />
     <Compile Include="App\AsyncWorker.cs" />
-    <Compile Include="App\CashSettings.cs" />
-    <Compile Include="App\DownloadFileParam.cs" />
-    <Compile Include="App\EnumExtensions.cs" />
-    <Compile Include="App\Extensions.cs" />
-    <Compile Include="App\FormatPage.cs" />
+    <Compile Include="App\Cache\CacheSettings.cs" />
+    <Compile Include="App\Controllers\ScanController.cs" />
+    <Compile Include="App\Models\ActionResult.cs" />
+    <Compile Include="App\Models\DownloadFileParam.cs" />
+    <Compile Include="App\Extensions\EnumExtensions.cs" />
+    <Compile Include="App\Twain\TwainExtensions.cs" />
+    <Compile Include="App\Models\FormatPage.cs" />
     <Compile Include="App\Queries\GetScannerParametersQuery.cs" />
     <Compile Include="App\GlobalDictionaries.cs" />
-    <Compile Include="App\HomeController.cs" />
+    <Compile Include="App\Controllers\HomeController.cs" />
     <Compile Include="App\Models\Result.cs" />
     <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
-    <Compile Include="RuntimeConfigurationManager.cs" />
-    <Compile Include="Scanner\ScannerManager.cs" />
-    <Compile Include="ServiceHelper.cs" />
-    <Compile Include="Tools\ImageTools.cs" />
-    <Compile Include="App\MessageBoxHookManager.cs" />
-    <Compile Include="App\MessageBoxHook.cs" />
-    <Compile Include="App\Models\MyError.cs" />
+    <Compile Include="Configurator\RuntimeConfigurationManager.cs" />
+    <Compile Include="App\Scanner\ScannerManager.cs" />
+    <Compile Include="App\Tools\ImageTools.cs" />
+    <Compile Include="App\Hook\MessageBoxHookManager.cs" />
+    <Compile Include="App\Hook\MessageBoxHook.cs" />
+    <Compile Include="Host\HttpServerError.cs" />
     <Compile Include="App\Commands\ScanCommand.cs" />
-    <Compile Include="App\ScannerSettings.cs" />
-    <Compile Include="App\ScanForm.cs" />
-    <Compile Include="App\ModelBinder.cs" />
+    <Compile Include="App\Models\ScannerSettings.cs" />
+    <Compile Include="App\Models\ScanForm.cs" />
+    <Compile Include="App\Binders\ModelBinder.cs" />
     <Compile Include="App\Models\ScanResult.cs" />
     <Compile Include="App\Models\SingleScanResult.cs" />
-    <Compile Include="FormForSetPort.cs">
+    <Compile Include="Configurator\FormForSetPort.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormForSetPort.Designer.cs">
+    <Compile Include="Configurator\FormForSetPort.Designer.cs">
       <DependentUpon>FormForSetPort.cs</DependentUpon>
     </Compile>
-    <Compile Include="MessageLoop\WindowsMessageLoopThread.cs" />
-    <Compile Include="Scanner\IScannerManager.cs" />
+    <Compile Include="Host\WindowsMessageLoopThread.cs" />
+    <Compile Include="App\Scanner\IScannerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -160,39 +160,39 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Scanner\ISource.cs" />
-    <Compile Include="Scanner\ScannerManagerFactory.cs" />
-    <Compile Include="ScanService.cs">
+    <Compile Include="App\Scanner\ISource.cs" />
+    <Compile Include="App\Scanner\ScannerManagerFactory.cs" />
+    <Compile Include="Host\ScanService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HttpServer.cs" />
+    <Compile Include="Host\HttpServer.cs" />
     <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="TwainNet\TwainDotNetScannerManager.cs" />
-    <Compile Include="TwainNet\TwainDotNetSource.cs" />
-    <Compile Include="TwainNet\TwainPixelTypeExtensions.cs" />
-    <Compile Include="Twain\DibToImage.cs" />
-    <Compile Include="Twain\SettingsAcquire.cs" />
-    <Compile Include="Twain\Source.cs" />
-    <Compile Include="Twain\Twain32.cs">
+    <Compile Include="App\TwainNet\TwainDotNetScannerManager.cs" />
+    <Compile Include="App\TwainNet\TwainDotNetSource.cs" />
+    <Compile Include="App\TwainNet\TwainPixelTypeExtensions.cs" />
+    <Compile Include="App\Twain\DibToImage.cs" />
+    <Compile Include="App\Twain\SettingsAcquire.cs" />
+    <Compile Include="App\Twain\Source.cs" />
+    <Compile Include="App\Twain\Twain32.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Twain\TwainDefs.cs" />
-    <Compile Include="Twain\TwainException.cs" />
-    <Compile Include="Twain\TwainScannerManager.cs" />
-    <Compile Include="Twain\TwainSource.cs" />
-    <Compile Include="Twain\TwainState.cs" />
-    <Compile Include="Wia\WiaPixelType.cs" />
-    <Compile Include="Wia\WiaFormat.cs" />
-    <Compile Include="Wia\WiaProperty.cs" />
-    <Compile Include="Wia\WiaScannerManager.cs" />
-    <Compile Include="Wia\WiaSource.cs" />
+    <Compile Include="App\Twain\TwainDefs.cs" />
+    <Compile Include="App\Twain\TwainException.cs" />
+    <Compile Include="App\Twain\TwainScannerManager.cs" />
+    <Compile Include="App\Twain\TwainSource.cs" />
+    <Compile Include="App\Twain\TwainState.cs" />
+    <Compile Include="App\Wia\WiaPixelType.cs" />
+    <Compile Include="App\Wia\WiaFormat.cs" />
+    <Compile Include="App\Wia\WiaProperty.cs" />
+    <Compile Include="App\Wia\WiaScannerManager.cs" />
+    <Compile Include="App\Wia\WiaSource.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormForSetPort.resx">
+    <EmbeddedResource Include="Configurator\FormForSetPort.resx">
       <DependentUpon>FormForSetPort.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
@@ -202,7 +202,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="ScanService.resx">
+    <EmbeddedResource Include="Host\ScanService.resx">
       <DependentUpon>ScanService.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

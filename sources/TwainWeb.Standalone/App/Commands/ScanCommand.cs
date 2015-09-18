@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using TwainWeb.Standalone.App.Models;
-using TwainWeb.Standalone.Scanner;
-using TwainWeb.Standalone.Tools;
-using TwainWeb.Standalone.Twain;
+using TwainWeb.Standalone.App.Scanner;
+using TwainWeb.Standalone.App.Tools;
+using TwainWeb.Standalone.App.Twain;
 
 namespace TwainWeb.Standalone.App.Commands
 {
