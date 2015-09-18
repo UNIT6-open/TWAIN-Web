@@ -33,7 +33,7 @@ namespace TwainWeb.Standalone.App.Commands
 				{
 					if (_scannerManager.CurrentSourceIndex != _command.Source)
 					{
-						new AsyncWorker<int>().RunWorkAsync(_command.Source, "ChangeSource", _scannerManager.ChangeSource,
+						new AsyncWorker<int>().RunWorkAsync(_command.Source, _scannerManager.ChangeSource,
 							WaitTimeForChangeSource);
 
 						if (_scannerManager.CurrentSourceIndex != _command.Source)
@@ -49,8 +49,7 @@ namespace TwainWeb.Standalone.App.Commands
 						PixelType = _command.ColorMode
 					};
 
-					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, "Asquire",
-						_scannerManager.CurrentSource.Scan, WaitTimaeForScan);
+					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, _scannerManager.CurrentSource.Scan, WaitTimaeForScan);
 
 					if (images != null)
 					{

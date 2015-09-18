@@ -1,57 +1,154 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceProcess;
 using System.Windows.Forms;
-
 
 namespace TwainWeb.Standalone
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>     
-        ///            
-
+        
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-                ServiceBase.Run(new ScanService(Settings.Default.Port));
-            else
-            {
-                if (args[0] == "config")
-                {
-                    var proc = new ProcessStartInfo();
-                    proc.UseShellExecute = true;
-                    proc.WorkingDirectory = Environment.CurrentDirectory;
-                    proc.FileName = Application.ExecutablePath;
-                    proc.Verb = "runas";
-                    proc.Arguments = "configrun 2";
-                    try
-                    {
-                        Process.Start(proc);
-                    }
-                    catch (Exception)
-                    {
-                    }
+	        foreach (var s in args)
+	        {
+		        File.AppendAllText("D://test.txt", s + "\r\n");
+	        }
+			File.AppendAllText("D://test.txt", "\r\n");
+			//запуск службы
+	        if (!Environment.UserInteractive || args.Length == 0)
+	        {
+		        ServiceBase.Run(new ScanService(Settings.Default.Port));
+	        }
+			
+			//запуск консольного приложения Twain@WEB
+			else if (args.Length == 1 && args[0] == "console")
+			{
+				RunFromConsole();
+			}
 
-                }
-                else if (args.Length == 2 && args[0] == "configrun")
-                {
-                    int isSetParameters;
-                    int.TryParse(args[1], out isSetParameters);
-                    if (isSetParameters == 2)
-                        Process.Start(Environment.CurrentDirectory + "/Files/bat/stop.bat").WaitForExit();
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);                    
-                    var mainForm = new FormForSetPort((isSetParameters == 1 || isSetParameters == 2));                    
-                    Application.Run(mainForm);   
-                    if(isSetParameters == 2)
-                        Process.Start(Environment.CurrentDirectory + "/Files/bat/start.bat");
-                }
-                else if (args[0] == "run")
-                    Process.Start("http://127.0.0.1:" + Settings.Default.Port + "/TWAIN@Web/");
-            }         
-        }        
+			//перезапуск конфигуратора от имени администратора
+			else if (args[0] == "config")
+				RunConfiguratorAsAdmin();
+
+			//запуск конфигуратора
+		    else if (args.Length == 2 && args[0] == "configrun")
+		    {
+			    int secondParam;
+			    var parseSuccess = int.TryParse(args[1], out secondParam);
+
+				// по умолчанию проверка порта
+				var argument = ConfigrunArg.CheckPortAvailability;
+			    if (parseSuccess && Enum.IsDefined(typeof (ConfigrunArg), secondParam))
+			    {
+				    argument = (ConfigrunArg) secondParam;
+			    }
+			
+				RunConfigurator(argument);
+		    }
+
+			//запуск браузера с открытой вкладкой Twain@WEB
+		    else if (args[0] == "run")
+			    OpenInBrowser();
+
+
+        }
+
+	    private static void RunConfiguratorAsAdmin()
+	    {
+		    var proc = new ProcessStartInfo
+		    {
+			    UseShellExecute = true,
+			    WorkingDirectory = Environment.CurrentDirectory,
+			    FileName = Application.ExecutablePath,
+			    Verb = "runas",
+			    Arguments = "configrun 2"
+		    };
+		    try
+		    {
+			    Process.Start(proc);
+		    }
+		    catch (Exception){}
+	    }
+
+	    private static void OpenInBrowser()
+	    {
+		    Process.Start("http://127.0.0.1:" + Settings.Default.Port + "/TWAIN@Web/");
+	    }
+
+		private static Process RunServiceManager(string command)
+	    {
+			var proc = new Process();
+			var psi = new ProcessStartInfo
+			{
+				CreateNoWindow = true,
+				FileName = "TwainWeb.ServiceManager.exe",
+				Arguments = command,
+				WindowStyle = ProcessWindowStyle.Hidden
+			};
+
+			proc.StartInfo = psi;
+			proc.Start();
+
+			return proc;
+	    }
+
+		private static void RunConfigurator(ConfigrunArg parameter)
+		{
+			var needToStartStop = parameter == ConfigrunArg.ConfigWithServiceInterruption;
+			var needToChangeSettingsInConfigurator = 
+				parameter == ConfigrunArg.Config ||
+				parameter == ConfigrunArg.ConfigWithServiceInterruption;
+
+			if (needToStartStop)			
+				RunServiceManager("-stop").WaitForExit();
+
+			Application.EnableVisualStyles();
+		    Application.SetCompatibleTextRenderingDefault(false);
+			var mainForm = new FormForSetPort(needToChangeSettingsInConfigurator);
+		    Application.Run(mainForm);
+
+			if (needToStartStop)
+				RunServiceManager("-start").WaitForExit();
+	    }
+
+	    private static void RunFromConsole()
+	    {
+		    var service = new ScanService(Settings.Default.Port);
+		    try
+		    {
+			    service.Start();
+			    Console.WriteLine("Press any key to stop service");
+			    Console.ReadKey();
+		    }
+		    catch (Exception e)
+		    {
+			    Console.WriteLine(e);
+		    }
+		    finally
+		    {
+			    service.Stop();
+		    }
+	    }
+
+		private enum ConfigrunArg
+		{
+			/// <summary>
+			/// Запуск конфигуратора для проверки доступности порта
+			/// </summary>
+			CheckPortAvailability,
+
+			/// <summary>
+			/// Запуск конфигуратора для настройки Twain@WEB
+			/// </summary>
+			Config,
+
+			/// <summary>
+			/// Запуск конфигуратора с прерыванием работы службы
+			/// </summary>
+			ConfigWithServiceInterruption
+		}
+           
     }
 }

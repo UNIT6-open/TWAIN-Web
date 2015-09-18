@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App.Models;
@@ -13,7 +14,8 @@ namespace TwainWeb.Standalone.App.Queries
 		private readonly CashSettings _cashSettings;
 		private int? _sourceIndex;
 		private readonly ILog _logger;
-		private const int WaitTime = 15000;
+		private const int ChangeSourceWaitTime = 15000;
+		private const int PushSettingsWaitTime = 5000;
 		public GetScannerParametersQuery(IScannerManager scannerManager, CashSettings cashSettings, int? sourceIndex)
 		{
 			if (scannerManager == null) throw new Exception("Невозможно получить параметры сканирования, т.к. менеджер источников данных не был инициализирован");
@@ -22,7 +24,7 @@ namespace TwainWeb.Standalone.App.Queries
 			_cashSettings = cashSettings;
 			_sourceIndex = sourceIndex;
 
-			_logger = LogManager.GetLogger(typeof(HttpServer));
+			_logger = LogManager.GetLogger(typeof(GetScannerParametersQuery));
 		}
 		public ScannerParametersQueryResult Execute(object markerAsync)
 		{
@@ -54,9 +56,9 @@ namespace TwainWeb.Standalone.App.Queries
 						{
 							searchSetting = GetScannerSettings(sourceIndex);
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
-							_logger.Error("Can't obtain scanner settings");
+							_logger.Error("Can't obtain scanner settings: " + e);
 						}
 
 						sources = _scannerManager.GetSources();
@@ -87,13 +89,14 @@ namespace TwainWeb.Standalone.App.Queries
 			var needOfChangeSource = _sourceIndex.HasValue && _sourceIndex != _scannerManager.CurrentSourceIndex;
 
 			if (needOfChangeSource)
-				new AsyncWorker<int>().RunWorkAsync(sourceIndex, "ChangeSource", _scannerManager.ChangeSource, WaitTime);
+				new AsyncWorker<int>().RunWorkAsync(sourceIndex, _scannerManager.ChangeSource, ChangeSourceWaitTime);
 
 			if (_scannerManager.CurrentSource == null)
 				throw new Exception("Не удалось выбрать источник");
 
 			if (sourceIndex == _scannerManager.CurrentSource.Index)
-				searchSetting = _cashSettings.PushCurrentSource(_scannerManager);
+				searchSetting = new AsyncWorker<IScannerManager, ScannerSettings>()
+					.RunWorkAsync(_scannerManager, _cashSettings.PushCurrentSource, PushSettingsWaitTime);
 
 			return searchSetting;
 		}

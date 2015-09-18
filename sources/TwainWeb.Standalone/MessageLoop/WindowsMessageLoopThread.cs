@@ -36,33 +36,48 @@ namespace TwainWeb.Standalone.MessageLoop
 		}
 
 		private delegate int GetThreadId();
+
+
 		private int GetControlThreadId()
 		{
 			return AppDomain.GetCurrentThreadId();			
 		}
 
-		public object Invoke(Delegate action, object[] parameters)
+		public void Invoke(Delegate action, object[] parameters)
 		{
 			using (new MessageBoxHook((int)_form.Invoke(new GetThreadId(GetControlThreadId))))
 			{
-				return _form.Invoke(action, parameters);
-			}			
-		}
-		public object Invoke(Delegate action)
-		{
-			using (new MessageBoxHook((int)_form.Invoke(new GetThreadId(GetControlThreadId))))
-			{
-				return _form.Invoke(action);
+				_form.Invoke(action, parameters);
 			}
 		}
-		public object BeginInvoke(Delegate action, object[] parameters)
+
+		public T Invoke<T>(Delegate action)
 		{
-			return _form.BeginInvoke(action, parameters);
+			using (new MessageBoxHook((int)_form.Invoke(new GetThreadId(GetControlThreadId))))
+			{					
+				return (T)_form.Invoke(action);				
+			}
+		}
+
+		public T Invoke<T>(Delegate action, object[] parameters)
+		{
+			using (new MessageBoxHook((int)_form.Invoke(new GetThreadId(GetControlThreadId))))
+			{
+				return (T)_form.Invoke(action, parameters);
+			}			
+		}
+		/*public object BeginInvoke(Delegate action, object[] parameters)
+		{
+
+				return _form.BeginInvoke(action, parameters);
+			
 		}
 
 		public object BeginInvoke(Delegate action)
 		{
-			return _form.BeginInvoke(action);
-		}
+
+				return _form.BeginInvoke(action);
+			
+		}*/
 	}
 }

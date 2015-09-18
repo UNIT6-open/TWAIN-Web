@@ -52,10 +52,14 @@ namespace TwainWeb.Standalone
         public void Stop()
         {
             _stop.Set();
+
+
             _listenerThread.Join();
+			_listener.Stop();
             foreach (Thread worker in _workers)
                 worker.Join();
-            _listener.Stop();
+
+          
         }
 
         private void HandleRequests()
@@ -79,10 +83,7 @@ namespace TwainWeb.Standalone
 			        _ready.Set();
 		        }
 	        }
-	        catch (Exception e)
-	        {
-		        _logger.Error(e.ToString());
-	        }
+	        catch { }
         }
 
         private void Worker()
@@ -108,12 +109,16 @@ namespace TwainWeb.Standalone
                     try
                     {
                         var actionResult = new ActionResult { Content = Encoding.UTF8.GetBytes(e.Message), ContentType = "text/plain" };
-                        context.Response.OutputStream.Write(actionResult.Content, 0, actionResult.Content.Length);
+	                    if (context.Response.OutputStream.CanWrite)
+	                    {
+		                    context.Response.OutputStream.Write(actionResult.Content, 0, actionResult.Content.Length);		             
+	                    }
 						_logger.Error(e.ToString());
                     }
                     catch (Exception ex)
                     {
 						_logger.Error(ex.ToString());
+						
                     }
                 }
 
@@ -123,7 +128,7 @@ namespace TwainWeb.Standalone
                 }
                 catch (Exception e)
                 {
-					_logger.Error(e.ToString());
+					//_logger.Error(e.ToString());
                 }
             }
         }

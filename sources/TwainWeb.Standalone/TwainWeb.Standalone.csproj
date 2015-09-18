@@ -111,7 +111,6 @@
   <ItemGroup>
     <Compile Include="App\AjaxMethods.cs" />
     <Compile Include="App\AsyncWorker.cs" />
-    <Compile Include="App\AsyncMethods.cs" />
     <Compile Include="App\CashSettings.cs" />
     <Compile Include="App\DownloadFileParam.cs" />
     <Compile Include="App\EnumExtensions.cs" />
@@ -124,6 +123,7 @@
     <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
     <Compile Include="RuntimeConfigurationManager.cs" />
     <Compile Include="Scanner\ScannerManager.cs" />
+    <Compile Include="ServiceHelper.cs" />
     <Compile Include="Tools\ImageTools.cs" />
     <Compile Include="App\MessageBoxHookManager.cs" />
     <Compile Include="App\MessageBoxHook.cs" />
@@ -298,19 +298,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Files\bat\install.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Files\bat\publish_release.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\bat\start.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\bat\stop.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Files\bat\uninstall.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -337,6 +325,10 @@
     <ProjectReference Include="..\TwainDotNet\TwainDotNet.csproj">
       <Project>{857b8891-2932-484d-a9a8-d38b47108cf0}</Project>
       <Name>TwainDotNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TwainWeb.ServiceManager\TwainWeb.ServiceManager.csproj">
+      <Project>{662a04dc-98d3-4e1a-ad6b-027b20878431}</Project>
+      <Name>TwainWeb.ServiceManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

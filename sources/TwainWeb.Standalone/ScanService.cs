@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App;
 using TwainWeb.Standalone.App.Models;
@@ -12,7 +14,7 @@ namespace TwainWeb.Standalone
 {
 	public class ScanService : ServiceBase
 	{
-		private readonly ILog _logger = LogManager.GetLogger(typeof(HttpServer));
+		private readonly ILog _logger = LogManager.GetLogger(typeof(ScanService));
 		private WindowsMessageLoopThread _messageLoop;
 		
 		public MyError CheckServer()
@@ -71,6 +73,25 @@ namespace TwainWeb.Standalone
 		private CashSettings cashSettings;
 		protected override void OnStart(string[] args)
 		{
+			_logger.InfoFormat("Start service on port: {0}", _port);
+			_messageLoop = new WindowsMessageLoopThread();
+			var smFactory = new ScannerManagerFactory();
+			try
+			{
+				_scannerManager = smFactory.GetScannerManager(_messageLoop);
+			}
+			catch (Exception e)
+			{
+				_logger.ErrorFormat(e.ToString());
+			}
+			StartServer();
+			var sdf = new Thread(() => _logger.InfoFormat("Http server started"));
+			sdf.Start();
+		}
+
+		public void Start()
+		{
+		
 			_messageLoop = new WindowsMessageLoopThread();
 			var smFactory = new ScannerManagerFactory();
 			try
@@ -91,9 +112,10 @@ namespace TwainWeb.Standalone
 			ActionResult actionResult;
 			if (ctx.Request.HttpMethod == "POST")
 			{
-				var scanFormModelBinder = new ModelBinder(GetPostData(ctx.Request));
-				if (ctx.Request.Url.AbsolutePath.Length > 11 && ctx.Request.Url.AbsolutePath.Substring(11) == "ajax")
+				var segments = new Uri(ctx.Request.Url.AbsoluteUri).Segments;
+				if (segments.Length > 1 && segments[segments.Length - 2] == "TWAIN@Web/" && segments[segments.Length - 1] == "ajax")
 				{
+					var scanFormModelBinder = new ModelBinder(GetPostData(ctx.Request));
 					var method = scanFormModelBinder.BindAjaxMethod();
 					var ajaxMethods = new AjaxMethods(_markerAsynchrone);
 					switch (method)
@@ -103,6 +125,12 @@ namespace TwainWeb.Standalone
 							break;
 						case "Scan":
 							actionResult = ajaxMethods.Scan(scanFormModelBinder.BindScanForm(), _scannerManager);
+							break;
+						case "RestartWia":
+							actionResult = ajaxMethods.RestartWia();
+							break;
+						case "Restart":
+							actionResult = ajaxMethods.Restart();
 							break;
 						default:
 							actionResult = new ActionResult { Content = new byte[0] };
@@ -158,26 +186,27 @@ namespace TwainWeb.Standalone
 
 		private Dictionary<string, string> GetGetData(System.Net.HttpListenerRequest request)
 		{
-			var getData = new Dictionary<string, string>();
+			Dictionary<string, string> getData;
 			var getDataString = request.RawUrl.Substring(request.RawUrl.IndexOf("?") + 1);
-			parseQueriString(getDataString, ref getData);
+			getData = parseQueryString(getDataString);
 			return getData;
 		}
 
 		private Dictionary<string, string> GetPostData(System.Net.HttpListenerRequest request)
 		{
-			var postData = new Dictionary<string, string>();
+			Dictionary<string, string> postData;
 			using (var reader = new StreamReader(request.InputStream))
 			{
 				var postedData = reader.ReadToEnd();
-				parseQueriString(postedData, ref postData);
+				postData = parseQueryString(postedData);
 			}
 
 			return postData;
 		}
 
-		private void parseQueriString(string query, ref Dictionary<string, string> data)
+		private Dictionary<string, string> parseQueryString(string query)
 		{
+			var data = new Dictionary<string, string>();
 			foreach (var item in query.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				var tokens = item.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
@@ -189,12 +218,20 @@ namespace TwainWeb.Standalone
 				var paramValue = Uri.UnescapeDataString(tokens[1]);
 				data.Add(paramName, paramValue);
 			}
+
+			return data;
 		}
 
 		protected override void OnStop()
 		{
+			_logger.InfoFormat("Stop server...");
 			_messageLoop.Stop();
 			StopServer();
+			_logger.InfoFormat("Service stopped");
+			foreach (var appender in _logger.Logger.Repository.GetAppenders())
+			{
+				appender.Close();
+			}
 		}
 	}
 

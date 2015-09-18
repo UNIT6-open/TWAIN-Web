@@ -87,18 +87,34 @@ namespace TwainWeb.Standalone.Wia
 			var i = 0;
 			foreach (DeviceInfo info in manager.DeviceInfos)
 			{
-				try
+				if (info.Type == WiaDeviceType.ScannerDeviceType)
 				{
-					devices.Add(new WiaSource(manager, info, i));
-				}
-				catch (Exception e)
-				{
-					_log.WarnFormat("Ошибка при добавлении источника: {0}", e);
-					continue;
+					try
+					{
+						var name = FindProperty(info.Properties, WiaProperty.Name);
+						devices.Add(new WiaSource(i, (string)name.get_Value(), info.DeviceID));
+					}
+					catch (Exception e)
+					{
+						_log.WarnFormat("Ошибка при добавлении источника: {0}", e);
+						continue;
+					}
 				}
 				i++;
 			}
 			_sources = devices;
+		}
+
+		private static Property FindProperty(WIA.Properties properties, WiaProperty property)
+		{
+			foreach (Property prop in properties)
+			{
+				if (prop.PropertyID == (int)property)
+				{
+					return prop;
+				}
+			}
+			return null;
 		}
 
 	}

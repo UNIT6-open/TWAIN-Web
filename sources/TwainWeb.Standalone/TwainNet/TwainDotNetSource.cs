@@ -37,7 +37,7 @@ namespace TwainWeb.Standalone.TwainNet
 		public ScannerSettings GetScannerSettings()
 		{
 			var getSettings = new GetSettings(GetTwainScannerSettings);
-			var settings = (SourceSettings)_windowsMessageLoop.Invoke(getSettings);
+			var settings = _windowsMessageLoop.Invoke<SourceSettings>(getSettings);
 			var scannerSettings = new ScannerSettings(Index, Name, settings.Resolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth);
 
 			return scannerSettings;
@@ -87,6 +87,7 @@ namespace TwainWeb.Standalone.TwainNet
 
 		private SourceSettings GetTwainScannerSettings()
 		{
+			//return new AsyncWorker<string, SourceSettings>().RunWorkAsync(Name, _twain.GetAwailableSourceSettings, 4000);
 			return _twain.GetAwailableSourceSettings(Name);
 		}
 		private void StartTwainScan(ScanSettings settings)
