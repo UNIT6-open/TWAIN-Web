@@ -25,7 +25,7 @@ namespace TwainWeb.Standalone {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
         public int Port {
             get {
                 return ((int)(this["Port"]));
@@ -34,7 +34,7 @@ namespace TwainWeb.Standalone {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TwainDotNet")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Wia")]
         public string ScannerManager {
             get {
                 return ((string)(this["ScannerManager"]));

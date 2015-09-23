@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using TwainDotNet.TwainNative;
 using System.Runtime.InteropServices;
 using TwainDotNet.Win32;
@@ -156,6 +157,12 @@ namespace TwainDotNet
 				sources.Add(new DataSource(ApplicationId, id, _messageHook, _log));
 			}
 
+			var sb = new StringBuilder("GetAllSources result: ");
+			foreach (var dataSource in sources)
+			{
+				sb.Append(string.Format("sourceId: {0}; ", dataSource.SourceId.ProductName));
+			}
+			_log.Debug(sb);
 			return sources;
 		}
 
@@ -337,8 +344,7 @@ namespace TwainDotNet
 
 			        if (result != TwainResult.XferDone)
 			        {
-				        var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
-				        _log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
+						_log.ErrorFormat("Transfer the image from the device failed. Result: {0}", result);
 				        CloseDataSource();
 				        break;
 			        }
@@ -395,10 +401,16 @@ namespace TwainDotNet
                     Message.Reset,
                     pendingTransfer);
 
-				_log.Debug(string.Format("Reset(PendingXfers), result: {0}", result));
+				
 	            if (result == TwainResult.Success)
 	            {
 		            _twainState = TwainState.SourceEnabled;
+					_log.Debug(string.Format("Reset(PendingXfers), result: {0}", result));
+	            }
+	            else
+	            {
+					var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
+					_log.ErrorFormat("Reset(PendingXfers), result: {0}, condition code: {1}", result, conditionCode);		
 	            }
             }
         }

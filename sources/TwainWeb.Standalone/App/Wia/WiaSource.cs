@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
+using log4net;
 using TwainWeb.Standalone.App.Extensions;
+using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 using TwainWeb.Standalone.App.Twain;
 using WIA;
@@ -12,10 +16,11 @@ namespace TwainWeb.Standalone.App.Wia
 	class WiaSource:ISource
 	{
 		#region constants
-		class WIA_DPS_DOCUMENT_HANDLING_SELECT
+		enum WIA_DPS_DOCUMENT_HANDLING_SELECT
 		{
-			public const uint FEEDER = 0x00000001;
-			public const uint FLATBED = 0x00000002;
+			Feeder = 0x00000001,
+			Flatbad = 0x00000002,
+			Duplex = 0x00000004,
 		}
 
 		class WIA_DPS_DOCUMENT_HANDLING_STATUS
@@ -41,22 +46,28 @@ namespace TwainWeb.Standalone.App.Wia
 		private readonly string _deviceId;
 		private readonly int _sourceIndex;
 		private readonly string _name;
+		private ILog _log;
 
 		public WiaSource(int index, string name, string deviceId)
 		{
 			_sourceIndex = index;
 			_name = name;
 			_deviceId = deviceId;
-			
-			//ConnectToDevice(deviceInfo.DeviceID);
+			_log = LogManager.GetLogger(typeof(WiaSource));
+			_log.Debug(string.Format("Created WIA source, name={0}, index={1}", name, index));
 		}
 		public string DeviceId { get { return _deviceId; } }
 		public string Name { get { return _name; } }
 		public int Index { get { return _sourceIndex; } }
 
+		private void Log(string message)
+		{
+			_log.Info(string.Format("{0}: {1}", Name, message));
+		}
 
 		public ScannerSettings GetScannerSettings()
 		{
+			Log("Get scanner settings");
 			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
@@ -66,30 +77,56 @@ namespace TwainWeb.Standalone.App.Wia
 			var device = ConnectToDevice();
 			var source = device.Items[1];
 
+			var supportedScanFeeds = GetSupportedDocumentHandlingCaps(device);
+			List<float> flatbedResolutions = null;
+			List<float> feederResolutions = null;
+			if (supportedScanFeeds == null || supportedScanFeeds.Count == 0)
+			{
+				flatbedResolutions = GetAllowableResolutions(source);
+			}
+			else
+			{
+				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Flatbad))
+				{
+					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
+					flatbedResolutions = GetAllowableResolutions(source);
+				}
+				
+				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Feeder))
+				{
+					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
+					feederResolutions = GetAllowableResolutions(source);
+				}
+			}
 			var settings = new ScannerSettings(
 				_sourceIndex,
 				_name,
-				GetAllowableResolutions(source),
+				flatbedResolutions,
+				feederResolutions,
 				GetAllowablePixelTypes(),
 				GetMaxHeight(device),
-				GetMaxWidth(device));
+				GetMaxWidth(device),
+				GetSupportedDocumentHandlingCaps(device));
+
+			Log("Get scanner settings success");
 
 			return settings;
 		}
 
+	
 		/// <summary>
 		/// Use scanner to scan an image (with user selecting the scanner from a dialog).
 		/// </summary>
 		/// <returns>Scanned images.</returns>
 		public List<Image> Scan(SettingsAcquire settings)
 		{
-
 			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
 			}
 
 			var device = ConnectToDevice();
+
 			SetAcquireSettings(device, settings);
 
 			return Scan(device);
@@ -102,65 +139,81 @@ namespace TwainWeb.Standalone.App.Wia
 		/// <returns>Scanned images.</returns>
 		private List<Image> Scan(Device device)
 		{
-		
+
+			Log("Start scan");
 			var images = new List<Image>();
 
 			var hasMorePages = true;
 			while (hasMorePages)
 			{
 
-				var item = device.Items[1];;
+				var item = device.Items[1];
 
 				try
 				{
 					// scan image
-					var image = (ImageFile)item.Transfer(FormatID.wiaFormatBMP);
+					Log("Start transfer image");
+					var image = (ImageFile) item.Transfer(FormatID.wiaFormatBMP);
+					Log("Image transfer success");
 
 					if (image == null) throw new Exception("Не удалось отсканировать изображение");
 
 					// save to memory stream
-					var buffer = (byte[])image.FileData.get_BinaryData();
+					var buffer = (byte[]) image.FileData.get_BinaryData();
 					var stream = new MemoryStream(buffer);
 					var img = Image.FromStream(stream);
 
 					images.Add(img);
 
 				}
-				catch (Exception exc)
+				catch (COMException e)
 				{
-					throw exc;
+					//Out Of Paper
+					if (e.ErrorCode == -2145320957)
+					{
+						Log("Out of paper");
+						return images;
+					}
+					else throw;
 				}
 				finally
 				{
-					//determine if there are any more pages waiting
-					Property documentHandlingSelect = null;
-					Property documentHandlingStatus = null;
-
-					foreach (Property prop in device.Properties)
-					{
-						if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_SELECT)
-							documentHandlingSelect = prop;
-
-						if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_STATUS)
-							documentHandlingStatus = prop;
-					}
-
-					// assume there are no more pages
-					hasMorePages = false;
-
-					// may not exist on flatbed scanner but required for feeder
-					if (documentHandlingSelect != null)
-					{
-						// check for document feeder
-						if ((Convert.ToUInt32(documentHandlingSelect.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_SELECT.FEEDER) != 0)
-						{
-							hasMorePages = ((Convert.ToUInt32(documentHandlingStatus.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY) != 0);
-						}
-					}
+					hasMorePages = HasMorePages(device);
 				}
 			}
-
+			Log("Scan success, images count: " + images.Count);
 			return images;
+		}
+
+		private bool HasMorePages(IDevice device)
+		{
+			//determine if there are any more pages waiting
+			Property documentHandlingSelect = null;
+			Property documentHandlingStatus = null;
+
+			foreach (Property prop in device.Properties)
+			{
+				if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_SELECT)
+					documentHandlingSelect = prop;
+
+				if (prop.PropertyID == WIA_PROPERTIES.WIA_DPS_DOCUMENT_HANDLING_STATUS)
+					documentHandlingStatus = prop;
+			}
+
+			// assume there are no more pages
+			bool hasMorePages = false;
+
+			// may not exist on flatbed scanner but required for feeder
+			if (documentHandlingSelect != null)
+			{
+				// check for document feeder
+				if ((Convert.ToUInt32(documentHandlingSelect.get_Value()) & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
+				{
+					hasMorePages = ((Convert.ToUInt32(documentHandlingStatus.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY) != 0);
+				}
+			}
+			Log("Has more pages = " + hasMorePages);
+			return hasMorePages;
 		}
 
 		private DeviceInfo DeviceInfo
@@ -182,7 +235,7 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private Device ConnectToDevice()
 		{
-			
+			Log("Connect to scanner");
 			// connect to scanner
 			var device = DeviceInfo.Connect();
 			
@@ -195,6 +248,7 @@ namespace TwainWeb.Standalone.App.Wia
 			if (device.Items.Count == 0)
 				throw new Exception("The device hasn't any device info");
 
+			Log("Connect to scanner success");
 			return device;
 		}
 
@@ -216,6 +270,8 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private void SetAcquireSettings(Device device, SettingsAcquire settings)
 		{
+			Log("Set acquire settings");
+
 			var source = device.Items[1];
 			if (source == null) throw new Exception("Current sourse not found");
 
@@ -235,13 +291,34 @@ namespace TwainWeb.Standalone.App.Wia
 			SetProperty(source.Properties, WiaProperty.CurrentIntent, currentIntent);
 
 			if (currentIntent == WiaPixelType.Color)
-				try
+			try
+			{
+				SetProperty(source.Properties, WiaProperty.BitsPerPixel, 24);
+			}
+			catch (Exception)
+			{
+			}
+
+			if (settings.ScanSource.HasValue)
+			{
+				int documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
+				switch ((ScanFeed)settings.ScanSource.Value)
 				{
-					SetProperty(source.Properties, WiaProperty.BitsPerPixel, 24);
+					case ScanFeed.Feeder:
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder;
+						break;
+					case ScanFeed.Flatbad:
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
+						break;
+					case ScanFeed.Duplex:
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex | (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder;
+						break;
 				}
-				catch (Exception)
-				{
-				}
+				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, documentHandlingSelect);
+				
+			}
+
+			Log("Set acquire settings success");
 		}
 
 		private Dictionary<int, string> GetAllowablePixelTypes()
@@ -254,6 +331,28 @@ namespace TwainWeb.Standalone.App.Wia
 
 			return pixelTypes;
 		}
+
+		private Dictionary<int, string> GetSupportedDocumentHandlingCaps(IDevice device)
+		{
+			var property = FindProperty(device.Properties, WiaProperty.DocumentHandlingCapabilities);
+
+			if (property == null)
+				return null;
+
+			var scanFeeds = new Dictionary<int, string>();
+
+			var propertyValue = (int)property.get_Value();
+			
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad) != 0)
+				scanFeeds.Add((int)ScanFeed.Flatbad, EnumExtensions.GetDescription(ScanFeed.Flatbad));				
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
+				scanFeeds.Add((int)ScanFeed.Feeder, EnumExtensions.GetDescription(ScanFeed.Feeder));			
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex) != 0)
+				scanFeeds.Add((int)ScanFeed.Duplex, EnumExtensions.GetDescription(ScanFeed.Duplex));
+			
+			return scanFeeds;
+		}
+
 
 		private List<float> GetAllowableResolutions(IItem source)
 		{
@@ -344,7 +443,7 @@ namespace TwainWeb.Standalone.App.Wia
 		}
 
 		#region debug
-		/*		private void WritePropertiesToFile(WIA.Properties properties)
+		private void WritePropertiesToFile(WIA.Properties properties)
 		{
 			foreach (Property prop in properties)
 			{
@@ -366,7 +465,7 @@ namespace TwainWeb.Standalone.App.Wia
 					string.Format("id: {4}, name: {0}, val: {1}, min: {2}, max: {3}\r\n", name, val, min.HasValue ? min.Value.ToString() : "", max.HasValue ? max.Value.ToString() : "", prop.PropertyID));
 				
 			}
-		}*/
+		}
 		#endregion
 	}
 }

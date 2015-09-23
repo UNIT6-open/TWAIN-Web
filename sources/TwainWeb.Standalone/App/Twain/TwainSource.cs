@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Twain
@@ -31,6 +32,8 @@ namespace TwainWeb.Standalone.App.Twain
 			var settings = new ScannerSettings(
 				Index,
 				Name,
+				GetAllowableResolutions(),
+				//todo: 
 				GetAllowableResolutions(),
 				GetAllowablePixelTypes(),
 				GetMaxHeight(),

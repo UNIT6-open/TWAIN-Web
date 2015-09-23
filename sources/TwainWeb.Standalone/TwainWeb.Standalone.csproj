@@ -39,6 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -112,28 +113,31 @@
     <Compile Include="App\AsyncWorker.cs" />
     <Compile Include="App\Cache\CacheSettings.cs" />
     <Compile Include="App\Controllers\ScanController.cs" />
-    <Compile Include="App\Models\ActionResult.cs" />
-    <Compile Include="App\Models\DownloadFileParam.cs" />
+    <Compile Include="App\Models\Response\ActionResult.cs" />
+    <Compile Include="App\Models\Request\DownloadFileParam.cs" />
     <Compile Include="App\Extensions\EnumExtensions.cs" />
+    <Compile Include="App\Models\Response\MultipleScanResult.cs" />
+    <Compile Include="App\Models\ScanFeed.cs" />
     <Compile Include="App\Twain\TwainExtensions.cs" />
     <Compile Include="App\Models\FormatPage.cs" />
     <Compile Include="App\Queries\GetScannerParametersQuery.cs" />
     <Compile Include="App\GlobalDictionaries.cs" />
     <Compile Include="App\Controllers\HomeController.cs" />
-    <Compile Include="App\Models\Result.cs" />
-    <Compile Include="App\Models\ScannerParametersQueryResult.cs" />
+    <Compile Include="App\Models\Response\ExecutionResult.cs" />
+    <Compile Include="App\Models\Response\ScannerParametersQueryResult.cs" />
     <Compile Include="Configurator\RuntimeConfigurationManager.cs" />
     <Compile Include="App\Scanner\ScannerManager.cs" />
     <Compile Include="App\Tools\ImageTools.cs" />
     <Compile Include="App\Hook\MessageBoxHookManager.cs" />
     <Compile Include="App\Hook\MessageBoxHook.cs" />
+    <Compile Include="ConsoleManager.cs" />
     <Compile Include="Host\HttpServerError.cs" />
     <Compile Include="App\Commands\ScanCommand.cs" />
-    <Compile Include="App\Models\ScannerSettings.cs" />
-    <Compile Include="App\Models\ScanForm.cs" />
+    <Compile Include="App\Models\Response\ScannerSettings.cs" />
+    <Compile Include="App\Models\Request\ScanForm.cs" />
     <Compile Include="App\Binders\ModelBinder.cs" />
-    <Compile Include="App\Models\ScanResult.cs" />
-    <Compile Include="App\Models\SingleScanResult.cs" />
+    <Compile Include="App\Models\Response\ScanResult.cs" />
+    <Compile Include="App\Models\Response\SingleScanResult.cs" />
     <Compile Include="Configurator\FormForSetPort.cs">
       <SubType>Form</SubType>
     </Compile>

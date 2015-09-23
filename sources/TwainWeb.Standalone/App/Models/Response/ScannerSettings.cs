@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Models.Response
 {    
     
     public class ScannerSettings
@@ -8,16 +8,20 @@ namespace TwainWeb.Standalone.App
 	    private const float Backlash = 0.3f;
 	    private readonly string _name;
         private readonly int? _id;
-		private readonly List<float> _resolutions;
+		private readonly List<float> _flatbedResolutions;
+		private readonly List<float> _feederResolutions;
 		private readonly Dictionary<int, string> _pixelTypes;
         private List<FormatPage> _allowedFormats;
-		public ScannerSettings(int id, string name, List<float> resolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null)
+	    private readonly Dictionary<int, string> _scanFeeds;
+		public ScannerSettings(int id, string name, List<float> flatbedResolutions = null, List<float> feederResolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null, Dictionary<int, string> scanFeeds = null)
         {
             _name = name;
             _id = id;
-            _resolutions = resolutions;
+			_flatbedResolutions = flatbedResolutions;
+			_feederResolutions = feederResolutions;
             _pixelTypes = pixelTypes;
             FillAllowedFormats(maxHeight, maxWidth);
+			_scanFeeds = scanFeeds;
         }
 
         private void reduceSize(ref float? maxWidth, ref float? maxHeight)
@@ -90,10 +94,31 @@ namespace TwainWeb.Standalone.App
         public string Serialize()
         {
             var result = "";
-            if (_resolutions != null && _resolutions.Count > 0)
-                result += string.Format(",\"minResolution\": \"{0}\", \"maxResolution\": \"{1}\"", _resolutions[0], _resolutions[_resolutions.Count - 1]);
 
-	        var iter = 0;
+			if (_flatbedResolutions != null && _flatbedResolutions.Count > 0)
+			{
+				result += ",\"flatbedResolutions\": [";
+				for (var i = 0; i < _flatbedResolutions.Count; i++)
+				{
+					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", 
+						_flatbedResolutions[i], 
+						i != (_flatbedResolutions.Count - 1) ? "," : "");
+				}
+				result += "]";
+			}
+			if (_feederResolutions != null && _feederResolutions.Count > 0)
+			{
+				result += ",\"feederResolutions\": [";
+				for (var i = 0; i < _feederResolutions.Count; i++)
+				{
+					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", 
+						_feederResolutions[i], 
+						i != (_feederResolutions.Count - 1) ? "," : "");
+				}
+				result += "]";
+			}
+			
+           var iter = 0;
             if (_pixelTypes != null && _pixelTypes.Count > 0)
             {
                 result += ",\"pixelTypes\": [";
@@ -118,6 +143,19 @@ namespace TwainWeb.Standalone.App
                 }
                 result += "]";
             }
+
+	        if (_scanFeeds != null)
+	        {
+				result += ",\"scanFeeds\": [";
+		        var currentKeyNumber = 0;
+		        foreach (var key in _scanFeeds.Keys)
+		        {
+			        result += "{\"key\": \"" + key + "\", \"value\":\"" + _scanFeeds[key] + "\"}"
+						+ (currentKeyNumber != (_scanFeeds.Keys.Count - 1) ? "," : "");
+			        currentKeyNumber++;
+		        }
+				result += "]";
+	        }
             return result;
         }
     }

@@ -5,6 +5,8 @@ using System.Text;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Request;
+using TwainWeb.Standalone.App.Models.Response;
 
 namespace TwainWeb.Standalone.App.Controllers
 {
@@ -54,13 +56,19 @@ namespace TwainWeb.Standalone.App.Controllers
             var fileId = fileParam.ListFiles[0].TempFile;
             var fileName = fileParam.ListFiles[0].FileName;
             string mimeType = null;
-            var extension = Path.GetExtension(fileName);
-            if (!string.IsNullOrEmpty(extension))
-                mimeType = _mimeTypes[extension.Substring(1).ToLower()];
-            if (fileParam.SaveAs == (int)GlobalDictionaries.SaveAsValues.Pdf)
-            {
-                fileId = MakePdf(fileParam.ListFiles);
-            }
+            
+	        if (fileParam.SaveAs == (int) GlobalDictionaries.SaveAsValues.Pdf)
+	        {
+		        fileId = MakePdf(fileParam.ListFiles);
+		        mimeType = _mimeTypes["pdf"];
+				fileName = Path.ChangeExtension(fileName, ".pdf");
+	        }
+	        else
+	        {
+				var extension = Path.GetExtension(fileName);
+				if (!string.IsNullOrEmpty(extension))
+					mimeType = _mimeTypes[extension.Substring(1).ToLower()];
+	        }
             var file = Path.Combine(tempDir, fileId);
             if (File.Exists(file))
             {
@@ -71,7 +79,7 @@ namespace TwainWeb.Standalone.App.Controllers
                 {
                     if (File.Exists(tempDir + img.TempFile))
                     {
-                        File.Delete(tempDir + img.TempFile);
+						File.Delete(tempDir + img.TempFile);
                         GlobalDictionaries.Scans.Remove(img.TempFile);
                     }
                 }

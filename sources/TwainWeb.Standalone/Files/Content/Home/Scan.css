@@ -1,10 +1,11 @@
-﻿section.body {
+﻿	section.body {
     background: url(images/photo.jpg) 50% 0 no-repeat;
+	background-size: 100%;
 }
 
 #form {
     position:relative;
-    height: 820px;
+    min-height: 760px;
     min-width: 460px;
 }
 
@@ -45,7 +46,7 @@
     height: 35px;
 }
 
-#form .mode-switch.enable {
+#form .mode-switch.active {
     background: none;
     box-shadow: inset 2px 2px 6px -1px rgba(0,0,0,0.5), inset 4px 0 8px 0px rgba(0,0,0,.1);
     background-color: #4D6D20;
@@ -61,10 +62,15 @@
     border-radius: 0 5px 5px 0;
 }
 
-#form .mode-switch.disable {
+#form .mode-switch.inactive {
     background-color: #85BD37;
     padding: 6px 14px;
     background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(0,0,0, .05)),to(rgba(0,0,0, .4)));
+}
+
+
+#form .mode-switch:disabled{
+    background-color: #4C6B1F;  
 }
 
 #form .form-field {    

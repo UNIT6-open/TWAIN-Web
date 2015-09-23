@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Request;
 
 namespace TwainWeb.Standalone.App.Binders
 {
     public class ModelBinder
     {
-        private readonly Dictionary<string, string> query;
+        private readonly Dictionary<string, string> _query;
 
         public ModelBinder(Dictionary<string, string> query)
         {
-            this.query = query;
+            _query = query;
         }
 
         private string TryGet(string key)
         {
-            return query.ContainsKey(key) ? query[key] : null;
+            return _query.ContainsKey(key) ? _query[key] : null;
         }
 
         public DownloadFileParam BindDownloadFile()
@@ -23,16 +25,16 @@ namespace TwainWeb.Standalone.App.Binders
             var i = 0;
             while(true)
             {                
-                var FileName = TryGet("fileName"+i);
-                var TempFile = TryGet("fileId"+i);
-                if (FileName == null || TempFile == null)
+                var fileName = TryGet("fileName"+i);
+                var tempFile = TryGet("fileId"+i);
+                if (fileName == null || tempFile == null)
                     break;
-                downloadParam.ListFiles.Add(new DownloadFile(FileName,TempFile));
+                downloadParam.ListFiles.Add(new DownloadFile(fileName,tempFile));
                 i++;
-            };                        
+            }                       
             if(downloadParam.ListFiles.Count == 0)
                 throw new Exception("Нечего загружать (неверный запрос)");
-            var saveAs = TryGetInt("saveAs", (int)GlobalDictionaries.SaveAsValues.Pictures);
+            
             downloadParam.SaveAs = TryGetInt("saveAs", (int)GlobalDictionaries.SaveAsValues.Pictures);
             return downloadParam;
         }
@@ -56,11 +58,12 @@ namespace TwainWeb.Standalone.App.Binders
                 FileCounter = TryGet("Form.FileCounter"),
                 CompressionFormat = new CompressionFormat(TryGet("Form.CompressionFormat")),                
                 ColorMode = TryGetInt("Form.ColorMode", 0),
-                DPI = TryGetFloat("Form.DPI", 150f),
+                DPI = TryGetFloat("Form.Dpi", 150f),
                 Source = TryGetInt("Form.Source", 0),
                 IsPackage = TryGet("isPackage"),
                 SaveAs = TryGetInt("Form.SaveAs", 0),
-                Format = new FormatPage(TryGet("Form.Format"))
+                Format = new FormatPage(TryGet("Form.Format")),
+				DocumentHandlingCap = TryGetNullableInt("Form.ScanFeed", null)
             };           
             
             return command;
@@ -80,6 +83,17 @@ namespace TwainWeb.Standalone.App.Binders
         }
 
         private int TryGetInt(string key, int defaultValue)
+        {
+            var stringValue = TryGet(key);
+            if (stringValue == null)
+                return defaultValue;
+
+            int intResult;
+            var parseResult = int.TryParse(stringValue, out intResult);
+
+            return parseResult ? intResult : defaultValue;
+        }
+		private int? TryGetNullableInt(string key, int? defaultValue)
         {
             var stringValue = TryGet(key);
             if (stringValue == null)

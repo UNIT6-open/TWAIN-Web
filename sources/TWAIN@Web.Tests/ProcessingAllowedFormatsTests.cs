@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TwainWeb.Standalone.App;
+using TwainWeb.Standalone.App.Models.Response;
 
 namespace TWAIN_Web.Tests
 {

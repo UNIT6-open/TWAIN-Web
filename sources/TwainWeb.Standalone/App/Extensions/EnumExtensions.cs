@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace TwainWeb.Standalone.App.Extensions
@@ -16,5 +17,19 @@ namespace TwainWeb.Standalone.App.Extensions
 
 			return enumValue.ToString();
 		}
+
+		public static Dictionary<int, string> GetDictionaryWithEnumValues(Type type)
+		{
+			var values = Enum.GetValues(type);
+			var result = new Dictionary<int, string>();
+
+			foreach (var value in values)
+			{
+				var description = GetDescription((Enum)value);
+				result.Add((int)value, description);
+			}
+
+			return result;
+		} 
 	}
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App.Cache;
-using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Queries
@@ -29,6 +28,7 @@ namespace TwainWeb.Standalone.App.Queries
 		}
 		public ScannerParametersQueryResult Execute(object markerAsync)
 		{
+			_logger.Info("======================================= GET PARAMS QUERY ========================================");
 			ScannerSettings searchSetting = null;
 			List<ISource> sources = null;
 
@@ -79,6 +79,7 @@ namespace TwainWeb.Standalone.App.Queries
 				return new ScannerParametersQueryResult(string.Format("Не удалось получить информацию об источниках: сканер занят"));
 			}
 
+			_logger.Info("Scan settings: " + (searchSetting == null? "": searchSetting.Serialize()));
 			return new ScannerParametersQueryResult(sources, searchSetting, _sourceIndex);
 		}
 

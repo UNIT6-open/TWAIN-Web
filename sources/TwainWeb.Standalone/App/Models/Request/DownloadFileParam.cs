@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Models.Request
 {
     public class DownloadFileParam
     {
@@ -17,15 +17,4 @@ namespace TwainWeb.Standalone.App
         public string FileName { get; set; }
         public string TempFile { get; set; }
     }
-
-	public class FileWithContent
-	{
-		public FileWithContent(DownloadFile fileName, byte[] content)
-		{
-			FileName = fileName;
-			Content = content;
-		}
-		public DownloadFile FileName { get; private set; }
-		public byte[] Content { get; private set; }
-	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Twain;
 
 namespace TwainWeb.Standalone.App.Scanner

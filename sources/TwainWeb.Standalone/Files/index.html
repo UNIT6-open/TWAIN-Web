@@ -12,7 +12,7 @@
 	<link href="Content/site.css?ver=04.12.2013" rel="stylesheet" />
 
 	<script src="Scripts/modernizr-2.6.2.js"></script>
-	
+
 	<link href="Content/Home/Scan.css?ver=04.12.2013" rel="stylesheet" />
 
 </head>
@@ -67,11 +67,12 @@
 						<div class="form-field">
 							<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
 						</div>
-						<div class="form-field DPI">
-							<div class="form-field-hint disp-no">
-								Диапазон: <span class="min"></span>-<span class="max"></span>
-							</div>
-							<input data-val="true" data-val-number="The field DPI must be a number." data-val-required="Требуется поле DPI." id="Form_DPI" name="Form.DPI" type="text" value="" />
+						<div class="form-field">
+							<select id="Form_Dpi" name="Form.Dpi"></select>
+							<select id="Form_Dpi_Hidden" class="disp-no"></select>
+						</div>
+						<div class="form-field">
+							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
 						</div>
 						<div class="form-field">
 							<select id="Form_ColorMode" name="Form.ColorMode"></select>
@@ -89,7 +90,7 @@
 							<select id="Form_Format" name="Form.Format"></select>
 						</div>
 						<div class="form-field mode-switch-container">
-							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch enable">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch disable">Пакетное сканирование</button>
+							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
 						</div>
 						<div class="form-field  disp-no package-setting">
 							<input id="Form_CountScans" type="text" value="001" />
@@ -97,7 +98,7 @@
 						<div class="form-field disp-no package-setting">
 							<input id="Form_ScanInterval" type="text" value="001" />
 						</div>
-						<div class="form-field disp-no package-setting">
+						<div class="form-field disp-no package-setting package-feeder-setting">
 							<select id="Form_SaveAs" name="Form.SaveAs">
 								<option value="0">Сохранить как Картинки</option>
 								<option value="1">Сохранить как PDF</option>
@@ -126,22 +127,32 @@
 	<script>
 		$(function () {
 			var GlobalScanSettingsName = "GlobalScanSettings";
+
+
 			var changeMode = function (enableID) {
 				var switches = $('#form .mode-switch-container .mode-switch');
 				for (var i = 0; i < switches.length; i++) {
 					if ($(switches[i]).attr('id') == enableID) {
-						$(switches[i]).removeClass('disable').addClass('enable');
-						eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
+						$(switches[i]).removeClass('inactive').addClass('active');
+						
+						//если выбран ADF
+						var scanFeed = $("#form").find("#Form_ScanFeed");
+						if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
+							$('#form .package-setting').addClass("disp-no");
+							eval("$('#form .package-feeder-setting')." + $(switches[i]).attr('changeAction'));
+						} else {
+							eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
+						}
 					} else {
-						$(switches[i]).removeClass('enable').addClass('disable');
+						$(switches[i]).removeClass('active').addClass('inactive');
 					}
 				}
 			};
 
 			$('#form .mode-switch').click(function () {
-				if ($(this).is('.disable')) {
-					changeMode($(this).attr('id'));
-				}
+				if ($(this).is('.inactive')) {
+					changeMode($(this).attr('id'));					
+				} 
 			});
 			function pad(num, size) {
 				var s = num + "";
@@ -155,20 +166,44 @@
 				UpdateGlobalSetting(GetGlobalSettings(), { "FileName": $('#Form_FileName').val(), "CountScans": fileCounter });
 				$("#Form_FileCounter").val(fileCounter);
 			};
+			
 			var downloadFile = function (downloadFiles, save_as) {
-				save_as = save_as == undefined ? "" : "saveAs=" + save_as;
-				var query = "?";
-				for (var i = 0; i < downloadFiles.length; i++) {
-					query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
+				//если несколько файлов необходимо сохранить как картинки - загружаем их последовательно
+				if ((save_as == undefined || save_as == 0) && downloadFiles.length > 1) {
+					for (var i = 0; i < downloadFiles.length; i++) {
+						downloadFile([downloadFiles[i]]);
+					}
+					
+				} else {
+					save_as = save_as == undefined ? "" : "saveAs=" + save_as;
+					var query = "?";
+					for (var i = 0; i < downloadFiles.length; i++) {
+						query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
+					}
+					query += save_as;
+
+					downloadFileFromFakeLink(encodeURI('download' + query));
+
+					counterModify();
 				}
-				query += save_as;
-				window.open(encodeURI('download' + query), '_self');
-				counterModify();
 			};
 
+			function downloadFileFromFakeLink(url) {
+				var link = document.createElement('a');
+
+				link.setAttribute('download', null);
+				link.style.display = 'none';
+
+				document.body.appendChild(link);
+				
+				link.setAttribute('href', url);
+				link.click();
+				
+				document.body.removeChild(link);
+			}
 
 			var setSetting = function (setting, defaultSetting) {
-				return (setting == undefined || setting == null) ? defaultSetting : setting;
+				return (setting == undefined) ? defaultSetting : setting;
 			};
 			var ModeSwitch = function (modeSwitch) {
 				var self = this;
@@ -224,6 +259,7 @@
 				self.source = setSetting(settings.source, "0");
 				self.fileName = setSetting(settings.fileName, "Скан");
 				self.dpi = setSetting(settings.dpi, "150");
+				self.scanFeed = setSetting(settings.scanFeed, null);
 				self.pixelType = setSetting(settings.pixelType, "2");
 				self.compressionFormat = setSetting(settings.compressionFormat, "100*Jpeg");
 				self.format = setSetting(settings.format, "8,5*11,7");
@@ -241,17 +277,17 @@
 				var localSettings = localStorage.getItem(localSettingsName);
 				return localSettings != null ? new ScanSettings(JSON.parse(localSettings)) : new ScanSettings({});
 			};
-			var SetLocalSettings = function (source, fileName, dpi, pixelType, compressionFormat, format, counter, modeSwitch) {
-				var settings = new ScanSettings({ "source": source, "fileName": fileName, "dpi": dpi, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
+			var SetLocalSettings = function (source, fileName, dpi, scanFeed, pixelType, compressionFormat, format, counter, modeSwitch) {
+				var settings = new ScanSettings({ "source": source, "fileName": fileName, "dpi": dpi, "scanFeed": scanFeed, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
 				localStorage.setItem(localSettingsName, JSON.stringify(settings));
 				return settings;
 			};
 			var ApplyLocalSettings = function (settings, defaultScanSettings) {
 				settings = new ScanSettings(settings);
 
-				var hintDPI = $('#form .DPI').find(".form-field-hint");
-				var minDpi = hintDPI.find('.min').text();
-				var maxDpi = hintDPI.find('.max').text();
+				var dpiSelect = $('#form #Form_Dpi');
+				var minDpi = dpiSelect.val(dpiSelect.find('option').first().val());;
+				var maxDpi = dpiSelect.val(dpiSelect.find('option').last().val());;
 
 				function isEmpty(str) {
 					return (!str || 0 === str.length);
@@ -266,12 +302,13 @@
 					selectedDpi = settings.dpi;
 
 
-				$('#form').find('#Form_DPI').val(selectedDpi);
+				$('#form').find('#Form_Dpi').val(selectedDpi);
 				$('#form').find('#Form_CompressionFormat').val(settings.compressionFormat);
 				$('#form').find('#Form_FileName').val(settings.fileName);
 				if (!ApplyGlobalSettings(GetGlobalSettings(), settings.fileName))
 					$('#form').find('#Form_FileCounter').val(settings.Counter);
 				$('#form').find("#Form_ColorMode").val(settings.pixelType);
+				$('#form').find("#Form_ScanFeed").val(settings.scanFeed);
 				$('#form').find("#Form_Format option:contains(" + settings.format + ")").attr('selected', 'selected');
 				$('#form').find('#Form_CountScans').val(settings.modeSwitch.countScans);
 				$('#form').find('#Form_ScanInterval').val(settings.modeSwitch.timeout);
@@ -296,6 +333,15 @@
 				canScan = false;
 			};
 
+			function showOverlay(msg) {
+				$(".overlay-message").text(msg);
+				$(".overlay, .overlay-message").show();
+			}
+			
+			function hideOverlay() {
+				$(".overlay-message").text("");
+				$(".overlay, .overlay-message").hide();
+			}
 
 			var GetScanFormData = function () {
 				var scanParameters = $('#form [name]');
@@ -306,7 +352,7 @@
 				}
 				return values;
 			};
-			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg, showOverlay) {
+			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg, useOverlay) {
 				if (method != undefined) {
 					doneFunction = doneFunction == undefined ? function () {
 					} : doneFunction;
@@ -315,9 +361,8 @@
 					completeFunction = completeFunction == undefined ? function () {
 					} : completeFunction;
 					data = data == undefined ? "" : "&" + data;
-					if (showOverlay) {
-						$(".overlay-message").text(statusMsg);
-						$(".overlay, .overlay-message").show();
+					if (useOverlay) {
+						showOverlay(statusMsg);
 						DisactivateScanForm();
 					}
 					$.ajax({
@@ -339,9 +384,8 @@
 						},
 						complete: function (resp) {
 							completeFunction();
-							if (showOverlay) {
-								$(".overlay-message").text("");
-								$(".overlay, .overlay-message").hide();
+							if (useOverlay) {
+								hideOverlay();
 							}
 						}
 					});
@@ -374,7 +418,7 @@
 						var selectedSources = responce.sources.selectedSource;
 						fillSelect(selectSources, responce.sources.sourcesList, selectedSources);
 
-						var hintDPI = $('#form .DPI').find(".form-field-hint");
+					/*	var hintDPI = $('#form .DPI').find(".form-field-hint");
 						if (responce.minResolution != undefined && responce.minResolution != undefined) {
 							hintDPI.find('.min').text(responce.minResolution);
 							hintDPI.find('.max').text(responce.maxResolution);
@@ -384,12 +428,37 @@
 							hintDPI.find('.max').text("");
 							hintDPI.addClass('disp-no');
 						}
-
+*/
 						var selectTypePixel = $('#form').find("#Form_ColorMode");
 						if (responce.pixelTypes != undefined) {
 							fillSelect(selectTypePixel, responce.pixelTypes);
 						} else {
 							clearSelect(selectTypePixel);
+						}
+
+						var selectDpi = $('#form').find("#Form_Dpi");
+						if (responce.flatbedResolutions != undefined) {
+							fillSelect(selectDpi, responce.flatbedResolutions);
+						} else {
+							clearSelect(selectDpi);
+						}
+						
+						var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
+						if (responce.feederResolutions != undefined) {
+							fillSelect(selectDpiHidden, responce.feederResolutions);
+						} else {
+							clearSelect(selectDpiHidden);
+						}
+						selectDpiHidden.removeClass('flatbedResolutions');
+						selectDpiHidden.addClass('feederResolutions');
+
+						var selectScanFeed = $('#form').find("#Form_ScanFeed");
+						if (responce.scanFeeds != undefined) {
+							fillSelect(selectScanFeed, responce.scanFeeds);
+							selectScanFeed.parent().show();
+						} else {
+							clearSelect(selectScanFeed);
+							selectScanFeed.parent().hide();
 						}
 
 						var selectAllowedFormats = $('#form').find("#Form_Format");
@@ -400,7 +469,9 @@
 						}
 						ApplyLocalSettings(localSettings);
 
-						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || responce.minResolution == undefined || responce.maxResolution == undefined) {
+						scanFeedOnChange();
+
+						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || (responce.flatbedResolutions == undefined && responce.feederResolutions == undefined)) {
 							DisactivateScanParameters();
 							alert("Не удалось получить параметры сканера.");
 
@@ -421,28 +492,37 @@
 				GetScanParameters($(this).val());
 			});
 
+			var parseScanResponse = function(resp) {
 
-			var FileForDownload = function (resp) {
-				var self = this;
-				self.temp = resp.temp;
-				self.file = resp.file;
+				var downloadFiles = [];
+				if (resp.file != undefined) {
+					downloadFiles.push(new FileForDownload(resp));
+				} else if (resp.files != undefined) {
+
+					resp.files.forEach(function(file) {
+						downloadFiles.push(new FileForDownload(file));
+
+					});
+				}
+				return downloadFiles;
 			};
 
 			$("#form").submit(function () {
 				try {
 					DisactivateScanForm();
 					var save_as = $('#form #Form_SaveAs').val();
-					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
+					var scanFeed = $('#form #Form_ScanFeed').val();
+					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ScanFeed').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
 						$(this).find('#Form_FileCounter').val(),
 						{
-							"id": $('#form .mode-switch.enable').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
+							"id": $('#form .mode-switch.active').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
 							"saveAs": save_as
 						});
 
-					if ($('#form #package-scan').is('.enable')) {
+					if ($('#form #package-scan').is('.active') && (scanFeed == undefined || scanFeed == 0)) {
 						var countScans = $('#form #Form_CountScans').val();
 						var timeout = $('#form #Form_ScanInterval').val();
-
+						showOverlay("Сканирование...");
 						if ((countScans * 1) != undefined && (timeout * 1) != undefined) {
 							var i = 1;
 							var DownloadFiles = [];
@@ -455,15 +535,21 @@
 									},
 									GetScanFormData() + '&isPackage=true', true, function (msg) { alert(msg); },
 									function () {
-										if (i < countScans) { setTimeout(scan, (timeout * 1000)); } else { ActivateScanForm(); }
+										if (i < countScans) {
+											 setTimeout(scan, (timeout * 1000));
+										}
+										else {
+											ActivateScanForm();
+											hideOverlay();
+										}
 										++i;
 									});
 
-							}
-								, (timeout * 1000));
+							}, (timeout * 1000));
 						}
 					} else {
-						sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...", true);
+						if (!$('#form #package-scan').is('.active')) save_as = null;
+						sendAjax("Scan", function (responce) { downloadFile(parseScanResponse(responce), save_as); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...", true);
 					}
 				}
 				catch (ex) { console && console.log(ex); }
@@ -472,7 +558,71 @@
 			});
 			$("#Form_FileName").focus();
 			GetScanParameters();
+			
+			function scanFeedOnChange() {
+				
+				function swapSelects(first, second) {
 
+					var selectedValue = first.val();
+
+					var firstOptions = first.html();
+					var secondOptions = second.html();
+
+					second.html(firstOptions);
+					first.html(secondOptions);
+
+					first.val(selectedValue);
+
+				}
+
+				function replaceSelectFromHidden(activeSelect, hiddenSelect, activeClass, hiddenClass) {
+					if (hiddenSelect.hasClass(hiddenClass)) {
+
+						swapSelects(activeSelect, hiddenSelect);
+
+						hiddenSelect.removeClass(hiddenClass);
+						hiddenSelect.addClass(activeClass);
+					}
+
+				}
+
+				var selectDpi = $('#form').find("#Form_Dpi");
+				var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
+				
+				var scanFeed = $("#form").find("#Form_ScanFeed");
+				if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
+					var scanMode = $("#form .mode-switch.active").attr('id');
+					localStorage.setItem("previousScanMode", scanMode);
+					changeMode("package-scan");
+					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
+
+					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'flatbedResolutions', 'feederResolutions');
+					
+				} else {
+					$("#form").find("#conventional-scan").removeAttr('disabled');
+					var previousScanMode = localStorage.getItem("previousScanMode");
+					changeMode(previousScanMode);
+					
+					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'feederResolutions', 'flatbedResolutions');
+					
+				}
+			};
+
+			$("#form").find("#Form_Source").on('change', function () {
+				scanFeedOnChange();
+			});
+
+
+
+			$("#form").find("#Form_ScanFeed").on('change', scanFeedOnChange);
+			var FileForDownload = function (resp) {
+				var self = this;
+				self.temp = resp.temp;
+				self.file = resp.file;
+			};
+
+
+			scanFeedOnChange();
 			var refreshPage = function () {
 				$.ajax({
 					url: "",
@@ -480,7 +630,7 @@
 					success: function (xhr) {
 						alert("Приложение успешно перезапущено");
 						location.reload();
-		
+
 					},
 					error: function () {
 						setTimeout(refreshPage, 500);

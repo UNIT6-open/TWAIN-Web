@@ -2,9 +2,9 @@
 using System.Text;
 using TwainWeb.Standalone.App.Scanner;
 
-namespace TwainWeb.Standalone.App.Models
+namespace TwainWeb.Standalone.App.Models.Response
 {
-	public class ScannerParametersQueryResult:Result
+	public class ScannerParametersQueryResult:ExecutionResult
 	{
 		private readonly List<ISource> _sources;
 		private readonly ScannerSettings _settings;
