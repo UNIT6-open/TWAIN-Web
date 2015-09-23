@@ -79,6 +79,7 @@ namespace TwainWeb.Standalone.App.Queries
 				return new ScannerParametersQueryResult(string.Format("Не удалось получить информацию об источниках: сканер занят"));
 			}
 
+			_logger.Info("Scan settings: " + (searchSetting == null? "": searchSetting.Serialize()));
 			return new ScannerParametersQueryResult(sources, searchSetting, _sourceIndex);
 		}
 

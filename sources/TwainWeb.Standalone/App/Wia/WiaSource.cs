@@ -311,7 +311,7 @@ namespace TwainWeb.Standalone.App.Wia
 						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
 						break;
 					case ScanFeed.Duplex:
-						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex;
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex | (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder;
 						break;
 				}
 				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, documentHandlingSelect);
