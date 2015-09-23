@@ -58,7 +58,7 @@ namespace TwainWeb.Standalone.App.Binders
                 FileCounter = TryGet("Form.FileCounter"),
                 CompressionFormat = new CompressionFormat(TryGet("Form.CompressionFormat")),                
                 ColorMode = TryGetInt("Form.ColorMode", 0),
-                DPI = TryGetFloat("Form.DPI", 150f),
+                DPI = TryGetFloat("Form.Dpi", 150f),
                 Source = TryGetInt("Form.Source", 0),
                 IsPackage = TryGet("isPackage"),
                 SaveAs = TryGetInt("Form.SaveAs", 0),

@@ -92,10 +92,18 @@ namespace TwainWeb.Standalone.App.Models.Response
         public string Serialize()
         {
             var result = "";
-            if (_resolutions != null && _resolutions.Count > 0)
-                result += string.Format(",\"minResolution\": \"{0}\", \"maxResolution\": \"{1}\"", _resolutions[0], _resolutions[_resolutions.Count - 1]);
 
-	        var iter = 0;
+			if (_resolutions != null && _resolutions.Count > 0)
+			{
+				result += ",\"resolutions\": [";
+				for (var i = 0; i < _resolutions.Count; i++)
+				{
+					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", _resolutions[i], i != (_resolutions.Count - 1) ? "," : "");
+				}
+				result += "]";
+			}
+			
+           var iter = 0;
             if (_pixelTypes != null && _pixelTypes.Count > 0)
             {
                 result += ",\"pixelTypes\": [";

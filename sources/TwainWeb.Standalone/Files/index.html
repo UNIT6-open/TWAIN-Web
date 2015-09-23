@@ -67,11 +67,8 @@
 						<div class="form-field">
 							<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
 						</div>
-						<div class="form-field DPI">
-							<div class="form-field-hint disp-no">
-								Диапазон: <span class="min"></span>-<span class="max"></span>
-							</div>
-							<input data-val="true" data-val-number="The field DPI must be a number." data-val-required="Требуется поле DPI." id="Form_DPI" name="Form.DPI" type="text" value="" />
+						<div class="form-field">
+							<select id="Form_Dpi" name="Form.Dpi"></select>
 						</div>
 						<div class="form-field">
 							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
@@ -92,7 +89,8 @@
 							<select id="Form_Format" name="Form.Format"></select>
 						</div>
 						<div class="form-field mode-switch-container">
-							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
+							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button>
+							<button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
 						</div>
 						<div class="form-field  disp-no package-setting">
 							<input id="Form_CountScans" type="text" value="001" />
@@ -286,9 +284,9 @@
 			var ApplyLocalSettings = function (settings, defaultScanSettings) {
 				settings = new ScanSettings(settings);
 
-				var hintDPI = $('#form .DPI').find(".form-field-hint");
-				var minDpi = hintDPI.find('.min').text();
-				var maxDpi = hintDPI.find('.max').text();
+				var dpiSelect = $('#form #Form_Dpi');
+				var minDpi = dpiSelect.val(dpiSelect.find('option').first().val());;
+				var maxDpi = dpiSelect.val(dpiSelect.find('option').last().val());;
 
 				function isEmpty(str) {
 					return (!str || 0 === str.length);
@@ -303,7 +301,7 @@
 					selectedDpi = settings.dpi;
 
 
-				$('#form').find('#Form_DPI').val(selectedDpi);
+				$('#form').find('#Form_Dpi').val(selectedDpi);
 				$('#form').find('#Form_CompressionFormat').val(settings.compressionFormat);
 				$('#form').find('#Form_FileName').val(settings.fileName);
 				if (!ApplyGlobalSettings(GetGlobalSettings(), settings.fileName))
@@ -419,7 +417,7 @@
 						var selectedSources = responce.sources.selectedSource;
 						fillSelect(selectSources, responce.sources.sourcesList, selectedSources);
 
-						var hintDPI = $('#form .DPI').find(".form-field-hint");
+					/*	var hintDPI = $('#form .DPI').find(".form-field-hint");
 						if (responce.minResolution != undefined && responce.minResolution != undefined) {
 							hintDPI.find('.min').text(responce.minResolution);
 							hintDPI.find('.max').text(responce.maxResolution);
@@ -429,12 +427,19 @@
 							hintDPI.find('.max').text("");
 							hintDPI.addClass('disp-no');
 						}
-
+*/
 						var selectTypePixel = $('#form').find("#Form_ColorMode");
 						if (responce.pixelTypes != undefined) {
 							fillSelect(selectTypePixel, responce.pixelTypes);
 						} else {
 							clearSelect(selectTypePixel);
+						}
+
+						var selectDpi = $('#form').find("#Form_Dpi");
+						if (responce.resolutions != undefined) {
+							fillSelect(selectDpi, responce.resolutions);
+						} else {
+							clearSelect(selectDpi);
 						}
 
 
@@ -455,7 +460,7 @@
 						}
 						ApplyLocalSettings(localSettings);
 
-						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || responce.minResolution == undefined || responce.maxResolution == undefined) {
+						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || responce.resolutions == undefined) {
 							DisactivateScanParameters();
 							alert("Не удалось получить параметры сканера.");
 
