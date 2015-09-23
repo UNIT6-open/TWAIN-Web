@@ -69,6 +69,7 @@
 						</div>
 						<div class="form-field">
 							<select id="Form_Dpi" name="Form.Dpi"></select>
+							<select id="Form_Dpi_Hidden" class="disp-no"></select>
 						</div>
 						<div class="form-field">
 							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
@@ -89,8 +90,7 @@
 							<select id="Form_Format" name="Form.Format"></select>
 						</div>
 						<div class="form-field mode-switch-container">
-							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button>
-							<button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
+							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
 						</div>
 						<div class="form-field  disp-no package-setting">
 							<input id="Form_CountScans" type="text" value="001" />
@@ -436,12 +436,19 @@
 						}
 
 						var selectDpi = $('#form').find("#Form_Dpi");
-						if (responce.resolutions != undefined) {
-							fillSelect(selectDpi, responce.resolutions);
+						if (responce.flatbedResolutions != undefined) {
+							fillSelect(selectDpi, responce.flatbedResolutions);
 						} else {
 							clearSelect(selectDpi);
 						}
-
+						
+						var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
+						if (responce.feederResolutions != undefined) {
+							fillSelect(selectDpiHidden, responce.feederResolutions);
+						} else {
+							clearSelect(selectDpiHidden);
+						}
+						selectDpiHidden.addClass('feederResolutions');
 
 						var selectScanFeed = $('#form').find("#Form_ScanFeed");
 						if (responce.scanFeeds != undefined) {
@@ -460,7 +467,7 @@
 						}
 						ApplyLocalSettings(localSettings);
 
-						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || responce.resolutions == undefined) {
+						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || (responce.flatbedResolutions == undefined && responce.feederResolutions == undefined)) {
 							DisactivateScanParameters();
 							alert("Не удалось получить параметры сканера.");
 
@@ -548,22 +555,55 @@
 			$("#Form_FileName").focus();
 			GetScanParameters();
 			
-			function feedModeSwitch() {
+			function scanFeedOnChange() {
+				var selectDpi = $('#form').find("#Form_Dpi");
+				var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
+				
+				
+				
 				if ($("#form").find("#Form_ScanFeed").val() != 0) {
-
 					var scanMode = $("#form .mode-switch.active").attr('id');
 					localStorage.setItem("previousScanMode", scanMode);
 					changeMode("package-scan");
 					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
+					
+					if (selectDpiHidden.hasClass('feederResolutions')) {
+						
+						var feederOptions = selectDpiHidden.html();
+						var flatbedOptions = selectDpi.html();
+
+						selectDpi.html(feederOptions);
+						selectDpiHidden.html(flatbedOptions);
+						
+						selectDpiHidden.removeClass('feederResolutions');
+						selectDpiHidden.addClass('flatbedResolutions');
+					}
+					
+
+
 				} else {
 					$("#form").find("#conventional-scan").removeAttr('disabled');
 					var previousScanMode = localStorage.getItem("previousScanMode");
 					changeMode(previousScanMode);
+					
+
+					if (selectDpiHidden.hasClass('flatbedResolutions')) {
+						
+						flatbedOptions = selectDpiHidden.html();
+						feederOptions = selectDpi.html();
+
+						selectDpi.html(flatbedOptions);
+						selectDpiHidden.html(feederOptions);
+						
+						selectDpiHidden.removeClass('flatbedResolutions');
+						selectDpiHidden.addClass('feederResolutions');
+					}
+					
 				}
 			};
 
 
-			$("#form").find("#Form_ScanFeed").on('change', feedModeSwitch);
+			$("#form").find("#Form_ScanFeed").on('change', scanFeedOnChange);
 			var FileForDownload = function (resp) {
 				var self = this;
 				self.temp = resp.temp;
@@ -571,7 +611,7 @@
 			};
 
 
-			feedModeSwitch();
+			scanFeedOnChange();
 			var refreshPage = function () {
 				$.ajax({
 					url: "",

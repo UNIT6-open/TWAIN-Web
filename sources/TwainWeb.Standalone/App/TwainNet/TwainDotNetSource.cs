@@ -54,7 +54,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 				}
 			}
 			
-			var scannerSettings = new ScannerSettings(Index, Name, settings.Resolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth, supportedScanSources);
+			var scannerSettings = new ScannerSettings(Index, Name, settings.FlatbedResolutions, settings.FeederResolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth, supportedScanSources);
 
 			return scannerSettings;
 		}

@@ -70,11 +70,28 @@ namespace TwainWeb.Standalone.App.Wia
 			// connect to scanner
 			var device = ConnectToDevice();
 			var source = device.Items[1];
-	
+
+			var supportedScanFeeds = GetSupportedDocumentHandlingCaps(device);
+
+			List<float> flatbedResolutions = null;
+			if (supportedScanFeeds.ContainsKey((int) ScanFeed.Flatbad))
+			{
+				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
+				flatbedResolutions = GetAllowableResolutions(source);
+			}
+
+			List<float> feederResolutions = null;
+			if (supportedScanFeeds.ContainsKey((int)ScanFeed.Feeder))
+			{
+				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
+				feederResolutions = GetAllowableResolutions(source);
+			}
+			
 			var settings = new ScannerSettings(
 				_sourceIndex,
 				_name,
-				GetAllowableResolutions(source),
+				flatbedResolutions,
+				feederResolutions,
 				GetAllowablePixelTypes(),
 				GetMaxHeight(device),
 				GetMaxWidth(device),

@@ -33,6 +33,8 @@ namespace TwainWeb.Standalone.App.Twain
 				Index,
 				Name,
 				GetAllowableResolutions(),
+				//todo: 
+				GetAllowableResolutions(),
 				GetAllowablePixelTypes(),
 				GetMaxHeight(),
 				GetMaxWidth());
