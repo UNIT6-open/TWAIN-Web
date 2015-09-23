@@ -3,8 +3,12 @@ using System.Drawing;
 using System.Threading;
 using TwainDotNet;
 using TwainDotNet.TwainNative;
+using TwainWeb.Standalone.App.Extensions;
+using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 using TwainWeb.Standalone.App.Twain;
+using TwainWeb.Standalone.App.Wia;
 using TwainWeb.Standalone.Host;
 
 namespace TwainWeb.Standalone.App.TwainNet
@@ -36,7 +40,21 @@ namespace TwainWeb.Standalone.App.TwainNet
 		{
 			var getSettings = new GetSettings(GetTwainScannerSettings);
 			var settings = _windowsMessageLoop.Invoke<SourceSettings>(getSettings);
-			var scannerSettings = new ScannerSettings(Index, Name, settings.Resolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth);
+			Dictionary<int, string> supportedScanSources = null;
+			if (settings.HasADF && settings.HasFlatbed)
+			{
+				supportedScanSources = new Dictionary<int, string>
+				{
+					{(int)ScanFeed.Flatbad, EnumExtensions.GetDescription(ScanFeed.Flatbad)},
+					{(int)ScanFeed.Feeder, EnumExtensions.GetDescription(ScanFeed.Feeder)}				
+				};
+				if (settings.HasDuplex)
+				{
+					supportedScanSources.Add((int)ScanFeed.Duplex, EnumExtensions.GetDescription(ScanFeed.Duplex));
+				}
+			}
+			
+			var scannerSettings = new ScannerSettings(Index, Name, settings.Resolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth, supportedScanSources);
 
 			return scannerSettings;
 		}
@@ -54,7 +72,12 @@ namespace TwainWeb.Standalone.App.TwainNet
 				},
 				Area = new AreaSettings(Units.Inches, 0, 0, settings.Format.Height, settings.Format.Width),
 				ShowProgressIndicatorUI = false,
-				ShowTwainUI = false
+				ShowTwainUI = false,
+				UseDocumentFeeder = settings.ScanSource.HasValue &&
+				((ScanFeed)settings.ScanSource.Value == ScanFeed.Feeder || (ScanFeed)settings.ScanSource.Value == ScanFeed.Duplex),
+				UseAutoFeeder = false,
+				UseAutoScanCache = false,
+				UseDuplex = settings.ScanSource.HasValue && (ScanFeed)settings.ScanSource.Value == ScanFeed.Duplex,				
 			};
 
 			var scan = new StartScan(StartTwainScan);

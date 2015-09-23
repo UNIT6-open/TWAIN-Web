@@ -9,6 +9,7 @@ using TwainWeb.Standalone.App.Binders;
 using TwainWeb.Standalone.App.Cache;
 using TwainWeb.Standalone.App.Controllers;
 using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.Host

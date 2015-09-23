@@ -1,4 +1,4 @@
-﻿namespace TwainWeb.Standalone.App.Models
+﻿namespace TwainWeb.Standalone.App.Models.Response
 {
 	public class ActionResult
 	{

@@ -6,6 +6,7 @@ using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App.Controllers;
 using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 
 namespace TwainWeb.Standalone.Host
 {

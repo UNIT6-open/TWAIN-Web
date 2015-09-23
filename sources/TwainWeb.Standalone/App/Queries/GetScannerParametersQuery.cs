@@ -5,6 +5,7 @@ using System.Threading;
 using log4net;
 using TwainWeb.Standalone.App.Cache;
 using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Queries

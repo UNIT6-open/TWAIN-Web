@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using log4net;
 using TwainDotNet.TwainNative;
+using log4net;
+using Duplex = TwainDotNet.TwainNative.Duplex;
 
 namespace TwainDotNet
 {
@@ -74,9 +75,61 @@ namespace TwainDotNet
 				physicalWidth = ValueConverter.ConvertToFix32(physicalWidthCap[0]);
 			}
 
+			bool hasADF, hasFlatbed;
+			try
+			{
+				var documentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
+				if (documentFeederEnabled)
+			    {
+				    Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
+				    var newDocumentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
+
+				    hasADF = true;
+				    hasFlatbed = !newDocumentFeederEnabled;
+			    }
+			    else
+			    {
+				    Capability.SetCapability(Capabilities.FeederEnabled, true, _applicationId, SourceId);
+				    var newDocumentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
+
+				    hasADF = newDocumentFeederEnabled;
+				    hasFlatbed = true;
+
+			    }
+			}
+			catch (Exception)
+			{
+				hasADF = false;
+				hasFlatbed = true;
+			}
+			bool hasDuplex = false;
+			try
+			{
+				var duplexCap = Capability.GetCapability(Capabilities.Duplex, _applicationId, SourceId);
+				if (duplexCap == null) hasDuplex = false;
+				else
+				{
+					foreach (var value in duplexCap)
+					{
+						if ((Duplex)value == Duplex.None)
+						{
+							hasDuplex = false;
+							break;
+						}
+						if ((Duplex)value == Duplex.OnePass || (Duplex)value == Duplex.TwoPass)
+						{
+							hasDuplex = true;
+						}
+					}
+				}
+			}
+			catch (Exception)
+			{
+				hasDuplex = false;
+			}
 			_log.Debug("GetCapabilities, result: Success");
 
-			return new SourceSettings(resolutions, pixelTypes, physicalHeight, physicalWidth);
+			return new SourceSettings(resolutions, pixelTypes, physicalHeight, physicalWidth, hasADF, hasFlatbed, hasDuplex);
 	    }
 
 
