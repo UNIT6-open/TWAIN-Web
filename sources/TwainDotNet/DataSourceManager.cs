@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using TwainDotNet.TwainNative;
 using System.Runtime.InteropServices;
 using TwainDotNet.Win32;
@@ -156,6 +157,12 @@ namespace TwainDotNet
 				sources.Add(new DataSource(ApplicationId, id, _messageHook, _log));
 			}
 
+			var sb = new StringBuilder("GetAllSources result: ");
+			foreach (var dataSource in sources)
+			{
+				sb.Append(string.Format("sourceId: {0}; ", dataSource.SourceId.ProductName));
+			}
+			_log.Debug(sb);
 			return sources;
 		}
 
