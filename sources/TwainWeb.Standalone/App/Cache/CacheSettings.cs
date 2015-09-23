@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 
 namespace TwainWeb.Standalone.App.Cache

@@ -189,7 +189,7 @@ namespace TwainWeb.Standalone.App
 				_wasException = true;
 				_exception = e.Error;
 			}
-			else
+			else if (!e.Cancelled)
 				_result = (TRes) e.Result;
 
 			_waitHandle.Set();

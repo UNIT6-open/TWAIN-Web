@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using TwainWeb.Standalone.App.Models;
+using System.Text;
+using TwainWeb.Standalone.App.Models.Request;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
 using TwainWeb.Standalone.App.Tools;
 using TwainWeb.Standalone.App.Twain;
@@ -25,6 +27,13 @@ namespace TwainWeb.Standalone.App.Commands
 
 		public ScanResult Execute(object markerAsynchrone)
 		{
+			/*var res = new MultipleScanResult();
+			res.Content = Encoding.UTF8.GetBytes("{\"files\": [{\"file\": \"Скан_74.jpg\", \"temp\": \"tmpA618.tmp\"},{\"file\": \"Скан_75.jpg\", \"temp\": \"tmpAA9D.tmp\"}]}");
+
+			return res;*/
+
+
+
 			ScanResult scanResult;
 			try
 			{
@@ -46,7 +55,8 @@ namespace TwainWeb.Standalone.App.Commands
 					{
 						Format = _command.Format,
 						Resolution = _command.DPI,
-						PixelType = _command.ColorMode
+						PixelType = _command.ColorMode,
+						ScanSource =  _command.DocumentHandlingCap
 					};
 
 					var images = new AsyncWorker<SettingsAcquire, List<Image>>().RunWorkAsync(settingAcquire, _scannerManager.CurrentSource.Scan, WaitTimaeForScan);
@@ -73,17 +83,38 @@ namespace TwainWeb.Standalone.App.Commands
 				if (scannedImages.Count == 1)
 				{
 					var image = scannedImages[0];
-					scanResult = SaveImage(image);
+					var downloadFile = SaveImage(image);
+					var singleScanResult = new SingleScanResult();
+					singleScanResult.FillContent(downloadFile);
+
+					scanResult = singleScanResult;
+
 					image.Dispose();
 				}
 				else
 				{
+					var downloadFiles = new List<DownloadFile>();
+					int counter;
+					try
+					{
+						counter = int.Parse(_command.FileCounter);
+					}
+					catch (Exception)
+					{
+						counter = 1;
+					}
 					foreach (var scannedImage in scannedImages)
 					{
+						var downloadFile = SaveImage(scannedImage, counter++);
+						downloadFiles.Add(downloadFile);
 						scannedImage.Dispose();
 					}
-					return new SingleScanResult(
-							"Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.");
+				
+					var multipleScanResult = new MultipleScanResult();
+					multipleScanResult.FillContent(downloadFiles);
+					scanResult = multipleScanResult;
+					/*return new SingleScanResult(
+							"Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.");*/
 
 				}
 			}
@@ -94,13 +125,13 @@ namespace TwainWeb.Standalone.App.Commands
 			return scanResult;
 		}
 
-		private SingleScanResult SaveImage(Image image)
+		private DownloadFile SaveImage(Image image, int? counter = null)
 		{
 			if (image == null) throw new ArgumentException("image");
 
 			var filename = ImageTools.CreateFilename(
 				_command.FileName, 
-				_command.FileCounter,
+				counter.HasValue?counter.Value.ToString():_command.FileCounter,
 				_command.IsPackage != null,
 				(GlobalDictionaries.SaveAsValues)_command.SaveAs,
 				_command.CompressionFormat.ImgFormat);
@@ -114,11 +145,10 @@ namespace TwainWeb.Standalone.App.Commands
 		
 			GlobalDictionaries.Scans.Add(downloadFile.TempFile);
 
-			var result = new SingleScanResult();
-			result.FillContent(downloadFile);
-			return result;
+			return downloadFile;
 		}
 
+		
 		#region createZip
 		/*private ScanResult GetZip(List<Image> images)
 {

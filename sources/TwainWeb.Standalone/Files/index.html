@@ -12,7 +12,7 @@
 	<link href="Content/site.css?ver=04.12.2013" rel="stylesheet" />
 
 	<script src="Scripts/modernizr-2.6.2.js"></script>
-	
+
 	<link href="Content/Home/Scan.css?ver=04.12.2013" rel="stylesheet" />
 
 </head>
@@ -74,6 +74,9 @@
 							<input data-val="true" data-val-number="The field DPI must be a number." data-val-required="Требуется поле DPI." id="Form_DPI" name="Form.DPI" type="text" value="" />
 						</div>
 						<div class="form-field">
+							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
+						</div>
+						<div class="form-field">
 							<select id="Form_ColorMode" name="Form.ColorMode"></select>
 						</div>
 						<div class="form-field">
@@ -89,7 +92,7 @@
 							<select id="Form_Format" name="Form.Format"></select>
 						</div>
 						<div class="form-field mode-switch-container">
-							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch enable">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch disable">Пакетное сканирование</button>
+							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
 						</div>
 						<div class="form-field  disp-no package-setting">
 							<input id="Form_CountScans" type="text" value="001" />
@@ -130,18 +133,18 @@
 				var switches = $('#form .mode-switch-container .mode-switch');
 				for (var i = 0; i < switches.length; i++) {
 					if ($(switches[i]).attr('id') == enableID) {
-						$(switches[i]).removeClass('disable').addClass('enable');
+						$(switches[i]).removeClass('inactive').addClass('active');
 						eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
 					} else {
-						$(switches[i]).removeClass('enable').addClass('disable');
+						$(switches[i]).removeClass('active').addClass('inactive');
 					}
 				}
 			};
 
 			$('#form .mode-switch').click(function () {
-				if ($(this).is('.disable')) {
-					changeMode($(this).attr('id'));
-				}
+				if ($(this).is('.inactive')) {
+					changeMode($(this).attr('id'));					
+				} 
 			});
 			function pad(num, size) {
 				var s = num + "";
@@ -156,19 +159,42 @@
 				$("#Form_FileCounter").val(fileCounter);
 			};
 			var downloadFile = function (downloadFiles, save_as) {
-				save_as = save_as == undefined ? "" : "saveAs=" + save_as;
-				var query = "?";
-				for (var i = 0; i < downloadFiles.length; i++) {
-					query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
+				//если несколько файлов необходимо сохранить как картинки - загружаем их последовательно
+				if ((save_as == undefined || save_as == 0) && downloadFiles.length > 1) {
+					for (var i = 0; i < downloadFiles.length; i++) {
+						downloadFile([downloadFiles[i]]);
+					}
+					
+				} else {
+					save_as = save_as == undefined ? "" : "saveAs=" + save_as;
+					var query = "?";
+					for (var i = 0; i < downloadFiles.length; i++) {
+						query += 'fileId' + i + '=' + encodeURIComponent(downloadFiles[i].temp) + '&fileName' + i + '=' + encodeURIComponent(downloadFiles[i].file) + "&";
+					}
+					query += save_as;
+
+					downloadFileFromFakeLink(encodeURI('download' + query));
+
+					counterModify();
 				}
-				query += save_as;
-				window.open(encodeURI('download' + query), '_self');
-				counterModify();
 			};
 
+			function downloadFileFromFakeLink(url) {
+				var link = document.createElement('a');
+
+				link.setAttribute('download', null);
+				link.style.display = 'none';
+
+				document.body.appendChild(link);
+				
+				link.setAttribute('href', url);
+				link.click();
+				
+				document.body.removeChild(link);
+			}
 
 			var setSetting = function (setting, defaultSetting) {
-				return (setting == undefined || setting == null) ? defaultSetting : setting;
+				return (setting == undefined) ? defaultSetting : setting;
 			};
 			var ModeSwitch = function (modeSwitch) {
 				var self = this;
@@ -296,6 +322,15 @@
 				canScan = false;
 			};
 
+			function showOverlay(msg) {
+				$(".overlay-message").text(msg);
+				$(".overlay, .overlay-message").show();
+			}
+			
+			function hideOverlay() {
+				$(".overlay-message").text("");
+				$(".overlay, .overlay-message").hide();
+			}
 
 			var GetScanFormData = function () {
 				var scanParameters = $('#form [name]');
@@ -306,7 +341,7 @@
 				}
 				return values;
 			};
-			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg, showOverlay) {
+			var sendAjax = function (method, doneFunction, data, async, failFunction, completeFunction, statusMsg, useOverlay) {
 				if (method != undefined) {
 					doneFunction = doneFunction == undefined ? function () {
 					} : doneFunction;
@@ -315,9 +350,8 @@
 					completeFunction = completeFunction == undefined ? function () {
 					} : completeFunction;
 					data = data == undefined ? "" : "&" + data;
-					if (showOverlay) {
-						$(".overlay-message").text(statusMsg);
-						$(".overlay, .overlay-message").show();
+					if (useOverlay) {
+						showOverlay(statusMsg);
 						DisactivateScanForm();
 					}
 					$.ajax({
@@ -339,9 +373,8 @@
 						},
 						complete: function (resp) {
 							completeFunction();
-							if (showOverlay) {
-								$(".overlay-message").text("");
-								$(".overlay, .overlay-message").hide();
+							if (useOverlay) {
+								hideOverlay();
 							}
 						}
 					});
@@ -392,6 +425,16 @@
 							clearSelect(selectTypePixel);
 						}
 
+
+						var selectScanFeed = $('#form').find("#Form_ScanFeed");
+						if (responce.scanFeeds != undefined) {
+							fillSelect(selectScanFeed, responce.scanFeeds);
+							selectScanFeed.parent().show();
+						} else {
+							clearSelect(selectScanFeed);
+							selectScanFeed.parent().hide();
+						}
+
 						var selectAllowedFormats = $('#form').find("#Form_Format");
 						if (responce.allowedFormats != undefined) {
 							fillSelect(selectAllowedFormats, responce.allowedFormats);
@@ -421,28 +464,55 @@
 				GetScanParameters($(this).val());
 			});
 
-
+			$("#form").find("#Form_ScanFeed").on('change', function () {
+				if ($("#form").find("#Form_ScanFeed").val() != 0) {
+					changeMode("package-scan");
+					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
+					$("#form #Form_CountScans").parent().addClass('disp-no');
+					$("#form #Form_ScanInterval").parent().addClass('disp-no');
+				} else {
+					$("#form").find("#conventional-scan").removeAttr('disabled');
+					$("#form #Form_CountScans").parent().removeClass('disp-no');
+					$("#form #Form_ScanInterval").parent().removeClass('disp-no');
+				}
+			});
 			var FileForDownload = function (resp) {
 				var self = this;
 				self.temp = resp.temp;
 				self.file = resp.file;
 			};
 
+			var parseScanResponse = function(resp) {
+
+				var downloadFiles = [];
+				if (resp.file != undefined) {
+					downloadFiles.push(new FileForDownload(resp));
+				} else if (resp.files != undefined) {
+
+					resp.files.forEach(function(file) {
+						downloadFiles.push(new FileForDownload(file));
+
+					});
+				}
+				return downloadFiles;
+			};
+
 			$("#form").submit(function () {
 				try {
 					DisactivateScanForm();
 					var save_as = $('#form #Form_SaveAs').val();
+					var scanFeed = $('#form #Form_ScanFeed').val();
 					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
 						$(this).find('#Form_FileCounter').val(),
 						{
-							"id": $('#form .mode-switch.enable').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
+							"id": $('#form .mode-switch.active').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
 							"saveAs": save_as
 						});
 
-					if ($('#form #package-scan').is('.enable')) {
+					if ($('#form #package-scan').is('.active') && (scanFeed == undefined || scanFeed == 0)) {
 						var countScans = $('#form #Form_CountScans').val();
 						var timeout = $('#form #Form_ScanInterval').val();
-
+						showOverlay("Сканирование...");
 						if ((countScans * 1) != undefined && (timeout * 1) != undefined) {
 							var i = 1;
 							var DownloadFiles = [];
@@ -455,15 +525,21 @@
 									},
 									GetScanFormData() + '&isPackage=true', true, function (msg) { alert(msg); },
 									function () {
-										if (i < countScans) { setTimeout(scan, (timeout * 1000)); } else { ActivateScanForm(); }
+										if (i < countScans) {
+											 setTimeout(scan, (timeout * 1000));
+										}
+										else {
+											ActivateScanForm();
+											hideOverlay();
+										}
 										++i;
 									});
 
-							}
-								, (timeout * 1000));
+							}, (timeout * 1000));
 						}
 					} else {
-						sendAjax("Scan", function (responce) { downloadFile([new FileForDownload(responce)]); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...", true);
+						if (!$('#form #package-scan').is('.active')) save_as = null;
+						sendAjax("Scan", function (responce) { downloadFile(parseScanResponse(responce), save_as); }, GetScanFormData(), true, function (msg) { alert(msg); }, ActivateScanForm, "Сканирование...", true);
 					}
 				}
 				catch (ex) { console && console.log(ex); }
@@ -480,7 +556,7 @@
 					success: function (xhr) {
 						alert("Приложение успешно перезапущено");
 						location.reload();
-		
+
 					},
 					error: function () {
 						setTimeout(refreshPage, 500);

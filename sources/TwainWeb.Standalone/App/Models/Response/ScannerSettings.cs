@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Models.Response
 {    
     
     public class ScannerSettings
@@ -11,13 +11,15 @@ namespace TwainWeb.Standalone.App
 		private readonly List<float> _resolutions;
 		private readonly Dictionary<int, string> _pixelTypes;
         private List<FormatPage> _allowedFormats;
-		public ScannerSettings(int id, string name, List<float> resolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null)
+	    private readonly Dictionary<int, string> _scanFeeds; 
+		public ScannerSettings(int id, string name, List<float> resolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null, Dictionary<int, string> scanFeeds = null)
         {
             _name = name;
             _id = id;
             _resolutions = resolutions;
             _pixelTypes = pixelTypes;
             FillAllowedFormats(maxHeight, maxWidth);
+			_scanFeeds = scanFeeds;
         }
 
         private void reduceSize(ref float? maxWidth, ref float? maxHeight)
@@ -118,6 +120,19 @@ namespace TwainWeb.Standalone.App
                 }
                 result += "]";
             }
+
+	        if (_scanFeeds != null)
+	        {
+				result += ",\"scanFeeds\": [";
+		        var currentKeyNumber = 0;
+		        foreach (var key in _scanFeeds.Keys)
+		        {
+			        result += "{\"key\": \"" + key + "\", \"value\":\"" + _scanFeeds[key] + "\"}"
+						+ (currentKeyNumber != (_scanFeeds.Keys.Count - 1) ? "," : "");
+			        currentKeyNumber++;
+		        }
+				result += "]";
+	        }
             return result;
         }
     }

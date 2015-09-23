@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using TwainWeb.Standalone.App.Cache;
 using TwainWeb.Standalone.App.Commands;
 using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Request;
+using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Queries;
 using TwainWeb.Standalone.App.Scanner;
 

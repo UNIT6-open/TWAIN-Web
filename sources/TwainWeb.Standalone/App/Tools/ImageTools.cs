@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
+using TwainWeb.Standalone.App.Models;
+using TwainWeb.Standalone.App.Models.Request;
 using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace TwainWeb.Standalone.App.Tools

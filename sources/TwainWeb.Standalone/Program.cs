@@ -113,14 +113,20 @@ namespace TwainWeb.Standalone
 	    }
 
 		
-		[DllImport("kernel32.dll", SetLastError = true)]
+/*		[DllImport("kernel32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool AllocConsole();
-
-
+		static extern bool AllocConsole();*/
+		// P/Invoke:
+		private enum FileType { Unknown, Disk, Char, Pipe };
+		private enum StdHandle { Stdin = -10, Stdout = -11, Stderr = -12 };
+		[DllImport("kernel32.dll")]
+		private static extern FileType GetFileType(IntPtr hdl);
+		[DllImport("kernel32.dll")]
+		private static extern IntPtr GetStdHandle(StdHandle std);
 	    private static void RunFromConsole()
 	    {
-			AllocConsole();
+			ConsoleManager.Show();
+
 		    var service = new ScanService(Settings.Default.Port);
 		    try
 		    {

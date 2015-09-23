@@ -1,6 +1,6 @@
 ﻿using System.Drawing.Imaging;
 
-namespace TwainWeb.Standalone.App
+namespace TwainWeb.Standalone.App.Models.Request
 {
     public class ScanForm
     {
@@ -9,6 +9,7 @@ namespace TwainWeb.Standalone.App
         public float DPI { get; set; }
         public CompressionFormat CompressionFormat { get; set; }
         public int ColorMode { get; set; }
+		public int? DocumentHandlingCap { get; set; }
         public int Source { get; set; }
         public string IsPackage { get; set; }
         public int SaveAs { get; set; }
