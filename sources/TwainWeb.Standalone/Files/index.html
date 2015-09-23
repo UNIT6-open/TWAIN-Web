@@ -100,7 +100,7 @@
 						<div class="form-field disp-no package-setting">
 							<input id="Form_ScanInterval" type="text" value="001" />
 						</div>
-						<div class="form-field disp-no package-setting">
+						<div class="form-field disp-no package-setting package-feeder-setting">
 							<select id="Form_SaveAs" name="Form.SaveAs">
 								<option value="0">Сохранить как Картинки</option>
 								<option value="1">Сохранить как PDF</option>
@@ -129,12 +129,21 @@
 	<script>
 		$(function () {
 			var GlobalScanSettingsName = "GlobalScanSettings";
+
+
 			var changeMode = function (enableID) {
 				var switches = $('#form .mode-switch-container .mode-switch');
 				for (var i = 0; i < switches.length; i++) {
 					if ($(switches[i]).attr('id') == enableID) {
 						$(switches[i]).removeClass('inactive').addClass('active');
-						eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
+						
+						//если выбран ADF
+						if ($("#form").find("#Form_ScanFeed").val() != 0) {
+							$('#form .package-setting').addClass("disp-no");
+							eval("$('#form .package-feeder-setting')." + $(switches[i]).attr('changeAction'));
+						} else {
+							eval("$('#form .package-setting')." + $(switches[i]).attr('changeAction'));
+						}
 					} else {
 						$(switches[i]).removeClass('active').addClass('inactive');
 					}
@@ -158,6 +167,7 @@
 				UpdateGlobalSetting(GetGlobalSettings(), { "FileName": $('#Form_FileName').val(), "CountScans": fileCounter });
 				$("#Form_FileCounter").val(fileCounter);
 			};
+			
 			var downloadFile = function (downloadFiles, save_as) {
 				//если несколько файлов необходимо сохранить как картинки - загружаем их последовательно
 				if ((save_as == undefined || save_as == 0) && downloadFiles.length > 1) {
@@ -250,6 +260,7 @@
 				self.source = setSetting(settings.source, "0");
 				self.fileName = setSetting(settings.fileName, "Скан");
 				self.dpi = setSetting(settings.dpi, "150");
+				self.scanFeed = setSetting(settings.scanFeed, null);
 				self.pixelType = setSetting(settings.pixelType, "2");
 				self.compressionFormat = setSetting(settings.compressionFormat, "100*Jpeg");
 				self.format = setSetting(settings.format, "8,5*11,7");
@@ -267,8 +278,8 @@
 				var localSettings = localStorage.getItem(localSettingsName);
 				return localSettings != null ? new ScanSettings(JSON.parse(localSettings)) : new ScanSettings({});
 			};
-			var SetLocalSettings = function (source, fileName, dpi, pixelType, compressionFormat, format, counter, modeSwitch) {
-				var settings = new ScanSettings({ "source": source, "fileName": fileName, "dpi": dpi, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
+			var SetLocalSettings = function (source, fileName, dpi, scanFeed, pixelType, compressionFormat, format, counter, modeSwitch) {
+				var settings = new ScanSettings({ "source": source, "fileName": fileName, "dpi": dpi, "scanFeed": scanFeed, "pixelType": pixelType, "compressionFormat": compressionFormat, "format": format, "modeSwitch": modeSwitch });
 				localStorage.setItem(localSettingsName, JSON.stringify(settings));
 				return settings;
 			};
@@ -298,6 +309,7 @@
 				if (!ApplyGlobalSettings(GetGlobalSettings(), settings.fileName))
 					$('#form').find('#Form_FileCounter').val(settings.Counter);
 				$('#form').find("#Form_ColorMode").val(settings.pixelType);
+				$('#form').find("#Form_ScanFeed").val(settings.scanFeed);
 				$('#form').find("#Form_Format option:contains(" + settings.format + ")").attr('selected', 'selected');
 				$('#form').find('#Form_CountScans').val(settings.modeSwitch.countScans);
 				$('#form').find('#Form_ScanInterval').val(settings.modeSwitch.timeout);
@@ -464,24 +476,6 @@
 				GetScanParameters($(this).val());
 			});
 
-			$("#form").find("#Form_ScanFeed").on('change', function () {
-				if ($("#form").find("#Form_ScanFeed").val() != 0) {
-					changeMode("package-scan");
-					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
-					$("#form #Form_CountScans").parent().addClass('disp-no');
-					$("#form #Form_ScanInterval").parent().addClass('disp-no');
-				} else {
-					$("#form").find("#conventional-scan").removeAttr('disabled');
-					$("#form #Form_CountScans").parent().removeClass('disp-no');
-					$("#form #Form_ScanInterval").parent().removeClass('disp-no');
-				}
-			});
-			var FileForDownload = function (resp) {
-				var self = this;
-				self.temp = resp.temp;
-				self.file = resp.file;
-			};
-
 			var parseScanResponse = function(resp) {
 
 				var downloadFiles = [];
@@ -502,7 +496,7 @@
 					DisactivateScanForm();
 					var save_as = $('#form #Form_SaveAs').val();
 					var scanFeed = $('#form #Form_ScanFeed').val();
-					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
+					SetLocalSettings($(this).find('#Form_Source').val(), $(this).find('#Form_FileName').val(), $(this).find('#Form_DPI').val(), $(this).find('#Form_ScanFeed').val(), $(this).find('#Form_ColorMode').val(), $(this).find('#Form_CompressionFormat').val(), $.trim($(this).find('#Form_Format option:selected').text()),
 						$(this).find('#Form_FileCounter').val(),
 						{
 							"id": $('#form .mode-switch.active').attr('id'), "countScans": $(this).find('#Form_CountScans').val(), "timeout": $(this).find('#Form_ScanInterval').val(),
@@ -548,7 +542,31 @@
 			});
 			$("#Form_FileName").focus();
 			GetScanParameters();
+			
+			function feedModeSwitch() {
+				if ($("#form").find("#Form_ScanFeed").val() != 0) {
 
+					var scanMode = $("#form .mode-switch.active").attr('id');
+					localStorage.setItem("previousScanMode", scanMode);
+					changeMode("package-scan");
+					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
+				} else {
+					$("#form").find("#conventional-scan").removeAttr('disabled');
+					var previousScanMode = localStorage.getItem("previousScanMode");
+					changeMode(previousScanMode);
+				}
+			};
+
+
+			$("#form").find("#Form_ScanFeed").on('change', feedModeSwitch);
+			var FileForDownload = function (resp) {
+				var self = this;
+				self.temp = resp.temp;
+				self.file = resp.file;
+			};
+
+
+			feedModeSwitch();
 			var refreshPage = function () {
 				$.ajax({
 					url: "",

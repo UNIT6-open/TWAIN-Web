@@ -16,11 +16,11 @@ namespace TwainWeb.Standalone.App.Wia
 	class WiaSource:ISource
 	{
 		#region constants
-		class WIA_DPS_DOCUMENT_HANDLING_SELECT
+		enum WIA_DPS_DOCUMENT_HANDLING_SELECT
 		{
-			public const uint FEEDER = 0x00000001;
-			public const uint FLATBED = 0x00000002;
-			public const uint DUPLEX = 0x00000004;
+			Feeder = 0x00000001,
+			Flatbad = 0x00000002,
+			Duplex = 0x00000004,
 		}
 
 		class WIA_DPS_DOCUMENT_HANDLING_STATUS
@@ -70,13 +70,7 @@ namespace TwainWeb.Standalone.App.Wia
 			// connect to scanner
 			var device = ConnectToDevice();
 			var source = device.Items[1];
-
-			//WritePropertiesToFile(source.Properties);
-			/*var prop = FindProperty(device.Properties, WiaProperty.DocumentHandlingSelect);
-			var sdf = FindProperty(device.Properties, WiaProperty.DocumentHandlingCapacity);
-			var sbvdf = FindProperty(device.Properties, WiaProperty.DocumentHandlingStatus);
-*/
-		
+	
 			var settings = new ScannerSettings(
 				_sourceIndex,
 				_name,
@@ -183,9 +177,8 @@ namespace TwainWeb.Standalone.App.Wia
 			if (documentHandlingSelect != null)
 			{
 				// check for document feeder
-				if ((Convert.ToUInt32(documentHandlingSelect.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_SELECT.FEEDER) != 0)
+				if ((Convert.ToUInt32(documentHandlingSelect.get_Value()) & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
 				{
-					var val = documentHandlingStatus.get_Value();
 					hasMorePages = ((Convert.ToUInt32(documentHandlingStatus.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY) != 0);
 				}
 			}
@@ -275,17 +268,17 @@ namespace TwainWeb.Standalone.App.Wia
 
 			if (settings.ScanSource.HasValue)
 			{
-				int documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.FLATBED;
+				int documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
 				switch ((ScanFeed)settings.ScanSource.Value)
 				{
 					case ScanFeed.Feeder:
-						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.FEEDER;
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder;
 						break;
 					case ScanFeed.Flatbad:
-						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.FLATBED;
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
 						break;
 					case ScanFeed.Duplex:
-						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.DUPLEX;
+						documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex;
 						break;
 				}
 				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, documentHandlingSelect);
@@ -311,20 +304,18 @@ namespace TwainWeb.Standalone.App.Wia
 			if (property == null)
 				return null;
 
-			var documentHandlingCaps = new Dictionary<int, string>();
-/*
+			var scanFeeds = new Dictionary<int, string>();
 
-			foreach (var cap in Enum.GetValues(typeof(WiaDocumentHandlingCap)))
-			{
-				var propertyValue = (int)property.get_Value();
-				if ((propertyValue & (int)cap) != 0)
-				{
-					documentHandlingCaps.Add((int)cap,  EnumExtensions.GetDescription((WiaDocumentHandlingCap)cap));
-				}
-			}
-*/
-
-			return documentHandlingCaps;
+			var propertyValue = (int)property.get_Value();
+			
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad) != 0)
+				scanFeeds.Add((int)ScanFeed.Flatbad, EnumExtensions.GetDescription(ScanFeed.Flatbad));				
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
+				scanFeeds.Add((int)ScanFeed.Feeder, EnumExtensions.GetDescription(ScanFeed.Feeder));			
+			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex) != 0)
+				scanFeeds.Add((int)ScanFeed.Duplex, EnumExtensions.GetDescription(ScanFeed.Duplex));
+			
+			return scanFeeds;
 		}
 
 
