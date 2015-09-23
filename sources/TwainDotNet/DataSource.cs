@@ -92,35 +92,22 @@ namespace TwainDotNet
 				hasFlatbed = true;
 			}
 			var flatbedResolutions = new List<float>();
-
-			if (hasFlatbed)
-			{
-				Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
-				var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
-				if (resolutionCap != null)
-				{
-					foreach (var res in resolutionCap)
-					{
-						flatbedResolutions.Add(ValueConverter.ConvertToFix32(res));
-					}
-				}
-			}
-
-
 			var feederResolutions = new List<float>();
-			if (hasADF)
+
+			if (hasFlatbed && !hasADF)
+				flatbedResolutions = GetResolutions();
+
+			else
 			{
-				Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
-				var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
-				if (resolutionCap != null)
+				Capability.SetCapability(Capabilities.FeederEnabled, true, _applicationId, SourceId);
+				feederResolutions = GetResolutions();
+
+				if (hasFlatbed)
 				{
-					foreach (var res in resolutionCap)
-					{
-						feederResolutions.Add(ValueConverter.ConvertToFix32(res));
-					}
+					Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
+					flatbedResolutions = GetResolutions();
 				}
 			}
-
 			bool hasDuplex = false;
 			try
 			{
@@ -151,8 +138,23 @@ namespace TwainDotNet
 			return new SourceSettings(flatbedResolutions, feederResolutions, pixelTypes, physicalHeight, physicalWidth, hasADF, hasFlatbed, hasDuplex);
 	    }
 
+		private List<float> GetResolutions()
+		{
+			var resolutions = new List<float>();
+		    var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
+		    if (resolutionCap != null)
+		    {
+			    foreach (var res in resolutionCap)
+			    {
+					resolutions.Add(ValueConverter.ConvertToFix32(res));
+			    }
+		    }
 
-        public void NegotiateTransferCount(ScanSettings scanSettings)
+			return resolutions;
+		}
+
+
+	    public void NegotiateTransferCount(ScanSettings scanSettings)
         {
             try
             {

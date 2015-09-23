@@ -72,13 +72,24 @@ namespace TwainDotNet
 		/// <param name="sourceName">The source product name.</param>
 	    /// <returns></returns>
 	    public SourceSettings GetAwailableSourceSettings(string sourceName)
-	    {			
-			
-			SelectSource(sourceName);
-			_dataSourceManager.DataSource.OpenSource();
-			var settings = _dataSourceManager.DataSource.GetAwailableSourceSettings();
-			_dataSourceManager.DataSource.Close();
-			return settings;
+	    {
+		    SourceSettings settings;
+		    try
+		    {
+			    SelectSource(sourceName);
+			    _dataSourceManager.DataSource.OpenSource();
+			    settings = _dataSourceManager.DataSource.GetAwailableSourceSettings();
+		    }
+		    catch (Exception e)
+		    {
+			    throw;
+		    }
+		    finally
+		    {
+			    _dataSourceManager.DataSource.Close();
+		    }
+
+		    return settings;
 	    }
 
         /// <summary>
