@@ -8,15 +8,17 @@ namespace TwainWeb.Standalone.App.Models.Response
 	    private const float Backlash = 0.3f;
 	    private readonly string _name;
         private readonly int? _id;
-		private readonly List<float> _resolutions;
+		private readonly List<float> _flatbedResolutions;
+		private readonly List<float> _feederResolutions;
 		private readonly Dictionary<int, string> _pixelTypes;
         private List<FormatPage> _allowedFormats;
-	    private readonly Dictionary<int, string> _scanFeeds; 
-		public ScannerSettings(int id, string name, List<float> resolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null, Dictionary<int, string> scanFeeds = null)
+	    private readonly Dictionary<int, string> _scanFeeds;
+		public ScannerSettings(int id, string name, List<float> flatbedResolutions = null, List<float> feederResolutions = null, Dictionary<int, string> pixelTypes = null, float? maxHeight = null, float? maxWidth = null, Dictionary<int, string> scanFeeds = null)
         {
             _name = name;
             _id = id;
-            _resolutions = resolutions;
+			_flatbedResolutions = flatbedResolutions;
+			_feederResolutions = feederResolutions;
             _pixelTypes = pixelTypes;
             FillAllowedFormats(maxHeight, maxWidth);
 			_scanFeeds = scanFeeds;
@@ -93,12 +95,25 @@ namespace TwainWeb.Standalone.App.Models.Response
         {
             var result = "";
 
-			if (_resolutions != null && _resolutions.Count > 0)
+			if (_flatbedResolutions != null && _flatbedResolutions.Count > 0)
 			{
-				result += ",\"resolutions\": [";
-				for (var i = 0; i < _resolutions.Count; i++)
+				result += ",\"flatbedResolutions\": [";
+				for (var i = 0; i < _flatbedResolutions.Count; i++)
 				{
-					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", _resolutions[i], i != (_resolutions.Count - 1) ? "," : "");
+					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", 
+						_flatbedResolutions[i], 
+						i != (_flatbedResolutions.Count - 1) ? "," : "");
+				}
+				result += "]";
+			}
+			if (_feederResolutions != null && _feederResolutions.Count > 0)
+			{
+				result += ",\"feederResolutions\": [";
+				for (var i = 0; i < _feederResolutions.Count; i++)
+				{
+					result += string.Format("{{\"key\": \"{0}\", \"value\":\"{0}\"}}{1}", 
+						_feederResolutions[i], 
+						i != (_feederResolutions.Count - 1) ? "," : "");
 				}
 				result += "]";
 			}

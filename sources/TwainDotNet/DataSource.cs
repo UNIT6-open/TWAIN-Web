@@ -37,17 +37,6 @@ namespace TwainDotNet
 
 		public SourceSettings GetAwailableSourceSettings()
 	    {
-			var resolutions = new List<float>();
-			var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
-			if (resolutionCap != null)
-			{
-				foreach (var res in resolutionCap)
-				{
-					resolutions.Add(ValueConverter.ConvertToFix32(res));
-				}
-			}
-
-
 			var pixelTypes = new List<ushort>();
 			var pixelTypesCap = Capability.GetCapability(Capabilities.IPixelType, _applicationId, SourceId);
 			if (pixelTypesCap != null)
@@ -102,6 +91,36 @@ namespace TwainDotNet
 				hasADF = false;
 				hasFlatbed = true;
 			}
+			var flatbedResolutions = new List<float>();
+
+			if (hasFlatbed)
+			{
+				Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
+				var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
+				if (resolutionCap != null)
+				{
+					foreach (var res in resolutionCap)
+					{
+						flatbedResolutions.Add(ValueConverter.ConvertToFix32(res));
+					}
+				}
+			}
+
+
+			var feederResolutions = new List<float>();
+			if (hasADF)
+			{
+				Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
+				var resolutionCap = Capability.GetCapability(Capabilities.XResolution, _applicationId, SourceId);
+				if (resolutionCap != null)
+				{
+					foreach (var res in resolutionCap)
+					{
+						feederResolutions.Add(ValueConverter.ConvertToFix32(res));
+					}
+				}
+			}
+
 			bool hasDuplex = false;
 			try
 			{
@@ -129,7 +148,7 @@ namespace TwainDotNet
 			}
 			_log.Debug("GetCapabilities, result: Success");
 
-			return new SourceSettings(resolutions, pixelTypes, physicalHeight, physicalWidth, hasADF, hasFlatbed, hasDuplex);
+			return new SourceSettings(flatbedResolutions, feederResolutions, pixelTypes, physicalHeight, physicalWidth, hasADF, hasFlatbed, hasDuplex);
 	    }
 
 
