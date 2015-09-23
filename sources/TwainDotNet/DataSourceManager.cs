@@ -344,8 +344,7 @@ namespace TwainDotNet
 
 			        if (result != TwainResult.XferDone)
 			        {
-				        var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
-				        _log.ErrorFormat("Transfer the image from the device failed. Condition code: {0}", conditionCode);
+						_log.ErrorFormat("Transfer the image from the device failed. Result: {0}", result);
 				        CloseDataSource();
 				        break;
 			        }
