@@ -29,6 +29,8 @@ namespace TwainWeb.Standalone.App.TwainNet
 			var init = new Init(Initialize);
 			_twain = _windowsMessageLoop.Invoke<TwainDotNet.Twain>(init, new object[] { _windowsMessageLoop.Hwnd });
 
+			_log.Info("TwainDotNet scanner manager is used");
+
 			RefreshSources();
 		}
 		public int SourceCount
@@ -64,6 +66,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 
 		public void ChangeSource(int index)
 		{
+			_log.Info("Twain: change source");
 			TwainDotNetSource source;
 			if (_sources.Count == 0)
 				RefreshSources();
@@ -78,6 +81,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 			}
 
 			_currentSource = source;
+			_log.Info("Twain: change source success");
 		}
 
 		private static TwainDotNet.Twain Initialize(IntPtr hwnd)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
+using log4net;
 using TwainWeb.Standalone.App.Extensions;
 using TwainWeb.Standalone.App.Models;
 using TwainWeb.Standalone.App.Models.Response;
@@ -46,22 +46,28 @@ namespace TwainWeb.Standalone.App.Wia
 		private readonly string _deviceId;
 		private readonly int _sourceIndex;
 		private readonly string _name;
+		private ILog _log;
 
 		public WiaSource(int index, string name, string deviceId)
 		{
 			_sourceIndex = index;
 			_name = name;
 			_deviceId = deviceId;
-			
-			//ConnectToDevice(deviceInfo.DeviceID);
+			_log = LogManager.GetLogger(typeof(WiaSource));
+			_log.Debug(string.Format("Created WIA source, name={0}, index={1}", name, index));
 		}
 		public string DeviceId { get { return _deviceId; } }
 		public string Name { get { return _name; } }
 		public int Index { get { return _sourceIndex; } }
 
+		private void Log(string message)
+		{
+			_log.Info(string.Format("{0}: {1}", Name, message));
+		}
 
 		public ScannerSettings GetScannerSettings()
 		{
+			Log("Get scanner settings");
 			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
@@ -72,21 +78,26 @@ namespace TwainWeb.Standalone.App.Wia
 			var source = device.Items[1];
 
 			var supportedScanFeeds = GetSupportedDocumentHandlingCaps(device);
-
 			List<float> flatbedResolutions = null;
-			if (supportedScanFeeds.ContainsKey((int) ScanFeed.Flatbad))
+			List<float> feederResolutions = null;
+			if (supportedScanFeeds == null || supportedScanFeeds.Count == 0)
 			{
-				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
 				flatbedResolutions = GetAllowableResolutions(source);
 			}
-
-			List<float> feederResolutions = null;
-			if (supportedScanFeeds.ContainsKey((int)ScanFeed.Feeder))
+			else
 			{
-				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
-				feederResolutions = GetAllowableResolutions(source);
+				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Flatbad))
+				{
+					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
+					flatbedResolutions = GetAllowableResolutions(source);
+				}
+				
+				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Feeder))
+				{
+					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
+					feederResolutions = GetAllowableResolutions(source);
+				}
 			}
-			
 			var settings = new ScannerSettings(
 				_sourceIndex,
 				_name,
@@ -96,6 +107,8 @@ namespace TwainWeb.Standalone.App.Wia
 				GetMaxHeight(device),
 				GetMaxWidth(device),
 				GetSupportedDocumentHandlingCaps(device));
+
+			Log("Get scanner settings success");
 
 			return settings;
 		}
@@ -107,15 +120,13 @@ namespace TwainWeb.Standalone.App.Wia
 		/// <returns>Scanned images.</returns>
 		public List<Image> Scan(SettingsAcquire settings)
 		{
-
 			if (_deviceId == null)
 			{
 				throw new Exception("Не выбран источник данных для сканера.");
 			}
 
 			var device = ConnectToDevice();
-			var source = device.Items[1];
-			WritePropertiesToFile(source.Properties);
+
 			SetAcquireSettings(device, settings);
 
 			return Scan(device);
@@ -128,7 +139,8 @@ namespace TwainWeb.Standalone.App.Wia
 		/// <returns>Scanned images.</returns>
 		private List<Image> Scan(Device device)
 		{
-		
+
+			Log("Start scan");
 			var images = new List<Image>();
 
 			var hasMorePages = true;
@@ -140,8 +152,9 @@ namespace TwainWeb.Standalone.App.Wia
 				try
 				{
 					// scan image
-					
+					Log("Start transfer image");
 					var image = (ImageFile) item.Transfer(FormatID.wiaFormatBMP);
+					Log("Image transfer success");
 
 					if (image == null) throw new Exception("Не удалось отсканировать изображение");
 
@@ -151,7 +164,6 @@ namespace TwainWeb.Standalone.App.Wia
 					var img = Image.FromStream(stream);
 
 					images.Add(img);
-					Thread.Sleep(TimeSpan.FromSeconds(2));
 
 				}
 				catch (COMException e)
@@ -159,6 +171,7 @@ namespace TwainWeb.Standalone.App.Wia
 					//Out Of Paper
 					if (e.ErrorCode == -2145320957)
 					{
+						Log("Out of paper");
 						return images;
 					}
 					else throw;
@@ -168,7 +181,7 @@ namespace TwainWeb.Standalone.App.Wia
 					hasMorePages = HasMorePages(device);
 				}
 			}
-
+			Log("Scan success, images count: " + images.Count);
 			return images;
 		}
 
@@ -199,7 +212,7 @@ namespace TwainWeb.Standalone.App.Wia
 					hasMorePages = ((Convert.ToUInt32(documentHandlingStatus.get_Value()) & WIA_DPS_DOCUMENT_HANDLING_STATUS.FEED_READY) != 0);
 				}
 			}
-
+			Log("Has more pages = " + hasMorePages);
 			return hasMorePages;
 		}
 
@@ -222,7 +235,7 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private Device ConnectToDevice()
 		{
-			
+			Log("Connect to scanner");
 			// connect to scanner
 			var device = DeviceInfo.Connect();
 			
@@ -235,6 +248,7 @@ namespace TwainWeb.Standalone.App.Wia
 			if (device.Items.Count == 0)
 				throw new Exception("The device hasn't any device info");
 
+			Log("Connect to scanner success");
 			return device;
 		}
 
@@ -256,6 +270,8 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private void SetAcquireSettings(Device device, SettingsAcquire settings)
 		{
+			Log("Set acquire settings");
+
 			var source = device.Items[1];
 			if (source == null) throw new Exception("Current sourse not found");
 
@@ -301,6 +317,8 @@ namespace TwainWeb.Standalone.App.Wia
 				SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, documentHandlingSelect);
 				
 			}
+
+			Log("Set acquire settings success");
 		}
 
 		private Dictionary<int, string> GetAllowablePixelTypes()

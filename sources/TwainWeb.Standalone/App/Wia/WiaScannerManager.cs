@@ -16,10 +16,12 @@ namespace TwainWeb.Standalone.App.Wia
 		{
 			_sources = new List<WiaSource>();
 			_log = LogManager.GetLogger(typeof(WiaScannerManager));
+			_log.Info("Wia scanner manager is used");
 		}
 
 		public void ChangeSource(int index)
 		{
+			_log.Info("Wia: change source");
 			WiaSource source;
 			if (_sources.Count == 0)
 				RefreshSources();
@@ -34,7 +36,7 @@ namespace TwainWeb.Standalone.App.Wia
 			}
 
 			_currentSource = source;
-
+			_log.Info("Wia: change source success");
 		}
 
 		public int? CurrentSourceIndex { get { return _currentSource == null ? (int?)null : _currentSource.Index; } }

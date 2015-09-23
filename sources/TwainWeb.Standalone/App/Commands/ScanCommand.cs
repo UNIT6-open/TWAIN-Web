@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using log4net;
 using TwainWeb.Standalone.App.Models.Request;
 using TwainWeb.Standalone.App.Models.Response;
 using TwainWeb.Standalone.App.Scanner;
@@ -16,10 +17,13 @@ namespace TwainWeb.Standalone.App.Commands
 		private const int WaitTimeForChangeSource = 15000;
 		private const int WaitTimaeForScan = 50000;
 
+		private readonly ILog _log;
+
 		public ScanCommand(ScanForm command, IScannerManager scannerManager)
 		{
 			_command = command;
 			_scannerManager = scannerManager;
+			_log = LogManager.GetLogger(typeof (ScanCommand));
 		}
 
 		private readonly ScanForm _command;
@@ -27,12 +31,18 @@ namespace TwainWeb.Standalone.App.Commands
 
 		public ScanResult Execute(object markerAsynchrone)
 		{
-			/*var res = new MultipleScanResult();
-			res.Content = Encoding.UTF8.GetBytes("{\"files\": [{\"file\": \"Скан_74.jpg\", \"temp\": \"tmpA618.tmp\"},{\"file\": \"Скан_75.jpg\", \"temp\": \"tmpAA9D.tmp\"}]}");
-
-			return res;*/
-
-
+			_log.Info("======================================= SCAN COMMAND ========================================");
+			_log.Info(string.Format("Start execute with scan params: " +
+			                        "source={0}, sourceFeed={1}, dpi={2}, colorMode={3}, compressionFormat={4}, format={5}, " +
+			                        "isPackage={6}, saveAs={7}", 
+				_command.Source, 
+				_command.DocumentHandlingCap, 
+				_command.DPI,
+				_command.ColorMode,
+				_command.CompressionFormat.ImgFormat,
+				_command.Format.Name,
+				_command.IsPackage,
+				_command.SaveAs));
 
 			ScanResult scanResult;
 			try
@@ -122,6 +132,8 @@ namespace TwainWeb.Standalone.App.Commands
 			{
 				return new SingleScanResult(ex.Message);
 			}
+
+			_log.Info("Scan command executed");
 			return scanResult;
 		}
 

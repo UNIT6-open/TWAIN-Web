@@ -402,10 +402,16 @@ namespace TwainDotNet
                     Message.Reset,
                     pendingTransfer);
 
-				_log.Debug(string.Format("Reset(PendingXfers), result: {0}", result));
+				
 	            if (result == TwainResult.Success)
 	            {
 		            _twainState = TwainState.SourceEnabled;
+					_log.Debug(string.Format("Reset(PendingXfers), result: {0}", result));
+	            }
+	            else
+	            {
+					var conditionCode = GetConditionCode(ApplicationId, DataSource.SourceId);
+					_log.ErrorFormat("Reset(PendingXfers), result: {0}, condition code: {1}", result, conditionCode);		
 	            }
             }
         }

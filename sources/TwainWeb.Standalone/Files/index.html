@@ -136,7 +136,8 @@
 						$(switches[i]).removeClass('inactive').addClass('active');
 						
 						//если выбран ADF
-						if ($("#form").find("#Form_ScanFeed").val() != 0) {
+						var scanFeed = $("#form").find("#Form_ScanFeed");
+						if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
 							$('#form .package-setting').addClass("disp-no");
 							eval("$('#form .package-feeder-setting')." + $(switches[i]).attr('changeAction'));
 						} else {
@@ -448,6 +449,7 @@
 						} else {
 							clearSelect(selectDpiHidden);
 						}
+						selectDpiHidden.removeClass('flatbedResolutions');
 						selectDpiHidden.addClass('feederResolutions');
 
 						var selectScanFeed = $('#form').find("#Form_ScanFeed");
@@ -466,6 +468,8 @@
 							clearSelect(selectAllowedFormats);
 						}
 						ApplyLocalSettings(localSettings);
+
+						scanFeedOnChange();
 
 						if (responce.allowedFormats == undefined || responce.pixelTypes == undefined || (responce.flatbedResolutions == undefined && responce.feederResolutions == undefined)) {
 							DisactivateScanParameters();
@@ -556,51 +560,58 @@
 			GetScanParameters();
 			
 			function scanFeedOnChange() {
+				
+				function swapSelects(first, second) {
+
+					var selectedValue = first.val();
+
+					var firstOptions = first.html();
+					var secondOptions = second.html();
+
+					second.html(firstOptions);
+					first.html(secondOptions);
+
+					first.val(selectedValue);
+
+				}
+
+				function replaceSelectFromHidden(activeSelect, hiddenSelect, activeClass, hiddenClass) {
+					if (hiddenSelect.hasClass(hiddenClass)) {
+
+						swapSelects(activeSelect, hiddenSelect);
+
+						hiddenSelect.removeClass(hiddenClass);
+						hiddenSelect.addClass(activeClass);
+					}
+
+				}
+
 				var selectDpi = $('#form').find("#Form_Dpi");
 				var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
 				
-				
-				
-				if ($("#form").find("#Form_ScanFeed").val() != 0) {
+				var scanFeed = $("#form").find("#Form_ScanFeed");
+				if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
 					var scanMode = $("#form .mode-switch.active").attr('id');
 					localStorage.setItem("previousScanMode", scanMode);
 					changeMode("package-scan");
 					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
+
+					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'flatbedResolutions', 'feederResolutions');
 					
-					if (selectDpiHidden.hasClass('feederResolutions')) {
-						
-						var feederOptions = selectDpiHidden.html();
-						var flatbedOptions = selectDpi.html();
-
-						selectDpi.html(feederOptions);
-						selectDpiHidden.html(flatbedOptions);
-						
-						selectDpiHidden.removeClass('feederResolutions');
-						selectDpiHidden.addClass('flatbedResolutions');
-					}
-					
-
-
 				} else {
 					$("#form").find("#conventional-scan").removeAttr('disabled');
 					var previousScanMode = localStorage.getItem("previousScanMode");
 					changeMode(previousScanMode);
 					
-
-					if (selectDpiHidden.hasClass('flatbedResolutions')) {
-						
-						flatbedOptions = selectDpiHidden.html();
-						feederOptions = selectDpi.html();
-
-						selectDpi.html(flatbedOptions);
-						selectDpiHidden.html(feederOptions);
-						
-						selectDpiHidden.removeClass('flatbedResolutions');
-						selectDpiHidden.addClass('feederResolutions');
-					}
+					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'feederResolutions', 'flatbedResolutions');
 					
 				}
 			};
+
+			$("#form").find("#Form_Source").on('change', function () {
+				scanFeedOnChange();
+			});
+
 
 
 			$("#form").find("#Form_ScanFeed").on('change', scanFeedOnChange);
