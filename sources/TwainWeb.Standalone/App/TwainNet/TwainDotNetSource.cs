@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using log4net;
+using log4net.Repository.Hierarchy;
 using TwainDotNet;
 using TwainDotNet.TwainNative;
 using TwainWeb.Standalone.App.Extensions;
@@ -24,6 +26,8 @@ namespace TwainWeb.Standalone.App.TwainNet
 		private delegate void StartScan(ScanSettings settings);
 		private delegate SourceSettings GetSettings();
 
+		private readonly ILog _log;
+
 		public TwainDotNetSource(int i, string sourceName, TwainDotNet.Twain twain, WindowsMessageLoopThread windowsMessageLoop)
 		{
 			Name = sourceName;
@@ -31,13 +35,21 @@ namespace TwainWeb.Standalone.App.TwainNet
 			_windowsMessageLoop = windowsMessageLoop;
 			_scanCompleteEvent = new ManualResetEvent(false);
 			_twain = twain;
+			_log = LogManager.GetLogger(typeof (TwainDotNetSource));
+
+			_log.Debug(string.Format("Created TWAIN name={0}, index={1}", sourceName, i));
 		}
 
+		private void Log(string message)
+		{
+			_log.Info(string.Format("{0}: {1}", Name, message));
+		}
 		public int Index { get; private set; }
 		public string Name { get; private set; }
 
 		public ScannerSettings GetScannerSettings()
 		{
+			Log("Get scanner settings");
 			var getSettings = new GetSettings(GetTwainScannerSettings);
 			var settings = _windowsMessageLoop.Invoke<SourceSettings>(getSettings);
 			Dictionary<int, string> supportedScanSources = null;
@@ -56,11 +68,13 @@ namespace TwainWeb.Standalone.App.TwainNet
 			
 			var scannerSettings = new ScannerSettings(Index, Name, settings.FlatbedResolutions, settings.FeederResolutions, TwainPixelTypeExtensions.GetSelectListDictionary(settings.PixelTypes), settings.PhysicalHeight, settings.PhysicalWidth, supportedScanSources);
 
+			Log("Get scanner settings success");
 			return scannerSettings;
 		}
 
 		public List<Image> Scan(SettingsAcquire settings)
 		{
+			Log("Scan start");
 			_images = new List<Image>();
 			_scanCompleteEvent.Reset();
 
@@ -84,6 +98,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 			_windowsMessageLoop.Invoke(scan, new object[] { scanSettings });
 
 			_scanCompleteEvent.WaitOne();
+			Log("Scan complete, images count: " + _images.Count);
 			return _images;
 		}
 
@@ -91,6 +106,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 		{
 			if (e.Image != null)
 			{
+				Log("Image transfered");
 				var img = e.Image;
 				if (_images == null) _images = new List<Image>();
 
@@ -103,6 +119,7 @@ namespace TwainWeb.Standalone.App.TwainNet
 		{
 			_twain.ScanningComplete -= Twain_ScanningComplete;
 			_twain.TransferImage -= Twain_TransferImage;
+			Log("Scanning complete");
 			_scanCompleteEvent.Set();
 		}
 
@@ -118,7 +135,10 @@ namespace TwainWeb.Standalone.App.TwainNet
 			settings.ShowTwainUI = false;
 			settings.ShowProgressIndicatorUI = false;
 
+			Log("Select this source");
 			_twain.SelectSource(Name);
+			Log("Select this source success");
+			Log("Start scanning");
 			_twain.StartScanning(settings);
 		}
 	}
