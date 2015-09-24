@@ -43,7 +43,7 @@ namespace TwainWeb.Standalone.App.Hook
 			_manager = new MessageBoxHookManager();
 
 			if (_hHook == IntPtr.Zero)
-				_hHook = _manager.Register(MessageBoxHookProc, threadId);
+				_hHook = _manager.Register(StaticWndProcDelegate, threadId);
 
 		}
 		public void Dispose()
@@ -52,6 +52,8 @@ namespace TwainWeb.Standalone.App.Hook
 			_hHook = IntPtr.Zero;
 		}
 
+		private static readonly MessageBoxHookManager.HookProc StaticWndProcDelegate = MessageBoxHookProc;
+
 		/// <summary>
 		/// Hook for autoclosing dialogs
 		/// </summary>
@@ -59,7 +61,7 @@ namespace TwainWeb.Standalone.App.Hook
 		/// <param name="wParam">Depends on the nCode parameter.</param>
 		/// <param name="lParam">Depends on the nCode parameter.</param>
 		/// <returns>If nCode is less than zero, the hook procedure must return the value returned by CallNextHookEx.</returns>
-		private IntPtr MessageBoxHookProc(int nCode, IntPtr wParam, IntPtr lParam)
+		private static IntPtr MessageBoxHookProc(int nCode, IntPtr wParam, IntPtr lParam)
 		{
 			if (nCode < 0)
 			{

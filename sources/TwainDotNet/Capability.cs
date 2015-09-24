@@ -115,7 +115,7 @@ namespace TwainDotNet
 
         protected void SetValue<T>(T value)
         {
-            log.Debug(string.Format("Attempting to set capabilities:{0}, value:{1}, type:{1}",
+            log.Debug(string.Format("Attempting to set capabilities:{0}, value:{1}, type:{2}",
                 _capability, value, _twainType));
 
             int rawValue = Convert.ToInt32(value);
@@ -132,7 +132,7 @@ namespace TwainDotNet
 
             if (result != TwainResult.Success)
             {
-                log.Debug(string.Format("Failed to set capabilities:{0}, value:{1}, type:{1}, result:{2}",
+                log.Debug(string.Format("Failed to set capabilities:{0}, value:{1}, type:{2}, result:{3}",
                     _capability, value, _twainType, result));
 
                 if (result == TwainResult.Failure)

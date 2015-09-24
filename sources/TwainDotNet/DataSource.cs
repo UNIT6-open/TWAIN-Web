@@ -65,50 +65,46 @@ namespace TwainDotNet
 			}
 
 			bool hasADF, hasFlatbed;
+			var flatbedResolutions = new List<float>();
+			var feederResolutions = new List<float>();
+
 			try
 			{
 				var documentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
 				if (documentFeederEnabled)
-			    {
+				{
+					feederResolutions = GetResolutions();
 				    Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
 				    var newDocumentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
 
 				    hasADF = true;
 				    hasFlatbed = !newDocumentFeederEnabled;
-			    }
+					if (hasFlatbed) flatbedResolutions = GetResolutions();
+				}
 			    else
-			    {
+				{
+					flatbedResolutions = GetResolutions();
 				    Capability.SetCapability(Capabilities.FeederEnabled, true, _applicationId, SourceId);
 				    var newDocumentFeederEnabled = Capability.GetBoolCapability(Capabilities.FeederEnabled, _applicationId, SourceId);
 
 				    hasADF = newDocumentFeederEnabled;
 				    hasFlatbed = true;
 
-			    }
+					if (hasADF)
+						feederResolutions = GetResolutions();
+
+				}
 			}
 			catch (Exception)
 			{
 				hasADF = false;
 				hasFlatbed = true;
-			}
-			var flatbedResolutions = new List<float>();
-			var feederResolutions = new List<float>();
 
-			if (hasFlatbed && !hasADF)
 				flatbedResolutions = GetResolutions();
-
-			else
-			{
-				Capability.SetCapability(Capabilities.FeederEnabled, true, _applicationId, SourceId);
-				feederResolutions = GetResolutions();
-
-				if (hasFlatbed)
-				{
-					Capability.SetCapability(Capabilities.FeederEnabled, false, _applicationId, SourceId);
-					flatbedResolutions = GetResolutions();
-				}
 			}
-			bool hasDuplex = false;
+			
+		
+			var hasDuplex = false;
 			try
 			{
 				var duplexCap = Capability.GetCapability(Capabilities.Duplex, _applicationId, SourceId);
