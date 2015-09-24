@@ -3,14 +3,14 @@
    <autoclose >0</>
    <compname >UNIT6.ru</>
    <produrl >http://unit6.ru/twain-web</>
-   <ver >1.3</>
+   <ver >1.6</>
    <supurl ></>
    <updurl ></>
    <dlgfont >verdana</>
    <headlogo >default - 1</>
    <dlgfontsize >s8</>
    <output >D:\Works\unit6\projects\ScannerSite new\release\installer</>
-   <exename >TWAIN@Web-v1beta5-setup.exe</>
+   <exename >TWAIN@Web-v1beta6-setup.exe</>
    <beffile ></>
    <aftfile ></>
    <uninclude >1</>
