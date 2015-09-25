@@ -46,7 +46,7 @@ namespace TwainDotNet
 					pixelTypes.Add((ushort)pt);
 				}
 			}
-
+			_log.Debug("Get pixel types: success, count: " + pixelTypes.Count);
 
 			float physicalHeight = 0;
 			var physicalHeightCap = Capability.GetCapability(Capabilities.PhysicalHeight, _applicationId, SourceId);
@@ -54,16 +54,18 @@ namespace TwainDotNet
 			if (physicalHeightCap != null && physicalHeightCap.Count == 1)
 			{
 				physicalHeight = ValueConverter.ConvertToFix32(physicalHeightCap[0]);
+				_log.Debug("Get physical height: success, value: " + physicalHeight);
 			}
-
+			
 			float physicalWidth = 0;
 			var physicalWidthCap = Capability.GetCapability(Capabilities.PhysicalWidth, _applicationId, SourceId);
 
 			if (physicalWidthCap != null && physicalWidthCap.Count == 1)
 			{
 				physicalWidth = ValueConverter.ConvertToFix32(physicalWidthCap[0]);
+				_log.Debug("Get physical width: success, value: " + physicalWidth);
 			}
-
+			
 			bool hasADF, hasFlatbed;
 			var flatbedResolutions = new List<float>();
 			var feederResolutions = new List<float>();
@@ -79,6 +81,9 @@ namespace TwainDotNet
 
 				    hasADF = true;
 				    hasFlatbed = !newDocumentFeederEnabled;
+
+					_log.Debug(string.Format("Get document feeder enabled: success, hasFlatbed: {0}, hasADF: {1}, feederEnabledInitial: {2}", hasFlatbed, hasADF, documentFeederEnabled));
+
 					if (hasFlatbed) flatbedResolutions = GetResolutions();
 				}
 			    else
@@ -89,9 +94,10 @@ namespace TwainDotNet
 
 				    hasADF = newDocumentFeederEnabled;
 				    hasFlatbed = true;
+					_log.Debug(string.Format("Get document feeder enabled: success, hasFlatbed: {0}, hasADF: {1}, feederEnabledInitial: {2}", hasFlatbed, hasADF, documentFeederEnabled));
 
-					if (hasADF)
-						feederResolutions = GetResolutions();
+					
+					if (hasADF) feederResolutions = GetResolutions();
 
 				}
 			}
@@ -100,6 +106,8 @@ namespace TwainDotNet
 				hasADF = false;
 				hasFlatbed = true;
 
+				_log.Debug(string.Format("Get document feeder enabled: not supported, hasFlatbed: {0}, hasADF: {1}", 
+					hasFlatbed, hasADF));
 				flatbedResolutions = GetResolutions();
 			}
 			
@@ -124,9 +132,11 @@ namespace TwainDotNet
 						}
 					}
 				}
+				_log.Debug(string.Format("Has duplex: success, value: {0}", hasDuplex));
 			}
 			catch (Exception)
 			{
+				_log.Debug(string.Format("Has duplex: not supported, value: false"));
 				hasDuplex = false;
 			}
 			_log.Debug("GetCapabilities, result: Success");
@@ -146,6 +156,16 @@ namespace TwainDotNet
 			    }
 		    }
 
+			if (resolutions.Count > 0)
+			{
+				_log.Debug(string.Format("Get resolutions: success, min: {0}, max: {1}",
+					resolutions[0], resolutions[resolutions.Count - 1]));
+			}
+			else
+			{
+				_log.Debug(string.Format("Get resolutions: count = 0"));
+				
+			}
 			return resolutions;
 		}
 

@@ -64,6 +64,10 @@ namespace TwainWeb.Standalone.App.Wia
 		{
 			_log.Info(string.Format("{0}: {1}", Name, message));
 		}
+		private void Debug(string message)
+		{
+			_log.Debug(string.Format("{0}: {1}", Name, message));
+		}
 
 		public ScannerSettings GetScannerSettings()
 		{
@@ -88,13 +92,29 @@ namespace TwainWeb.Standalone.App.Wia
 			{
 				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Flatbad))
 				{
-					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
+					Debug("Getting resolutions for Flatbad");
+					try
+					{
+						SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad);
+					}
+					catch (Exception e)
+					{
+						Debug("Can't set DocumentHandlingSelect to Flatbad, " + e);
+					}
 					flatbedResolutions = GetAllowableResolutions(source);
 				}
 				
 				if (supportedScanFeeds.ContainsKey((int) ScanFeed.Feeder))
 				{
-					SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
+					Debug("Getting resolutions for Feeder");
+					try
+					{
+						SetProperty(device.Properties, WiaProperty.DocumentHandlingSelect, WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder);
+					}
+					catch (Exception e)
+					{
+						Debug("Can't set DocumentHandlingSelect to Feeder, " + e);
+					}
 					feederResolutions = GetAllowableResolutions(source);
 				}
 			}
@@ -106,7 +126,7 @@ namespace TwainWeb.Standalone.App.Wia
 				GetAllowablePixelTypes(),
 				GetMaxHeight(device),
 				GetMaxWidth(device),
-				GetSupportedDocumentHandlingCaps(device));
+				supportedScanFeeds);
 
 			Log("Get scanner settings success");
 
@@ -254,18 +274,39 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private float GetMaxHeight(IDevice device)
 		{
-			var verticalBedSize = FindProperty(device.Properties, WiaProperty.VerticalBedSize);
-			var vertical = verticalBedSize.get_Value();
-			var maxHeight = (float)(int)vertical / 1000;
-			return maxHeight;
+			Debug(string.Format("Get max Height"));
+			try
+			{
+				var verticalBedSize = FindProperty(device.Properties, WiaProperty.VerticalBedSize);
+				var vertical = verticalBedSize.get_Value();
+				var maxHeight = (float) (int) vertical/1000;
+				Debug(string.Format("Get max Height success, value: " + maxHeight));
+				return maxHeight;
+			}
+			catch (Exception e)
+			{
+				Debug(string.Format("Cant't obtain max height, error: " + e));
+				throw;
+			}		
 		}
 
 		private float GetMaxWidth(IDevice device)
 		{
-			var horizontalBedSize = FindProperty(device.Properties, WiaProperty.HorizontalBedSize);
-			var horizontal = horizontalBedSize.get_Value();
-			var maxWidth = (float)(int)horizontal / 1000;
-			return maxWidth;
+			Debug(string.Format("Get max Width"));
+			try
+			{
+				var horizontalBedSize = FindProperty(device.Properties, WiaProperty.HorizontalBedSize);
+				var horizontal = horizontalBedSize.get_Value();
+				var maxWidth = (float)(int)horizontal / 1000;
+
+				Debug(string.Format("Get max Width success, value: " + maxWidth));
+				return maxWidth;
+			}
+			catch (Exception e)
+			{
+				Debug(string.Format("Cant't obtain max width, error: " + e));
+				throw;
+			}			
 		}
 
 		private void SetAcquireSettings(Device device, SettingsAcquire settings)
@@ -334,6 +375,7 @@ namespace TwainWeb.Standalone.App.Wia
 
 		private Dictionary<int, string> GetSupportedDocumentHandlingCaps(IDevice device)
 		{
+			Debug("Getting scan feeds");
 			var property = FindProperty(device.Properties, WiaProperty.DocumentHandlingCapabilities);
 
 			if (property == null)
@@ -341,25 +383,42 @@ namespace TwainWeb.Standalone.App.Wia
 
 			var scanFeeds = new Dictionary<int, string>();
 
-			var propertyValue = (int)property.get_Value();
-			
-			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad) != 0)
-				scanFeeds.Add((int)ScanFeed.Flatbad, EnumExtensions.GetDescription(ScanFeed.Flatbad));				
-			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
-				scanFeeds.Add((int)ScanFeed.Feeder, EnumExtensions.GetDescription(ScanFeed.Feeder));			
-			if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex) != 0)
-				scanFeeds.Add((int)ScanFeed.Duplex, EnumExtensions.GetDescription(ScanFeed.Duplex));
-			
+			try
+			{
+				var propertyValue = (int) property.get_Value();
+
+				if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad) != 0)
+					scanFeeds.Add((int)ScanFeed.Flatbad, EnumExtensions.GetDescription(ScanFeed.Flatbad));
+				if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Feeder) != 0)
+					scanFeeds.Add((int)ScanFeed.Feeder, EnumExtensions.GetDescription(ScanFeed.Feeder));
+				if ((propertyValue & (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Duplex) != 0)
+					scanFeeds.Add((int)ScanFeed.Duplex, EnumExtensions.GetDescription(ScanFeed.Duplex));
+			}
+			catch (Exception)
+			{
+				Debug("Can't obtain DocumentHandlingCapabilities property value");
+				return null;
+			}
+
+			var scanFeedNames = new List<string>();
+
+			foreach (var scanFeed in scanFeeds)
+			{
+				scanFeedNames.Add(scanFeed.Value);
+			}
+			Debug("Scan feeds: " + string.Join(", ", scanFeedNames.ToArray()));
 			return scanFeeds;
 		}
 
 
 		private List<float> GetAllowableResolutions(IItem source)
 		{
+			Debug("Getting resolutions");
 			var verticalResolution = FindProperty(source.Properties, WiaProperty.VerticalResolution);
 			var horizontalResolution = FindProperty(source.Properties, WiaProperty.HorizontalResolution);
 
-			if (verticalResolution == null || horizontalResolution == null) throw new Exception("Не удалось получить допустимые разрешения сканера");
+			if (verticalResolution == null || horizontalResolution == null) 
+				throw new Exception("Не удалось получить допустимые разрешения сканера");
 
 			var verticalResolutions = new List<float>();
 			var horizontalResolutions = new List<float>();
@@ -368,7 +427,7 @@ namespace TwainWeb.Standalone.App.Wia
 			Vector horizontalResolutionsVector = null;
 
 			//Разрешения могут быть представлены либо списком в SubTypeValues, либо минимальным, максимальным значаниями и шагом (SubTypeMin, SubTypeMax, SubTypeStep)
-			var isVector = false;
+			bool isVector;
 
 			try
 			{
@@ -416,30 +475,58 @@ namespace TwainWeb.Standalone.App.Wia
 					throw new Exception("Не удалось получить допустимые разрешения сканера");
 				}
 
-			return horizontalResolutions.Count < verticalResolutions.Count
+			var resolutions = horizontalResolutions.Count < verticalResolutions.Count
 				? horizontalResolutions
 				: verticalResolutions;
+
+			Debug(string.Format("Resolutions was obtained, min: {0}, max: {1}", 
+				resolutions[0], 
+				resolutions[resolutions.Count - 1]));
+
+			return resolutions;
 		}
 
 
 
-		private static Property FindProperty(WIA.Properties properties, WiaProperty property)
+		private Property FindProperty(WIA.Properties properties, WiaProperty property)
 		{
+			Log("Try to find property: " + property);
 			foreach (Property prop in properties)
 			{
 				if (prop.PropertyID == (int)property)
 				{
+					Log(string.Format("Property '{0}' was found", property));
 					return prop;
 				}
 			}
+			Log(string.Format("Property '{0}' was not found", property));
 			return null;
 		}
 
 		private void SetProperty(IProperties properties, WiaProperty property, object propValue)
 		{
+			Debug(string.Format("Try to set property '{0}' to value '{1}'",property, propValue));
 			var propName = ((int)property).ToString();
-			var prop = properties.get_Item(propName);
-			prop.set_Value(ref propValue);
+			IProperty prop;
+			try
+			{
+				prop = properties.get_Item(propName);
+			}
+			catch (Exception e)
+			{
+				Debug(string.Format("Error occured when getting property '{0}': " + e, property));
+				throw;
+			}
+			try
+			{
+				prop.set_Value(ref propValue);
+			}
+			catch (Exception e)
+			{
+				Debug(string.Format("Error occured when setting property '{0}': " + e, property));
+				throw;
+			}
+			Debug(string.Format("Property '{0}' was successfully setted", property));
 		}
 
 		#region debug

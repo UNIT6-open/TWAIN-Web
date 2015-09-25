@@ -48,6 +48,15 @@
                   <backbmp ></>
                   <stretchback >0</>
                </>
+               <_ tag = 0 id = regget >
+                  <desc ></>
+                  <root >curuser</>
+                  <subkey ></>
+                  <wow64 >1</>
+                  <reglist >
+                     <rows ></>
+                  </>
+               </>
                <_ tag = 0 id = getuser disabled = 1 >
                   <desc ></>
                   <var >username</>
@@ -152,7 +161,7 @@
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
-                                 <exclude ></>
+                                 <exclude >*.pfx;Log.txt</>
                               </>
                            </>
                         </>
@@ -176,7 +185,7 @@
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
-                                 <exclude ></>
+                                 <exclude >*.pfx;Log.txt</>
                               </>
                            </>
                         </>
