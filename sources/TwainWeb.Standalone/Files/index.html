@@ -14,120 +14,124 @@
 
 </head>
 <body>
-	<div class="overlay">
-		<div class="overlay-content">
-			<div class="loader"></div>
-			<div class="overlay-message"></div>
+	<div class="page-wrap">
+		<div class="overlay">
+			<div class="overlay-content">
+				<div class="loader"></div>
+				<div class="overlay-message"></div>
+			</div>
 		</div>
-	</div>
-	<section class="header">
-		<div class="container">
-			<div class="row">
-				<div class="span12">
-					<div class="logo">
-						<a href="http://unit6.ru/twain-web">
-							<h1>TWAIN<span>@Web</span></h1>
-						</a>
+		<section class="header">
+			<div class="container">
+				<div class="row">
+					<div class="span12">
+						<div class="logo">
+							<a href="http://unit6.ru/twain-web">
+								<h1>TWAIN<span>@Web</span></h1>
+							</a>
+						</div>
+						<ul class="nav">
+							<li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Управление<span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="#" id="restartWiaLink">Перезапуск Wia</a></li>
+									<li><a href="#" id="restartLink">Перезапуск приложения</a></li>
+								</ul>
+							</li>
+							<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
+						</ul>
 					</div>
-					<ul class="nav">
-						<li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Управление<span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a href="#" id="restartWiaLink">Перезапуск Wia</a></li>
-								<li><a href="#" id="restartLink">Перезапуск приложения</a></li>
-							</ul>
-						</li>
-						<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
-					</ul>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<section class="body">
-		<div class="container">
-			<div class="row">
+		<section class="body">
+			<div class="container">
+				<div class="row">
 
-				<form method="post" id="form" class="span6">
-					<h2>Параметры Сканирования</h2>
+					<form method="post" id="form" class="span6">
+						<h2>Параметры Сканирования</h2>
 
-					<fieldset>
-						<div class="form-field">
-							<label for="Form_Dpi">Источник ❯</label>
-							<select id="Form_Source" name="Form.Source">
-								<option value="0">Устройство не определено</option>
-							</select>
-						</div>
-						<div class="form-field">
-							<label for="Form_FileName">Имя ❯</label>
-							<input id="Form_FileName" name="Form.FileName" type="text" value="Скан" />
-						</div>
-						<div class="form-field">
-							<label for="Form_FileCounter">Номер ❯</label>
-							<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
-						</div>
-						<div class="form-field">
-							<label for="Form_Dpi">Dpi ❯</label>
-							<select id="Form_Dpi" name="Form.Dpi"></select>
-							<select id="Form_Dpi_Hidden" class="disp-no"></select>
-						</div>
-						<div class="form-field">
-							<label for="Form_ScanFeed">Податчик ❯</label>
-							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
-						</div>
-						<div class="form-field">
-							<label for="Form_ColorMode">Цвет ❯</label>
-							<select id="Form_ColorMode" name="Form.ColorMode"></select>
-						</div>
-						<div class="form-field">
-							<label for="Form_CompressionFormat">Сжатие ❯</label>
-							<select id="Form_CompressionFormat" name="Form.CompressionFormat">
-								<option selected="selected" value="100*jpg">JPEG 100%</option>
-								<option value="75*jpg">JPEG 75%</option>
-								<option value="50*jpg">JPEG 50%</option>
-								<option value="25*jpg">JPEG 25%</option>
-								<option value="100*Bmp">BMP</option>
-							</select>
-						</div>
-						<div class="form-field">
-							<label for="Form_Format">Размер ❯</label>
-							<select id="Form_Format" name="Form.Format"></select>
-						</div>
-						<div class="form-field mode-switch-container">
-							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
-						</div>
-						<div class="form-field  disp-no package-setting">
-							<label for="Form_CountScans">Количество ❯</label>
-							<input id="Form_CountScans" type="text" value="001" />
-						</div>
-						<div class="form-field disp-no package-setting">
-							<label for="Form_ScanInterval">Интервал ❯</label>
-							<input id="Form_ScanInterval" type="text" value="001" />
-						</div>
-						<div class="form-field disp-no package-setting package-feeder-setting">
-							<label for="Form_SaveAs">Сохранить как ❯</label>
-							<select id="Form_SaveAs" name="Form.SaveAs">
-								<option value="0">Картинки</option>
-								<option value="1">PDF</option>
-							</select>
-						</div>
-						<div class="form-field">
-							<input type="submit" value="Cканировать" />
-						</div>
-					</fieldset>
+						<fieldset>
+							<div class="form-field">
+								<label for="Form_Dpi">Источник ❯</label>
+								<select id="Form_Source" name="Form.Source">
+									<option value="0">Устройство не определено</option>
+								</select>
+							</div>
+							<div class="form-field">
+								<label for="Form_FileName">Имя ❯</label>
+								<input id="Form_FileName" name="Form.FileName" type="text" value="Скан" />
+							</div>
+							<div class="form-field">
+								<label for="Form_FileCounter">Номер ❯</label>
+								<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
+							</div>
+							<div class="form-field">
+								<label for="Form_Dpi">Dpi ❯</label>
+								<select id="Form_Dpi" name="Form.Dpi"></select>
+								<select id="Form_Dpi_Hidden" class="disp-no"></select>
+							</div>
+							<div class="form-field">
+								<label for="Form_ScanFeed">Податчик ❯</label>
+								<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
+							</div>
+							<div class="form-field">
+								<label for="Form_ColorMode">Цвет ❯</label>
+								<select id="Form_ColorMode" name="Form.ColorMode"></select>
+							</div>
+							<div class="form-field">
+								<label for="Form_CompressionFormat">Сжатие ❯</label>
+								<select id="Form_CompressionFormat" name="Form.CompressionFormat">
+									<option selected="selected" value="100*jpg">JPEG 100%</option>
+									<option value="75*jpg">JPEG 75%</option>
+									<option value="50*jpg">JPEG 50%</option>
+									<option value="25*jpg">JPEG 25%</option>
+									<option value="100*Bmp">BMP</option>
+								</select>
+							</div>
+							<div class="form-field">
+								<label for="Form_Format">Размер ❯</label>
+								<select id="Form_Format" name="Form.Format"></select>
+							</div>
+							<div class="form-field mode-switch-container">
+								<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
+							</div>
+							<div class="form-field  disp-no package-setting">
+								<label for="Form_CountScans">Количество ❯</label>
+								<input id="Form_CountScans" type="text" value="001" />
+							</div>
+							<div class="form-field disp-no package-setting">
+								<label for="Form_ScanInterval">Интервал ❯</label>
+								<input id="Form_ScanInterval" type="text" value="001" />
+							</div>
+							<div class="form-field disp-no package-setting package-feeder-setting">
+								<label for="Form_SaveAs">Сохранить как ❯</label>
+								<select id="Form_SaveAs" name="Form.SaveAs">
+									<option value="0">Картинки</option>
+									<option value="1">PDF</option>
+								</select>
+							</div>
+							<div class="form-field">
+								<input type="submit" value="Cканировать" />
+							</div>
+						</fieldset>
 
-				</form>
+					</form>
 
 
-				<div id="news" class="span5">
+					<div id="news" class="span5">
+					</div>
+
 				</div>
-
 			</div>
-		</div>
-	</section>
+		</section>
+	</div>
 	<section class="footer">
-		&copy; UNIT6, 2014 - 2015
+		<div class="copyright">
+			&copy; UNIT6, 2014 - 2015
+		</div>
 	</section>
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 
