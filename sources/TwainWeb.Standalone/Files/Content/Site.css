@@ -10,9 +10,12 @@ section {
 }
 
 body{
-	height: 100%;
 	background: url(images/photo.jpg) 50% 0 no-repeat;
 	background-size: 100%;
+}
+
+html, body{
+     height: 100%;
 }
 
 body section.header {
@@ -20,34 +23,39 @@ body section.header {
     top: 0;
     left: 0;
     z-index: 1000;
-    background: rgba(00, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.6);
     width: 100%;
     height: 80px;
 	color: #9E9E9E;
 }
 
-body section.body {
-    padding-top: 20px;
-    padding-bottom: 20px;
-	height: auto;
-
+.page-wrap {
+ min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -50px; 
 }
-body section.footer {
-   position:fixed;
-   left:0px;
-   bottom:0px;
-   width:100%;
+.page-wrap:after {
+	content: "";
+	display: block;
+}
+
+section.body {
+	padding: 20px;
+}
+
+body section.footer, .page-wrap:after {
+  height: 50px; 
+}
+body section.footer{
    background: rgba(0, 0, 0, 0.6);
-   padding: 10px 30px 10px 30px;
+   padding: 0px 30px 0px 30px;
    color: #9E9E9E;
    font-size: 12px;
 }
-
-/* IE 6 */
-* html .footer {
-   position:absolute;
-   top:expression((0-(footer.offsetHeight)+(document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight)+(ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop))+'px');
+body section.footer .copyright{
+   padding: 15px;
 }
+
 
 a {
     text-decoration: none;
