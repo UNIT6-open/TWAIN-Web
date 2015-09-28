@@ -11,17 +11,17 @@ namespace TwainWeb.Standalone.App.Queries
 	public class GetScannerParametersQuery
 	{
 		private readonly IScannerManager _scannerManager;
-		private readonly CacheSettings _cashSettings;
+		private readonly CacheSettings _cacheSettings;
 		private int? _sourceIndex;
 		private readonly ILog _logger;
 		private const int ChangeSourceWaitTime = 15000;
 		private const int PushSettingsWaitTime = 5000;
-		public GetScannerParametersQuery(IScannerManager scannerManager, CacheSettings cashSettings, int? sourceIndex)
+		public GetScannerParametersQuery(IScannerManager scannerManager, CacheSettings cacheSettings, int? sourceIndex)
 		{
 			if (scannerManager == null) throw new Exception("Невозможно получить параметры сканирования, т.к. менеджер источников данных не был инициализирован");
 
 			_scannerManager = scannerManager;
-			_cashSettings = cashSettings;
+			_cacheSettings = cacheSettings;
 			_sourceIndex = sourceIndex;
 
 			_logger = LogManager.GetLogger(typeof(GetScannerParametersQuery));
@@ -29,11 +29,13 @@ namespace TwainWeb.Standalone.App.Queries
 		public ScannerParametersQueryResult Execute(object markerAsync)
 		{
 			_logger.Info("======================================= GET PARAMS QUERY ========================================");
+			_logger.Info("Scanner index: " + _sourceIndex);
 			ScannerSettings searchSetting = null;
 			List<ISource> sources = null;
 
 			if (Monitor.TryEnter(markerAsync))
 			{
+				_logger.Debug("Enter to monitor");
 				try
 				{
 					var sourcesCount = _scannerManager.SourceCount;
@@ -48,9 +50,10 @@ namespace TwainWeb.Standalone.App.Queries
 							sourceIndex = _sourceIndex.Value;
 
 
-						if (_cashSettings.NeedUpdateNow(DateTime.UtcNow))
+						if (_cacheSettings.NeedUpdateNow(DateTime.UtcNow))
 						{
-							_cashSettings.Update(_scannerManager);
+							_logger.Debug("Update cache");
+							_cacheSettings.Update(_scannerManager);
 						}
 
 						try
@@ -85,8 +88,18 @@ namespace TwainWeb.Standalone.App.Queries
 
 		private ScannerSettings GetScannerSettings(int sourceIndex)
 		{
-			var searchSetting = _cashSettings.Search(_scannerManager, sourceIndex);
-			if (searchSetting != null) return searchSetting;
+			_logger.Debug("Searching scanner settings in cache...");
+			var searchSetting = _cacheSettings.Search(_scannerManager, sourceIndex);
+
+			if (searchSetting != null)
+			{
+				_logger.Debug("Scanner settings was found");
+				return searchSetting;
+			}
+			else
+			{
+				_logger.Debug("Scanner settings was not found");
+			}
 
 			var needOfChangeSource = _sourceIndex.HasValue && _sourceIndex != _scannerManager.CurrentSourceIndex;
 
@@ -98,7 +111,7 @@ namespace TwainWeb.Standalone.App.Queries
 
 			if (sourceIndex == _scannerManager.CurrentSource.Index)
 				searchSetting = new AsyncWorker<IScannerManager, ScannerSettings>()
-					.RunWorkAsync(_scannerManager, _cashSettings.PushCurrentSource, PushSettingsWaitTime);
+					.RunWorkAsync(_scannerManager, _cacheSettings.PushCurrentSource, PushSettingsWaitTime);
 
 			return searchSetting;
 		}

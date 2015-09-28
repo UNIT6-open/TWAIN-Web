@@ -8,11 +8,8 @@
 	<link rel="icon" href="Content/favicon.ico" />
 	<link href="Content/bootstrap.min.css" rel="stylesheet" />
 	<link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
-
 	<link href="Content/site.css?ver=04.12.2013" rel="stylesheet" />
-
 	<script src="Scripts/modernizr-2.6.2.js"></script>
-
 	<link href="Content/Home/Scan.css?ver=04.12.2013" rel="stylesheet" />
 
 </head>
@@ -34,14 +31,14 @@
 					</div>
 					<ul class="nav">
 						<li><a href="http://unit6.ru/twain-web?link=ask-new-feature">Запросить улучшение</a></li>
-						<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Управление<span class="caret"></span></a>
 							<ul class="dropdown-menu">
 								<li><a href="#" id="restartWiaLink">Перезапуск Wia</a></li>
 								<li><a href="#" id="restartLink">Перезапуск приложения</a></li>
 							</ul>
 						</li>
+						<li><a href="http://unit6.ru/" style="padding:0;"><img src="Content/images/dev-in-unit6.png" alt="Разработано в UNIT6.ru" style="width:220px;height:80px;" /></a></li>
 					</ul>
 				</div>
 			</div>
@@ -53,31 +50,38 @@
 			<div class="row">
 
 				<form method="post" id="form" class="span6">
-					<h2>Параметры сканирования</h2>
+					<h2>Параметры Сканирования</h2>
 
 					<fieldset>
 						<div class="form-field">
+							<label for="Form_Dpi">Источник ❯</label>
 							<select id="Form_Source" name="Form.Source">
 								<option value="0">Устройство не определено</option>
 							</select>
 						</div>
 						<div class="form-field">
+							<label for="Form_FileName">Имя ❯</label>
 							<input id="Form_FileName" name="Form.FileName" type="text" value="Скан" />
 						</div>
 						<div class="form-field">
+							<label for="Form_FileCounter">Номер ❯</label>
 							<input id="Form_FileCounter" name="Form.FileCounter" type="text" value="001" />
 						</div>
 						<div class="form-field">
+							<label for="Form_Dpi">Dpi ❯</label>
 							<select id="Form_Dpi" name="Form.Dpi"></select>
 							<select id="Form_Dpi_Hidden" class="disp-no"></select>
 						</div>
 						<div class="form-field">
+							<label for="Form_ScanFeed">Податчик ❯</label>
 							<select id="Form_ScanFeed" name="Form.ScanFeed"></select>
 						</div>
 						<div class="form-field">
+							<label for="Form_ColorMode">Цвет ❯</label>
 							<select id="Form_ColorMode" name="Form.ColorMode"></select>
 						</div>
 						<div class="form-field">
+							<label for="Form_CompressionFormat">Сжатие ❯</label>
 							<select id="Form_CompressionFormat" name="Form.CompressionFormat">
 								<option selected="selected" value="100*jpg">JPEG 100%</option>
 								<option value="75*jpg">JPEG 75%</option>
@@ -87,25 +91,29 @@
 							</select>
 						</div>
 						<div class="form-field">
+							<label for="Form_Format">Размер ❯</label>
 							<select id="Form_Format" name="Form.Format"></select>
 						</div>
 						<div class="form-field mode-switch-container">
 							<button type="button" changeaction="addClass('disp-no')" id="conventional-scan" class="mode-switch active">Обычное сканирование</button><button changeaction="removeClass('disp-no')" type="button" id="package-scan" class="mode-switch inactive">Пакетное сканирование</button>
 						</div>
 						<div class="form-field  disp-no package-setting">
+							<label for="Form_CountScans">Количество ❯</label>
 							<input id="Form_CountScans" type="text" value="001" />
 						</div>
 						<div class="form-field disp-no package-setting">
+							<label for="Form_ScanInterval">Интервал ❯</label>
 							<input id="Form_ScanInterval" type="text" value="001" />
 						</div>
 						<div class="form-field disp-no package-setting package-feeder-setting">
+							<label for="Form_SaveAs">Сохранить как ❯</label>
 							<select id="Form_SaveAs" name="Form.SaveAs">
-								<option value="0">Сохранить как Картинки</option>
-								<option value="1">Сохранить как PDF</option>
+								<option value="0">Картинки</option>
+								<option value="1">PDF</option>
 							</select>
 						</div>
 						<div class="form-field">
-							<input type="submit" value="Сканируем!" />
+							<input type="submit" value="Cканировать" />
 						</div>
 					</fieldset>
 
@@ -118,7 +126,9 @@
 			</div>
 		</div>
 	</section>
-
+	<section class="footer">
+		&copy; UNIT6, 2014 - 2015
+	</section>
 	<script src="Scripts/jquery-1.9.1.min.js"></script>
 
 	<script src="Scripts/bootstrap.min.js"></script>
@@ -134,7 +144,7 @@
 				for (var i = 0; i < switches.length; i++) {
 					if ($(switches[i]).attr('id') == enableID) {
 						$(switches[i]).removeClass('inactive').addClass('active');
-						
+
 						//если выбран ADF
 						var scanFeed = $("#form").find("#Form_ScanFeed");
 						if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
@@ -151,8 +161,8 @@
 
 			$('#form .mode-switch').click(function () {
 				if ($(this).is('.inactive')) {
-					changeMode($(this).attr('id'));					
-				} 
+					changeMode($(this).attr('id'));
+				}
 			});
 			function pad(num, size) {
 				var s = num + "";
@@ -166,14 +176,14 @@
 				UpdateGlobalSetting(GetGlobalSettings(), { "FileName": $('#Form_FileName').val(), "CountScans": fileCounter });
 				$("#Form_FileCounter").val(fileCounter);
 			};
-			
+
 			var downloadFile = function (downloadFiles, save_as) {
 				//если несколько файлов необходимо сохранить как картинки - загружаем их последовательно
 				if ((save_as == undefined || save_as == 0) && downloadFiles.length > 1) {
 					for (var i = 0; i < downloadFiles.length; i++) {
 						downloadFile([downloadFiles[i]]);
 					}
-					
+
 				} else {
 					save_as = save_as == undefined ? "" : "saveAs=" + save_as;
 					var query = "?";
@@ -195,10 +205,10 @@
 				link.style.display = 'none';
 
 				document.body.appendChild(link);
-				
+
 				link.setAttribute('href', url);
 				link.click();
-				
+
 				document.body.removeChild(link);
 			}
 
@@ -337,7 +347,7 @@
 				$(".overlay-message").text(msg);
 				$(".overlay, .overlay-message").show();
 			}
-			
+
 			function hideOverlay() {
 				$(".overlay-message").text("");
 				$(".overlay, .overlay-message").hide();
@@ -418,17 +428,17 @@
 						var selectedSources = responce.sources.selectedSource;
 						fillSelect(selectSources, responce.sources.sourcesList, selectedSources);
 
-					/*	var hintDPI = $('#form .DPI').find(".form-field-hint");
-						if (responce.minResolution != undefined && responce.minResolution != undefined) {
-							hintDPI.find('.min').text(responce.minResolution);
-							hintDPI.find('.max').text(responce.maxResolution);
-							hintDPI.removeClass('disp-no');
-						} else {
-							hintDPI.find('.min').text("");
-							hintDPI.find('.max').text("");
-							hintDPI.addClass('disp-no');
-						}
-*/
+						/*	var hintDPI = $('#form .DPI').find(".form-field-hint");
+							if (responce.minResolution != undefined && responce.minResolution != undefined) {
+								hintDPI.find('.min').text(responce.minResolution);
+								hintDPI.find('.max').text(responce.maxResolution);
+								hintDPI.removeClass('disp-no');
+							} else {
+								hintDPI.find('.min').text("");
+								hintDPI.find('.max').text("");
+								hintDPI.addClass('disp-no');
+							}
+	*/
 						var selectTypePixel = $('#form').find("#Form_ColorMode");
 						if (responce.pixelTypes != undefined) {
 							fillSelect(selectTypePixel, responce.pixelTypes);
@@ -442,7 +452,7 @@
 						} else {
 							clearSelect(selectDpi);
 						}
-						
+
 						var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
 						if (responce.feederResolutions != undefined) {
 							fillSelect(selectDpiHidden, responce.feederResolutions);
@@ -492,14 +502,14 @@
 				GetScanParameters($(this).val());
 			});
 
-			var parseScanResponse = function(resp) {
+			var parseScanResponse = function (resp) {
 
 				var downloadFiles = [];
 				if (resp.file != undefined) {
 					downloadFiles.push(new FileForDownload(resp));
 				} else if (resp.files != undefined) {
 
-					resp.files.forEach(function(file) {
+					resp.files.forEach(function (file) {
 						downloadFiles.push(new FileForDownload(file));
 
 					});
@@ -536,7 +546,7 @@
 									GetScanFormData() + '&isPackage=true', true, function (msg) { alert(msg); },
 									function () {
 										if (i < countScans) {
-											 setTimeout(scan, (timeout * 1000));
+											setTimeout(scan, (timeout * 1000));
 										}
 										else {
 											ActivateScanForm();
@@ -558,9 +568,9 @@
 			});
 			$("#Form_FileName").focus();
 			GetScanParameters();
-			
+
 			function scanFeedOnChange() {
-				
+
 				function swapSelects(first, second) {
 
 					var selectedValue = first.val();
@@ -588,7 +598,7 @@
 
 				var selectDpi = $('#form').find("#Form_Dpi");
 				var selectDpiHidden = $('#form').find("#Form_Dpi_Hidden");
-				
+
 				var scanFeed = $("#form").find("#Form_ScanFeed");
 				if (scanFeed.val() != 0 && scanFeed.is(':visible')) {
 					var scanMode = $("#form .mode-switch.active").attr('id');
@@ -597,14 +607,14 @@
 					$("#form").find("#conventional-scan").attr('disabled', 'disabled');
 
 					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'flatbedResolutions', 'feederResolutions');
-					
+
 				} else {
 					$("#form").find("#conventional-scan").removeAttr('disabled');
 					var previousScanMode = localStorage.getItem("previousScanMode");
 					changeMode(previousScanMode);
-					
+
 					replaceSelectFromHidden(selectDpi, selectDpiHidden, 'feederResolutions', 'flatbedResolutions');
-					
+
 				}
 			};
 
@@ -665,14 +675,14 @@
 			})();
 
 			if (trueAjax) {
-				$("#news").load("http://unit6.ru/twain-web?content=news&ver=1.5", function (a, b, c) {
+				$("#news").load("http://unit6.ru/twain-web?content=news&ver=1.6", function (a, b, c) {
 					if (b != "error")
 						$("#news").addClass("news");
 				});
 			}
 			else {
 				var xdr = new XDomainRequest();
-				xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.5");
+				xdr.open("get", "http://unit6.ru/twain-web?content=news&ver=1.6");
 				xdr.onload = function () {
 					$("#news").html(xdr.responseText);
 					$("#news").addClass("news");

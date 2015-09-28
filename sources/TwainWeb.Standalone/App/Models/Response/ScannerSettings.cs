@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Remoting.Metadata;
+using System.Threading;
 
 namespace TwainWeb.Standalone.App.Models.Response
 {    
@@ -17,8 +20,12 @@ namespace TwainWeb.Standalone.App.Models.Response
         {
             _name = name;
             _id = id;
-			_flatbedResolutions = flatbedResolutions;
-			_feederResolutions = feederResolutions;
+			_flatbedResolutions = flatbedResolutions!=null && flatbedResolutions.Count>20
+				?ReduceResolutionsCount(flatbedResolutions)
+				:flatbedResolutions;
+			_feederResolutions = feederResolutions != null && feederResolutions.Count > 20
+				? ReduceResolutionsCount(feederResolutions)
+				: feederResolutions; 
             _pixelTypes = pixelTypes;
             FillAllowedFormats(maxHeight, maxWidth);
 			_scanFeeds = scanFeeds;
@@ -91,6 +98,20 @@ namespace TwainWeb.Standalone.App.Models.Response
             return id == _id && _name == name;
         }
 
+	    private List<float> ReduceResolutionsCount(List<float> source)
+	    {
+		    if (source == null || source.Count == 0) return source;
+
+			var result = new List<float>();
+		    for (var i = 0; i < source.Count; i++)
+		    {
+				if (i == 0 || i == source.Count - 1 || Math.Abs(source[i] % 50) < 0.1f)
+			    {
+				    result.Add(source[i]);
+			    }
+		    }
+		    return result;
+	    }
         public string Serialize()
         {
             var result = "";
