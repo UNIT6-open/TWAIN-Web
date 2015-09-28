@@ -7,7 +7,7 @@
    <supurl ></>
    <updurl ></>
    <dlgfont >verdana</>
-   <headlogo >default - 1</>
+   <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
    <dlgfontsize >s8</>
    <output >D:\Works\unit6\projects\ScannerSite new\release\installer</>
    <exename >TWAIN@Web-v1beta6-setup.exe</>
@@ -33,36 +33,6 @@
       <children >
          <install id = install expanded = 2 >
             <children >
-               <_ id = background disabled = 1 >
-                  <desc ></>
-                  <head >#lcaption#</>
-                  <foot ></>
-                  <font >Times</>
-                  <height >36</>
-                  <bold >0</>
-                  <italic >0</>
-                  <backcol >0x0000FF</>
-                  <textcol >0xFFFFFF</>
-                  <shadecol >0x888888</>
-                  <uniform >0</>
-                  <backbmp ></>
-                  <stretchback >0</>
-               </>
-               <_ tag = 0 id = regget >
-                  <desc ></>
-                  <root >curuser</>
-                  <subkey ></>
-                  <wow64 >1</>
-                  <reglist >
-                     <rows ></>
-                  </>
-               </>
-               <_ tag = 0 id = getuser disabled = 1 >
-                  <desc ></>
-                  <var >username</>
-                  <vars >appdata,apppath,userpath,desktop,progpath,startup</>
-                  <if ></>
-               </>
                <_ id = checkreq expanded = 0 disabled = 0 >
                   <children >
                      <_ tag = 0 id = empty ></>
@@ -73,57 +43,71 @@
                   <not >0</>
                   <msg >Для работы приложения необходимо скачать и установить .NET Framework 2.0</>
                </>
-               <_ id = dlglang disabled = 1 >
+               <_ tag = 0 id = dlgprog expanded = 2 >
+                  <children >
+                     <_ tag = 0 id = tempfiles >
+                        <desc ></>
+                        <templist >
+                           <rows >
+                              <_ >
+                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\TwainWeb.ServiceManager.exe</>
+                                 <varname ></>
+                                 <if ></>
+                              </>
+                           </>
+                        </>
+                     </>
+                     <_ tag = 0 id = run >
+                        <desc ></>
+                        <path >custom</>
+                        <name >#tempinstpath#\TwainWeb.ServiceManager.exe</>
+                        <cmdline >-run-uninstaller</>
+                        <work >default</>
+                        <defwork ></>
+                        <wait >1</>
+                        <runas >norm</>
+                        <if ></>
+                     </>
+                  </>
                   <desc ></>
-                  <buttons >nc</>
-                  <design >left</>
-                  <headlogo ></>
+                  <auto >1</>
+                  <head >Удаление TWAIN@Web</>
+                  <headtext >Удаление ранее установленной версии TWAIN@Web</>
+                  <dlgtext >Подождите, пока ранее установленная версия TWAIN@Web будет удалена с Вашего компьютера</>
+                  <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
+                  <if ></>
                   <varlist >
                      <rows ></>
                   </>
-                  <head ></>
-                  <headtext ></>
-                  <dlgtext ></>
-                  <if ></>
                </>
-               <_ id = dlgwel disabled = 1 >
-                  <desc ></>
-                  <buttons >auto</>
-                  <design >left</>
-                  <headlogo ></>
-                  <varlist >
-                     <rows ></>
+               <_ tag = 0 id = if expanded = 2 >
+                  <children >
+                     <_ tag = 0 id = exit >
+                        <desc ></>
+                        <extype >exit</>
+                        <code >1</>
+                        <msg ></>
+                     </>
                   </>
-                  <head ></>
-                  <headtext ></>
-                  <dlgtext ></>
-                  <if ></>
-               </>
-               <_ id = dlglic disabled = 1 >
                   <desc ></>
-                  <file ></>
-                  <print >1</>
-                  <iagree >radio</>
-                  <buttons >pnc</>
-                  <design >left</>
-                  <headlogo ></>
-                  <varlist >
+                  <else ></>
+                  <condlist >
                      <rows >
                         <_ >
-                           <varname >Liccolor</>
-                           <value >1</>
+                           <varname >runret</>
+                           <iftype >noteq</>
+                           <not >0</>
+                           <value >0</>
+                           <orand >and</>
                         </>
                      </>
                   </>
-                  <head ></>
-                  <headtext ></>
-                  <if ></>
                </>
                <_ id = dlgpath >
                   <desc ></>
                   <buttons >auto</>
                   <design >left</>
-                  <headlogo ></>
+                  <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
                   <chlist >
                      <rows >
                         <_ >
@@ -330,7 +314,7 @@
                   <auto >1</>
                   <buttons >nc</>
                   <design >left</>
-                  <headlogo ></>
+                  <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
                   <varlist >
                      <rows ></>
                   </>
@@ -398,7 +382,7 @@
                   <desc ></>
                   <buttons >c</>
                   <design >left</>
-                  <headlogo ></>
+                  <headlogo >D:\Program Files (x86)\CreateInstall Free\res\leftimg\uninstall\green-uninstall.bmp</>
                   <varlist >
                      <rows ></>
                   </>
@@ -407,19 +391,42 @@
                   <dlgtext ></>
                   <if ></>
                </>
-               <_ tag = 0 id = run >
-                  <desc ></>
-                  <path >inst</>
-                  <name >TwainWeb.ServiceManager.exe</>
-                  <cmdline >-uninstall</>
-                  <work >inst</>
-                  <defwork ></>
-                  <wait >1</>
-                  <runas >norm</>
-                  <if ></>
-               </>
                <_ id = dlguprog expanded = 2 >
                   <children >
+                     <_ tag = 0 id = run >
+                        <desc ></>
+                        <path >inst</>
+                        <name >TwainWeb.ServiceManager.exe</>
+                        <cmdline >-uninstall</>
+                        <work >inst</>
+                        <defwork ></>
+                        <wait >1</>
+                        <runas >norm</>
+                        <if ></>
+                     </>
+                     <_ tag = 0 id = if expanded = 2 >
+                        <children >
+                           <_ tag = 0 id = exit >
+                              <desc ></>
+                              <extype >exit</>
+                              <code >1</>
+                              <msg ></>
+                           </>
+                        </>
+                        <desc ></>
+                        <else ></>
+                        <condlist >
+                           <rows >
+                              <_ >
+                                 <varname >runret</>
+                                 <iftype >noteq</>
+                                 <not >0</>
+                                 <value >0</>
+                                 <orand >and</>
+                              </>
+                           </>
+                        </>
+                     </>
                      <_ id = unprocess >
                         <desc ></>
                      </>
@@ -427,14 +434,14 @@
                   <desc ></>
                   <buttons >nc</>
                   <design >left</>
-                  <headlogo ></>
+                  <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
                   <varlist >
                      <rows ></>
                   </>
                   <auto >1</>
                   <head ></>
                   <headtext ></>
-                  <dlgtext ></>
+                  <dlgtext >Подождите, пока файлы TWAIN@Web будут удалены с Вашего компьютера. Процесс удаления может занять несколько минут</>
                   <if ></>
                </>
                <_ id = dlgundel >
@@ -454,7 +461,7 @@
                   <desc ></>
                   <buttons >nc</>
                   <design >left</>
-                  <headlogo ></>
+                  <headlogo >D:\Program Files (x86)\CreateInstall Free\res\leftimg\uninstall\green-uninstall.bmp</>
                   <varlist >
                      <rows ></>
                   </>
@@ -475,7 +482,7 @@
    </>
    <phone ></>
    <shfolder ></>
-   <headcol ></>
+   <headcol >0xFFFFFF</>
    <headtext ></>
    <headimg ></>
    <stretchback >0</>

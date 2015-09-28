@@ -51,15 +51,15 @@ namespace TwainWeb.ServiceManager
 			out RegistryValueKind lpType,
 			StringBuilder lpData,
 			ref int lpcbData);
-		public static string ReadRegKey(UIntPtr rootKey, string keyPath, string valueName)
+		public string ReadRegKey(UIntPtr rootKey, string keyPath, string valueName)
 		{
-			UIntPtr hKey;
-			if (RegOpenKeyEx(rootKey, keyPath, 0, KEY_READ, out hKey) == 0)
+			UIntPtr hKey = GetRegistryKeyHandle(keyPath);
+			if (hKey != UIntPtr.Zero)
 			{
-				int size = 1024;
+				var size = 1024;
 				RegistryValueKind type;
 				string keyValue = null;
-				var keyBuffer = new StringBuilder((int)size);
+				var keyBuffer = new StringBuilder(size);
 
 				if (RegQueryValueEx(hKey, valueName, IntPtr.Zero, out type, keyBuffer, ref size) == 0)
 					keyValue = keyBuffer.ToString();
