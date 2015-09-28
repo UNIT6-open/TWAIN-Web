@@ -84,7 +84,8 @@ namespace TwainWeb.Standalone.App.Wia
 			var supportedScanFeeds = GetSupportedDocumentHandlingCaps(device);
 			List<float> flatbedResolutions = null;
 			List<float> feederResolutions = null;
-			if (supportedScanFeeds == null || supportedScanFeeds.Count == 0)
+
+			if (supportedScanFeeds == null || supportedScanFeeds.Count == 0 || !IsDocumentHandlingSelectSupported(device))
 			{
 				flatbedResolutions = GetAllowableResolutions(source);
 			}
@@ -133,7 +134,22 @@ namespace TwainWeb.Standalone.App.Wia
 			return settings;
 		}
 
-	
+		private bool IsDocumentHandlingSelectSupported(Device device)
+		{
+			var isDocumentHandlingSelectSupported = false;
+			try
+			{
+				FindProperty(device.Properties, WiaProperty.DocumentHandlingSelect);
+				isDocumentHandlingSelectSupported = true;
+			}
+			catch (Exception)
+			{
+				isDocumentHandlingSelectSupported = false;
+			}
+			return isDocumentHandlingSelectSupported;
+		}
+
+
 		/// <summary>
 		/// Use scanner to scan an image (with user selecting the scanner from a dialog).
 		/// </summary>
@@ -340,9 +356,9 @@ namespace TwainWeb.Standalone.App.Wia
 			{
 			}
 
-			if (settings.ScanSource.HasValue)
+			if (settings.ScanSource.HasValue && IsDocumentHandlingSelectSupported(device))
 			{
-				int documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
+				var documentHandlingSelect = (int)WIA_DPS_DOCUMENT_HANDLING_SELECT.Flatbad;
 				switch ((ScanFeed)settings.ScanSource.Value)
 				{
 					case ScanFeed.Feeder:
