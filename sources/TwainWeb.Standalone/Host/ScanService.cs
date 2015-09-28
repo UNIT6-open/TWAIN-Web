@@ -47,6 +47,16 @@ namespace TwainWeb.Standalone.Host
 				_logger.ErrorFormat("Code: {0}, Text: {1}", ((System.Net.HttpListenerException)ex).ErrorCode, ex);
 				return new HttpServerError { Code = ((System.Net.HttpListenerException)ex).ErrorCode, Text = ex.ToString() };
 			}
+
+			try
+			{
+				var fwHelper = new FierwallHelper();
+				fwHelper.AddRuleForPort(_port);
+			}
+			catch (Exception e)
+			{
+				return new HttpServerError { Code = 0, Text = e.ToString() }; 
+			}
 			return null;
 		}
 		private string StopServer()

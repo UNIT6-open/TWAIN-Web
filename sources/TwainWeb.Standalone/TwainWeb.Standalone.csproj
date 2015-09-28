@@ -131,6 +131,7 @@
     <Compile Include="App\Hook\MessageBoxHookManager.cs" />
     <Compile Include="App\Hook\MessageBoxHook.cs" />
     <Compile Include="ConsoleManager.cs" />
+    <Compile Include="Host\FierwallHelper.cs" />
     <Compile Include="Host\HttpServerError.cs" />
     <Compile Include="App\Commands\ScanCommand.cs" />
     <Compile Include="App\Models\Response\ScannerSettings.cs" />
@@ -289,6 +290,15 @@
     <Content Include="TwainWebIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <COMReference Include="NetFwTypeLib">
+      <Guid>{58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
     <COMReference Include="WIA">
       <Guid>{94A0E92D-43C0-494E-AC29-FD45948A5221}</Guid>
       <VersionMajor>1</VersionMajor>
