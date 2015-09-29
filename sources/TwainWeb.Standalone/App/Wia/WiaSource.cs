@@ -134,19 +134,11 @@ namespace TwainWeb.Standalone.App.Wia
 			return settings;
 		}
 
-		private bool IsDocumentHandlingSelectSupported(Device device)
+		private bool IsDocumentHandlingSelectSupported(IDevice device)
 		{
-			var isDocumentHandlingSelectSupported = false;
-			try
-			{
-				FindProperty(device.Properties, WiaProperty.DocumentHandlingSelect);
-				isDocumentHandlingSelectSupported = true;
-			}
-			catch (Exception)
-			{
-				isDocumentHandlingSelectSupported = false;
-			}
-			return isDocumentHandlingSelectSupported;
+			var property = FindProperty(device.Properties, WiaProperty.DocumentHandlingSelect);
+			
+			return property != null;
 		}
 
 
