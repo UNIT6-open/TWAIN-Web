@@ -6,9 +6,10 @@ section.body {
 
 #form {
     position:relative;
-    min-width: 460px;
+
 	background-color: rgba(33,33,33,0.9); 
 	border-radius:2px;
+	margin-bottom: 20px;
 }
 
 #form h2 {
@@ -22,7 +23,7 @@ section.body {
 }
 
 #form fieldset {
-    padding: 10px 30px 15px 30px;	
+    padding: 4% 5% 4% 5%;	
 }
 
 #form .form-field {    
@@ -55,7 +56,7 @@ section.body {
 	}
 }
 
-#form select, #form input[type="submit"] {
+#form select, #form input, #form input[type="submit"] {
 	width: 100%;
 }
 
@@ -175,8 +176,10 @@ font-family: 'Open Sans', sans-serif;
 	font-size: 10px;
 	text-transform: uppercase;
 	position: absolute;
-    padding: 15px 0px 16px 10px;
+    padding: 20px 0px 20px 10px;
+	margin: 0px;
 	color: #BDBDBD;
+	font-weight: 100;
 
 }
 #form .loading-scan-param {

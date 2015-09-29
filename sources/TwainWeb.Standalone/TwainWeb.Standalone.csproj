@@ -227,7 +227,7 @@
     <Content Include="Files\Content\bootstrap-responsive.min.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\Content\bootstrap.min.css">
+    <Content Include="Files\Content\bootstrap-3.3.5.min.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\Content\Home\images\CountScans.png" />
@@ -277,7 +277,7 @@
     <Content Include="Files\Readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\Scripts\bootstrap.min.js">
+    <Content Include="Files\Scripts\bootstrap-3.3.5.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\Scripts\jquery-1.9.1.min.js">
