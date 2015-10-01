@@ -16,7 +16,8 @@ namespace TwainWeb.Standalone.App
                 return new Dictionary<string, ImageFormat>
                 {
                     {"jpg", ImageFormat.Jpeg},
-                    {ImageFormat.Bmp.ToString(), ImageFormat.Bmp}
+                    {ImageFormat.Bmp.ToString(), ImageFormat.Bmp},
+					{ImageFormat.Tiff.ToString(), ImageFormat.Tiff}
                 };
             }
         }

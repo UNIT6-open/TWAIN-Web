@@ -123,9 +123,6 @@ namespace TwainWeb.Standalone.App.Commands
 					var multipleScanResult = new MultipleScanResult();
 					multipleScanResult.FillContent(downloadFiles);
 					scanResult = multipleScanResult;
-					/*return new SingleScanResult(
-							"Сканирование завершилось неудачей! Попробуйте переподключить сканер либо повторить сканирование с помощью другого устройства.");*/
-
 				}
 			}
 			catch (TwainException ex)

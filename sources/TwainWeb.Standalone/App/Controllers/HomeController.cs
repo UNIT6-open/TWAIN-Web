@@ -20,6 +20,7 @@ namespace TwainWeb.Standalone.App.Controllers
             {"png", "image/png"},
             {"jpg", "image/jpeg"},
             {"bmp", "image/bmp"},            
+            {"tiff", "image/tiff"},            
             {"gif", "image/gif"},
             {"pdf","application/pdf"},
             {"zip","application/zip"},
