@@ -145,31 +145,7 @@
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
-                                 <exclude >*.pfx;Log.txt</>
-                              </>
-                           </>
-                        </>
-                        <varlist >
-                           <rows ></>
-                        </>
-                     </>
-                     <_ tag = 0 id = unpack >
-                        <desc ></>
-                        <comptype >default</>
-                        <ratio >r5</>
-                        <solid >1</>
-                        <path >sys</>
-                        <custpath ></>
-                        <ifexist >skip</>
-                        <if ></>
-                        <srclist >
-                           <rows >
-                              <_ >
-                                 <filename >D:\Works\unit6\projects\ScannerSite new\release\last\Wiaautsdk\wiaaut.dll</>
-                                 <recurse >1</>
-                                 <justfile >0</>
-                                 <emptydir >0</>
-                                 <exclude >*.pfx;Log.txt</>
+                                 <exclude >*.pfx;Log.txt;*.pdb;*.xml</>
                               </>
                            </>
                         </>

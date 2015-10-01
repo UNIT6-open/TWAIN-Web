@@ -9,8 +9,7 @@ namespace TwainWeb.ServiceManager
 	{
 		static void Main(string[] args)
 		{
-			try
-			{
+
 				using (var serviceHelper = new ServiceHelper("TWAIN@Web", "TwainWeb.Standalone.exe"))
 				{
 
@@ -34,6 +33,7 @@ namespace TwainWeb.ServiceManager
 							return;
 
 						case "-run-uninstaller":
+
 							var uninstallString = GetUninstallString();
 
 							if (File.Exists(uninstallString))
@@ -51,22 +51,13 @@ namespace TwainWeb.ServiceManager
 
 								}
 							}
+							
+							
 							return;
 					}
 				}
-			}
-			catch (Exception e)
-			{
-				File.AppendAllText("D:\\twain.txt", e.ToString());
-			}
+			
 		}
-
-		private const int SW_SHOWNORMAL = 1;
-
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		private static extern bool ShowWindow(IntPtr hwnd, int nCmdShow);
-		[DllImport("user32.dll", SetLastError=true)]
-		private static extern bool SetForegroundWindow(IntPtr hwnd);
 
 		public static UIntPtr HKEY_LOCAL_MACHINE = new UIntPtr(0x80000002u);
 

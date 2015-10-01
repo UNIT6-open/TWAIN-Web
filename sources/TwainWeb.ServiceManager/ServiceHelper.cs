@@ -28,7 +28,6 @@ namespace TwainWeb.ServiceManager
 				// at least once to trigger an exception
 				// not neccessarily its name
 				_status = _service.Status;
-				File.AppendAllText("D:\\twain.txt", _status + "\r\n");
 				_isInstalled = true;
 			}
 			catch (InvalidOperationException)
@@ -40,7 +39,6 @@ namespace TwainWeb.ServiceManager
 		}
 		internal void Install()
 		{
-			File.AppendAllText("D:\\twain.txt", "install start\r\n");
 			var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
 			if (_isInstalled)
 			{
@@ -50,7 +48,6 @@ namespace TwainWeb.ServiceManager
 
 			SetRecoveryOptions(_serviceName);
 			_isInstalled = true;
-			File.AppendAllText("D:\\twain.txt", "installed\r\n");
 		}
 
 		internal void Uninstall()
@@ -59,7 +56,6 @@ namespace TwainWeb.ServiceManager
 			if (_isInstalled)
 			{
 				Stop();
-				File.AppendAllText("D:\\twain.txt", "uninstall start\r\n");
 				var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
 				ManagedInstallerClass.InstallHelper(new[] { "/u", exeFile });
 				var sp = new Stopwatch();
@@ -80,11 +76,9 @@ namespace TwainWeb.ServiceManager
 					}
 					catch (Exception e)
 					{
-						File.AppendAllText("D:\\twain.txt", "removed\r\n");
 						break;
 					}
 				}
-				File.AppendAllText("D:\\twain.txt", "uninstalled\r\n");
 				_isInstalled = false;
 			}
 		}
@@ -106,20 +100,16 @@ namespace TwainWeb.ServiceManager
 				(_service.Status == ServiceControllerStatus.Stopped || 
 				_service.Status == ServiceControllerStatus.StopPending))
 			{
-				File.AppendAllText("D:\\twain.txt", "start\r\n");
 				_service.Start();
 				_service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(50));
-				File.AppendAllText("D:\\twain.txt", "started\r\n");
 			}
 		}
 		internal void Stop()
 		{
 			if (_isInstalled && _service.CanStop)
 			{
-				File.AppendAllText("D:\\twain.txt", "stop...\r\n");
 				_service.Stop();
 				_service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(50));
-				File.AppendAllText("D:\\twain.txt", "stoped\r\n");
 			}
 		}
 		internal void Restart()

@@ -53,7 +53,15 @@ namespace TwainWeb.ServiceManager
 			ref int lpcbData);
 		public string ReadRegKey(UIntPtr rootKey, string keyPath, string valueName)
 		{
-			UIntPtr hKey = GetRegistryKeyHandle(keyPath);
+			UIntPtr hKey;
+			try
+			{
+				hKey = GetRegistryKeyHandle(keyPath);
+			}
+			catch (Exception)
+			{
+				hKey = UIntPtr.Zero;
+			}
 			if (hKey != UIntPtr.Zero)
 			{
 				var size = 1024;
@@ -69,7 +77,7 @@ namespace TwainWeb.ServiceManager
 				return (keyValue);
 			}
 
-			return (null);  // Return null if the value could not be read
+			return null;  // Return null if the value could not be read
 		}
 
 
