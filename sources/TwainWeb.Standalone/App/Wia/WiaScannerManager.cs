@@ -28,7 +28,7 @@ namespace TwainWeb.Standalone.App.Wia
 
 			try
 			{
-				source = _sources[index];
+				source = _sources.Find(s=>s.Index == index);
 			}
 			catch (Exception)
 			{
@@ -59,7 +59,7 @@ namespace TwainWeb.Standalone.App.Wia
 			ISource wiaSource;
 			try
 			{
-				wiaSource = _sources[index];
+				wiaSource = _sources.Find(x=>x.Index == index);
 			}
 			catch (Exception)
 			{
@@ -94,14 +94,14 @@ namespace TwainWeb.Standalone.App.Wia
 					{
 						var name = FindProperty(info.Properties, WiaProperty.Name);
 						devices.Add(new WiaSource(i, (string)name.get_Value(), info.DeviceID));
+						i++;
 					}
 					catch (Exception e)
 					{
 						_log.WarnFormat("Ошибка при добавлении источника: {0}", e);
-						continue;
-					}
+					}			
 				}
-				i++;
+		
 			}
 			_sources = devices;
 		}

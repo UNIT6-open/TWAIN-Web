@@ -264,7 +264,9 @@
     <Content Include="Files\Content\images\loadingGreen.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Files\Content\images\photo.jpg" />
+    <Content Include="Files\Content\images\photo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
