@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace TwainWeb.ServiceManager
 {
@@ -9,7 +9,8 @@ namespace TwainWeb.ServiceManager
 	{
 		static void Main(string[] args)
 		{
-
+			try
+			{
 				using (var serviceHelper = new ServiceHelper("TWAIN@Web", "TwainWeb.Standalone.exe"))
 				{
 
@@ -17,11 +18,17 @@ namespace TwainWeb.ServiceManager
 					switch (parameter)
 					{
 						case "-install":
-							serviceHelper.Install();
-							return;
+							if (serviceHelper.Install())
+								return;
+
+							Environment.Exit(-1);
+							break;
 						case "-uninstall":
-							serviceHelper.Uninstall();
-							return;
+							if (serviceHelper.Uninstall())
+								return;
+
+							Environment.Exit(-1);
+							break;
 						case "-start":
 							serviceHelper.Start();
 							return;
@@ -34,29 +41,40 @@ namespace TwainWeb.ServiceManager
 
 						case "-run-uninstaller":
 
-							var uninstallString = GetUninstallString();
-
-							if (File.Exists(uninstallString))
+							var logger = new FileLogger("InstallationLog.txt");
+							try
 							{
-								var process = new Process {StartInfo = {FileName = uninstallString}};
-								process.Start();
-								process.WaitForExit();
+								var uninstallString = GetUninstallString();
 
-								var pr = Process.GetProcessesByName("appun-1");
-								if (pr.Length > 0)
+								if (File.Exists(uninstallString))
 								{
-									pr[0].WaitForExit();
-									var exitCode = File.Exists(uninstallString) ? 1 : 0;
-									Environment.Exit(exitCode);
+									var process = new Process {StartInfo = {FileName = uninstallString}};
+									process.Start();
+									process.WaitForExit();
 
+									var pr = Process.GetProcessesByName("appun-1");
+									if (pr.Length > 0)
+									{
+										pr[0].WaitForExit();
+										var exitCode = File.Exists(uninstallString) ? 1 : 0;
+										Environment.Exit(exitCode);
+
+									}
 								}
 							}
-							
-							
+							catch (Exception e)
+							{
+								logger.Error("Error occured while run uninstaller: " + e);
+							}
+
 							return;
 					}
 				}
-			
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(e.ToString());
+			}
 		}
 
 		public static UIntPtr HKEY_LOCAL_MACHINE = new UIntPtr(0x80000002u);

@@ -16,12 +16,14 @@ namespace TwainWeb.ServiceManager
 		private readonly ServiceController _service;
 		private bool _isInstalled;
 		private ServiceControllerStatus _status;
+		private readonly FileLogger _logger;
 		internal ServiceHelper(string servcieName, string serviceFilename)
 		{
 			_serviceFilename = serviceFilename;
 			_serviceName = servcieName;
 			_service = new ServiceController(_serviceName);
 
+			_logger = FileLogger.GetLogger("InstallationLog.txt");
 			try
 			{
 				// actually we need to try access ANY of service properties
@@ -32,31 +34,59 @@ namespace TwainWeb.ServiceManager
 			}
 			catch (InvalidOperationException)
 			{
-				
+				_isInstalled = false;
 			}
 			
 
 		}
-		internal void Install()
+		internal bool Install()
 		{
-			var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
+			_logger.Info(string.Format("Installation windows service '{0}'...", _serviceName));
+			
 			if (_isInstalled)
 			{
-				Uninstall();
+				_logger.Info("Need to uninstall service");
+				var success = Uninstall();
+				if (!success)
+				{
+					_logger.Error("Installation failed");
+					return false;
+				}
+			}
+
+			var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
+			if (!File.Exists(exeFile))
+			{
+				_logger.Error(string.Format("File '{0}' not found", exeFile));
+				MessageBox.Show(string.Format("Не удалось найти исполняемый файл: {0}.", exeFile));
+				return false;
 			}
 			ManagedInstallerClass.InstallHelper(new[] { exeFile });
-
 			SetRecoveryOptions(_serviceName);
+
 			_isInstalled = true;
+			_logger.Info(string.Format("Installation of windows service '{0}' completed successfully", _serviceName));
+			return true;
 		}
 
-		internal void Uninstall()
+		internal bool Uninstall()
 		{
 			
 			if (_isInstalled)
 			{
-				Stop();
+				_logger.Info(string.Format("Uninstallation windows service '{0}'...", _serviceName));
+
+				var stopSuccess = Stop();
+				if (!stopSuccess) return false;
+
 				var exeFile = Path.Combine(AssemblyDirectory, _serviceFilename);
+				if (!File.Exists(exeFile))
+				{
+					_logger.Error(string.Format("File '{0}' not found", exeFile));
+					MessageBox.Show(string.Format("Не удалось найти исполняемый файл: {0}.", exeFile));
+					return false;
+				}
+
 				ManagedInstallerClass.InstallHelper(new[] { "/u", exeFile });
 				var sp = new Stopwatch();
 				sp.Start();
@@ -68,7 +98,7 @@ namespace TwainWeb.ServiceManager
 						if (sp.ElapsedMilliseconds > 40000)
 						{
 							MessageBox.Show("При удалении Twain@Web возникла ошибка. Попробуйте повторно запустить программу удаления.");
-							Environment.Exit(-1);
+							return false;
 						}
 						_service.Refresh();
 						_status = _service.Status;
@@ -81,6 +111,8 @@ namespace TwainWeb.ServiceManager
 				}
 				_isInstalled = false;
 			}
+			_logger.Info(string.Format("Windows service '{0}' was successfully uninstalled", _serviceName));
+			return true;
 		}
 
 		private static string AssemblyDirectory
@@ -93,34 +125,61 @@ namespace TwainWeb.ServiceManager
 				return Path.GetDirectoryName(path);
 			}
 		}
-		internal void Start()
+		internal bool Start()
 		{
 			
 			if (_isInstalled && 
 				(_service.Status == ServiceControllerStatus.Stopped || 
 				_service.Status == ServiceControllerStatus.StopPending))
 			{
+				_logger.Info(string.Format("Start service '{0}'...", _serviceName));
 				_service.Start();
-				_service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(50));
+				try
+				{
+					_service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(50));
+					_logger.Info(string.Format("Service '{0}' was started", _serviceName));
+					return true;
+				}
+				catch (System.TimeoutException)
+				{
+					_logger.Info(string.Format("Can not to start service '{0}'", _serviceName));
+					return false;
+				}				
 			}
+			return false;
 		}
-		internal void Stop()
+		internal bool Stop()
 		{
 			if (_isInstalled && _service.CanStop)
 			{
+				_logger.Info(string.Format("Stop service '{0}'...", _serviceName));
 				_service.Stop();
-				_service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(50));
+				try
+				{
+					_service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(50));
+					_logger.Info(string.Format("Service '{0}' was stopped", _serviceName));
+					return true;
+				}
+				catch (System.TimeoutException)
+				{
+					_logger.Info(string.Format("Can not to stop service '{0}'", _serviceName));
+					return false;
+				}						
 			}
+			return true;
 		}
 		internal void Restart()
 		{
+			_logger.Info(string.Format("Restart service '{0}'...", _serviceName));
 			Stop();
 			Thread.Sleep(TimeSpan.FromSeconds(1));
 			Start();
+			_logger.Info(string.Format("Service '{0}' was restarted", _serviceName));
 		}
 
-		static void SetRecoveryOptions(string serviceName)
+		void SetRecoveryOptions(string serviceName)
 		{
+			_logger.Info(string.Format("Setting recovery options..."));
 			int exitCode;
 			using (var process = new Process())
 			{
@@ -138,7 +197,13 @@ namespace TwainWeb.ServiceManager
 			}
 
 			if (exitCode != 0)
-				throw new InvalidOperationException();
+			{
+				_logger.Error(string.Format("Program 'sc' terminated with exitCode: {0}", exitCode));
+			}
+			else
+			{
+				_logger.Info(string.Format("Recovery options successfully setted"));
+			}
 		}
 
 		public void Dispose()

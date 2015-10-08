@@ -15,7 +15,7 @@
    <aftfile ></>
    <uninclude >1</>
    <lang >russian</>
-   <addlang ></>
+   <addlang >english</>
    <selfextr >1</>
    <instpath ></>
    <voltype >nolimit</>
@@ -33,6 +33,104 @@
       <children >
          <install id = install expanded = 2 >
             <children >
+               <_ tag = 0 id = langres >
+                  <desc ></>
+                  <name >Russian</>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >dotNetFrameworkError</>
+                           <value >Для работы приложения необходимо скачать и установить .NET Framework 2.0</>
+                        </>
+                        <_ >
+                           <varname >configText</>
+                           <value >Задать расширенные настройки</>
+                        </>
+                        <_ >
+                           <varname >uninstallationHeaderText</>
+                           <value >Удаление TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >uninstallationHeaderDescription</>
+                           <value >Удаление ранее установленной версии TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >uninstallationText</>
+                           <value >Подождите, пока ранее установленная версия TWAIN@Web будет удалена с Вашего компьютера</>
+                        </>
+                        <_ >
+                           <varname >uninstallShortcutName</>
+                           <value >Удалить TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >configureShortcutName</>
+                           <value >Конфигурация TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >endingText</>
+                           <value >Поздравляем! Теперь доступ к сканеру на этом компьютере возможен через браузер!
+
+Сетевой адрес для сканирования — http://127.0.0.1/TWAIN@Web/ (слэш в конце обязательный).
+
+С других компьютеров — вместо 127.0.0.1 используйте IP адрес этого компьютера, например, 192.168.0.1</>
+                        </>
+                        <_ >
+                           <varname >runTwainWebText</>
+                           <value >Запустить TWAIN@Web сейчас?</>
+                        </>
+                     </>
+                  </>
+               </>
+               <_ tag = 0 id = langres >
+                  <desc ></>
+                  <name >English</>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >dotNetFrameworkError</>
+                           <value >To run this application, you first must install .NET Framework 2.0</>
+                        </>
+                        <_ >
+                           <varname >uninstallationHeaderText</>
+                           <value >Uninstalling TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >uninstallationHeaderDescription</>
+                           <value >Uninstalling previous version TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >uninstallationText</>
+                           <value >Please wait until the current version of TWAIN@Webis finished uninstalling</>
+                        </>
+                        <_ >
+                           <varname >uninstallShortcutName</>
+                           <value >Uninstall TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >configureShortcutName</>
+                           <value >Configure TWAIN@Web</>
+                        </>
+                        <_ >
+                           <varname >endingText</>
+                           <value >Congratulations!
+
+
+Url for scanning — http://127.0.0.1/TWAIN@Web/ (slash at the end is required).
+
+
+From other PC istead 127.0.0.1 you should use it's IP, for example, 192.168.0.1</>
+                        </>
+                        <_ >
+                           <varname >runTwainWebText</>
+                           <value >Run TWAIN@Web now?</>
+                        </>
+                        <_ >
+                           <varname >configText</>
+                           <value >Configure TWAIN@Web</>
+                        </>
+                     </>
+                  </>
+               </>
                <_ id = checkreq expanded = 0 disabled = 0 >
                   <children >
                      <_ tag = 0 id = empty ></>
@@ -41,7 +139,7 @@
                   <checktype >net2</>
                   <resvar >ischeck</>
                   <not >0</>
-                  <msg >Для работы приложения необходимо скачать и установить .NET Framework 2.0</>
+                  <msg >#dotNetFrameworkError#</>
                </>
                <_ tag = 0 id = dlgprog expanded = 2 >
                   <children >
@@ -71,9 +169,9 @@
                   </>
                   <desc ></>
                   <auto >1</>
-                  <head >Удаление TWAIN@Web</>
-                  <headtext >Удаление ранее установленной версии TWAIN@Web</>
-                  <dlgtext >Подождите, пока ранее установленная версия TWAIN@Web будет удалена с Вашего компьютера</>
+                  <head >#uninstallationHeaderText#</>
+                  <headtext >#uninstallationHeaderDescription#</>
+                  <dlgtext >#uninstallationText#</>
                   <headlogo >D:\Works\unit6\projects\ScannerSite new\release\installer\brand.jpg</>
                   <if ></>
                   <varlist >
@@ -112,7 +210,7 @@
                      <rows >
                         <_ >
                            <varname >config</>
-                           <value >Задать расширенные настройки</>
+                           <value >#configText#</>
                         </>
                      </>
                   </>
@@ -145,7 +243,7 @@
                                  <recurse >1</>
                                  <justfile >0</>
                                  <emptydir >0</>
-                                 <exclude >*.pfx;Log.txt;*.pdb;*.xml</>
+                                 <exclude >*.pfx;Log.txt;*.pdb;*.xml;sign_exe.bat</>
                               </>
                            </>
                         </>
@@ -197,7 +295,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Удалить TWAIN@Web</>
+                                 <shfile >#uninstallShortcutName#</>
                                  <path >inst</>
                                  <file >Uninstall.exe</>
                                  <cmdline ></>
@@ -230,7 +328,7 @@
                               </>
                               <_ >
                                  <shpath >prog</>
-                                 <shfile >Конфигурация TWAIN@Web</>
+                                 <shfile >#configureShortcutName#</>
                                  <path >inst</>
                                  <file >TwainWeb.Standalone.exe</>
                                  <cmdline >config</>
@@ -308,7 +406,7 @@
                      <rows >
                         <_ >
                            <varname >runtwainweb</>
-                           <value >Запустить TWAIN@Web сейчас?</>
+                           <value >#runTwainWebText#</>
                         </>
                      </>
                   </>
@@ -322,11 +420,7 @@
                   </>
                   <head ></>
                   <headtext ></>
-                  <dlgtext >Поздравляем! Теперь доступ к сканеру на этом компьютере возможен через браузер!
-
-Сетевой адрес для сканирования — http://127.0.0.1/TWAIN@Web/ (слэш в конце обязательный).
-
-С других компьютеров — вместо 127.0.0.1 используйте IP адрес этого компьютера, например, 192.168.0.1</>
+                  <dlgtext >#endingText#</>
                </>
                <_ tag = 0 id = run >
                   <desc ></>
@@ -354,6 +448,30 @@
       <children >
          <uninstall id = uninstall expanded = 2 >
             <children >
+               <_ tag = 0 id = langres >
+                  <desc ></>
+                  <name >Russian</>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >uninstallText</>
+                           <value >Подождите, пока файлы TWAIN@Web будут удалены с Вашего компьютера. Процесс удаления может занять несколько минут</>
+                        </>
+                     </>
+                  </>
+               </>
+               <_ tag = 0 id = langres >
+                  <desc ></>
+                  <name >English</>
+                  <varlist >
+                     <rows >
+                        <_ >
+                           <varname >uninstallText</>
+                           <value >Please, wait until TWAIN@Web is finished uninstalling. This might take several minutes.</>
+                        </>
+                     </>
+                  </>
+               </>
                <_ id = dlguconf >
                   <desc ></>
                   <buttons >c</>
@@ -417,7 +535,7 @@
                   <auto >1</>
                   <head ></>
                   <headtext ></>
-                  <dlgtext >Подождите, пока файлы TWAIN@Web будут удалены с Вашего компьютера. Процесс удаления может занять несколько минут</>
+                  <dlgtext >#uninstallText#</>
                   <if ></>
                </>
                <_ id = dlgundel >
@@ -448,9 +566,9 @@
                   <if ></>
                </>
             </>
-            <unicon >uninstall</>
+            <unicon >uninstall - 1</>
             <unresfile ></>
-            <leftimg >uninstall - 1</>
+            <leftimg >green-uninstall</>
             <caption ></>
             <noadmin >0</>
          </>
