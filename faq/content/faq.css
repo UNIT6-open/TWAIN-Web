@@ -1,0 +1,41 @@
+.panel {
+	border: none;
+	border-radius: 1px;
+	box-shadow: none;
+	-webkit-box-stahow: none;
+	background-color: transparent;
+}
+
+.panel .panel-heading{
+    color: #AEAEAE;
+	background-color: #444;
+	background-color: rgba(0, 0, 0, 0.6);
+	border-radius: 1px;
+	padding: 25px;
+}
+
+
+.panel .panel-title{
+	font-size: 18px;
+}
+
+.panel .panel-title a{
+	 text-decoration: none;
+}
+
+.panel .panel-collapse{
+    color: #EEE;
+	border-radius: 1px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.panel-group .panel-heading+.panel-collapse>.list-group, .panel-group .panel-heading+.panel-collapse>.panel-body{
+	border-top: none;
+}
+
+.thumbnail {
+	background-color: transparent;
+	border: none;
+	margin-top: 15px;
+	margin-bottom: 15px;
+}

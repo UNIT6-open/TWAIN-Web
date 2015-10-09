@@ -1,23 +1,18 @@
-﻿@import url(https://fonts.googleapis.com/css?family=Anton);
-@import url(https://fonts.googleapis.com/css?family=Great+Vibes|Fredericka+the+Great|Rancho);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300&subset=latin,cyrillic);
+@import url(https://fonts.googleapis.com/css?family=Fredericka+the+Great);
 html {
 	height:100%;
-}
-section {
-    display: block;
-}
-
-.disp-no {
-    display: none;
-}
-
-body{
-	background: url(images/photo.jpg) no-repeat;
-	min-width: 200px;
+	
 }
 
 html, body{
      height: 100%;
+}
+
+body{
+	background:  url(images/noise.png);
+	min-width: 200px;
+	font-family: 'Open Sans', sans-serif;
 }
 
 .page-wrap {
@@ -28,45 +23,63 @@ html, body{
 	content: "";
 	display: block;
 }
-
-body section.footer, .page-wrap:after {
+body .footer, .page-wrap:after {
   height: 50px; 
 }
-body section.footer{
+body .footer{
    background: rgba(0, 0, 0, 0.6);
    padding: 0 30px 0 30px;
    color: #9E9E9E;
    font-size: 12px;
 }
-body section.footer .copyright{
+body .footer .copyright{
    padding: 15px;
+}
+.navbar-header {
+    float: left;
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+	height: 120px;
+}
+
+.navbar-header  .subheader{
+	color: #777;
+	font-size: 21px;
 }
 
 .navbar-brand {
-    font-size: 26px;
-    color: #9E9E9E;
-font-family: 'Fredericka the Great', cursive;
-
+	float:none;
+    font-size: 28px;
+    color: #EEEEEE;
     font-weight: 300;
 	padding: 30px 20px;
 	z-index: 100;
 }
+
 .navbar-default .navbar-brand {
-    font-size: 30px;
-    color: #ABABAB;
+    font-size: 50px;
+    color: #DDDDDD;
+	font-family: 'Fredericka the Great', cursive;
     font-weight: 300;
 	padding: 30px 20px;
 	z-index: 100;
+}
+
+.navbar-default .navbar-brand {
+	line-height: 50px;
 }
 .navbar-default .navbar-brand:hover {
+ 
     color: #FFFFFF;
 }
+
 .navbar-toggle{
 	margin: 15px;
 }
 .navbar-brand span {
-    font-size: 30px;
     color: #7CB342;
+
 }
 .navbar-default .navbar-collapse, .navbar-default .navbar-form{
 	border-color: #7CB342;
@@ -99,7 +112,7 @@ h2 {
 }
 
 .navbar-default .navbar-nav>li>a {
-    padding: 30px 10px;
+    padding: 30px 20px;
     color: #9E9E9E;
 	text-transform: uppercase;
 	font-size: 12px;

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TWAIN@Web Frequently asked questions</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link href="content/site.css?ver=09.10.2015" rel="stylesheet" />
+	<link href="content/faq.css?ver=09.10.2015" rel="stylesheet" />
+</head>
+<body>
+	<div class="page-wrap">
+
+		<div class="overlay">
+			<div class="overlay-content">
+				<div class="loader"></div>
+				<div class="overlay-message"></div>
+			</div>
+		</div>
+
+
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse" aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand navbar-center " href="http://unit6.ru/twain-web">•TWAIN<span>@Web</span>•</a>
+					<div class="subheader">Frequently Asked Questions</div>
+				</div>
+			</div><!-- /.container-fluid -->
+		</nav>
+
+
+
+			<div class="container">
+		
+				
+
+
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+      <h4 class="panel-title">
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Не удаётся получить список источников в Internet Explorer
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+      <div class="panel-body">
+        Включите выполнение JavaScript в настройках Internet Explorer. Для этого перейдите в настройки браузера выберите "Свойства браузера", перейдите на вкладку "Безопасность":
+		<div class="thumbnail"><img src="content/images/IESettings.png" alt="Настройки браузера"></div>
+		В случае, если сканер подключен к ПК, на котором запущен Internet Explorer, необходимо выбрать зону "Местная интрасеть". Если сканер подключен к другому компьютеру, выберите зону "Интернет". 
+		Нажмите кнопку "Другой..." для перехода к настройкам зоны. В появившемся окне найдите параметр "Сценарии" → "Активные сценарии" и выберите пункт "Включить". 
+		<div class="thumbnail"><img src="content/images/IEJSSettings.png" alt="Настройки браузера"></div>
+		Обновите страницу, чтобы получить список устройств.
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingTwo">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Программа не удаляется/не переустанавливается, зависает на диалоге "Удаление программы 'TWAIN@Web Standalone'"
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        Закройте такие программы, как Службы, Диспетчер задач.
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingThree">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          После нажатия кнопки "Сканировать" отображается сообщение об ошибке
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+      <div class="panel-body">
+       <ul>
+	   <li>
+	   <strong>HResult 0x8021000E </strong> - ошибка в драйвере устройства. Попробуйте перезапустить Wia, или перезагрузить ПК, или переустановить драйвер сканера.
+	   </li>
+	   </ul>
+      </div>
+    </div>
+  </div>
+   <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading4">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse4" aria-expanded="false" aria-controls="collapse4">
+          Обращение к данному адресу заблокировано/Веб-страница недоступна
+        </a>
+      </h4>
+    </div>
+    <div id="collapse4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading4">
+      <div class="panel-body">
+	   Попробуйте настроить TWAIN@Web в конфигураторе на порт из диапазона: 80, 81, 1025-65535.
+		<div class="thumbnail"><img src="content/images/UnsafePortError.PNG" alt="Настройки браузера"></div>     
+      </div>
+    </div>
+  </div>
+     <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading5">
+      <h4 class="panel-title">
+        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse5" aria-expanded="false" aria-controls="collapse5">
+          При сканирования с автоподатчика загружается только первый файл
+        </a>
+      </h4>
+    </div>
+    <div id="collapse5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading5">
+      <div class="panel-body">
+	         Нажмите кнопку "Разрешить" в запросе браузера на скачивание нескольких файлов.
+			<div class="thumbnail"><img src="content/images/AllowFileDownload.PNG" alt="Настройки браузера"></div>
+      </div>
+	  </div>
+	  </div> </div>
+</div></div><div class="footer"><div class="copyright">© UNIT6, 2014 - 2015</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+	<!-- Latest compiled and minified JavaScript --><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script></body></html>

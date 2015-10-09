@@ -133,14 +133,15 @@ namespace TwainWeb.ServiceManager
 				_service.Status == ServiceControllerStatus.StopPending))
 			{
 				_logger.Info(string.Format("Start service '{0}'...", _serviceName));
-				_service.Start();
+				
 				try
 				{
+					_service.Start();
 					_service.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(50));
 					_logger.Info(string.Format("Service '{0}' was started", _serviceName));
 					return true;
 				}
-				catch (System.TimeoutException)
+				catch (Exception)
 				{
 					_logger.Info(string.Format("Can not to start service '{0}'", _serviceName));
 					return false;
@@ -153,14 +154,15 @@ namespace TwainWeb.ServiceManager
 			if (_isInstalled && _service.CanStop)
 			{
 				_logger.Info(string.Format("Stop service '{0}'...", _serviceName));
-				_service.Stop();
+				
 				try
 				{
+					_service.Stop();
 					_service.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(50));
 					_logger.Info(string.Format("Service '{0}' was stopped", _serviceName));
 					return true;
 				}
-				catch (System.TimeoutException)
+				catch (Exception)
 				{
 					_logger.Info(string.Format("Can not to stop service '{0}'", _serviceName));
 					return false;
